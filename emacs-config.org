@@ -776,7 +776,7 @@ As Sacha Chua put it, "Disk space is cheap. Save lots".
   (setf mu4e-confirm-quit nil
         mu4e-headers-leave-behavior 'apply)
     
-  (eval-after-load "org" '(require 'org-mu4e))
+  (eval-after-load "org" '(when (fboundp 'mu4e) (require 'org-mu4e)))
 
   (defhydra binarin/mu4e-hydra (:exit t :color red)
     "Some useful mu4e bookmarks"
