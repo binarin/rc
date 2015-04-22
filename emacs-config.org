@@ -1,0 +1,2015 @@
+#+TITLE: binarin's emacs configuration
+#+OPTIONS: toc:4 h:4
+* File header
+  :PROPERTIES:
+  :ID:       872629ce-4d48-47d4-b276-f7935cd31243
+  :END:
+#+begin_src emacs-lisp
+  ;; -*- lexical-binding: t -*-
+  (require 'cl-lib)
+  (eval-when (compile load)
+    (setf byte-compile-warnings '(not make-local)))
+
+  ;; (setf req-package-log-level 'trace)
+
+#+end_src
+
+* Personal information
+  :PROPERTIES:
+  :ID:       04b545bf-52b7-412d-9ce5-80ee4bbe10cf
+  :END:
+#+begin_src emacs-lisp
+  (setf user-full-name "Alexey Lebedeff"
+        user-mail-address "binarin@binarin.ru")
+  (setf password-cache-expiry nil)
+  (setf password-cache t)
+#+end_src
+
+* External packages
+** Don't load outdated compiled files
+   :PROPERTIES:
+   :ID:       dfe9ecac-32f8-46ab-bf0e-6eff073d7d25
+   :END:
+   #+begin_src emacs-lisp
+     (setq load-prefer-newer t)
+   #+end_src
+
+** MELPA
+   :PROPERTIES:
+   :ID:       fbea2e34-f728-49ab-9f99-80f7a53d8052
+   :END:
+
+MELPA is an ELPA-compatible package repository built automatically on
+our server from the upstream source code using simple
+recipes. Bleeding edge code.
+
+#+begin_src emacs-lisp
+  (eval-when (compile load)
+      (let ((archive '("melpa" . "http://melpa.milkbox.net/packages/")))
+        (add-to-list 'package-archives archive t)
+        (package-read-archive-contents (car archive))
+        (unless (member (car archive) (mapcar (lambda (archive) (package-desc-archive (cadr archive))) package-archive-contents))
+          (package--download-one-archive archive "archive-contents")
+          (package-read-archive-contents (car archive)))))
+
+
+#+end_src
+
+** Marmalade
+   :PROPERTIES:
+   :ID:       241a3497-d56b-4838-ae53-9dce29683e92
+   :END:
+Marmalade is an ELPA compatible package repository that allows users
+to upload their own packages. Package maintainers don’t have to be the
+same as the maintainers of the original code. Some packages are outdated.
+
+#+begin_src emacs-lisp
+    (let ((archive '("marmalade" . "http://melpa.milkbox.net/packages/")))
+      (add-to-list 'package-archives archive t)
+      (package-read-archive-contents (car archive))
+      (unless (member (car archive) (mapcar (lambda (archive) (package-desc-archive (cadr archive))) package-archive-contents))
+        (package--download-one-archive archive "archive-contents")
+        (package-read-archive-contents (car archive))))
+
+#+end_src
+
+
+** use-package
+   :PROPERTIES:
+   :ID:       e99e5fb5-0664-454b-8a88-b6193dbcdbba
+   :END:
+
+The use-package declaration macro allows you to isolate package
+configuration in your ".emacs" in a way that is performance-oriented.
+You can use use-package to automatically load packages from ELPA with
+package.el.
+
+#+begin_src emacs-lisp
+  (eval-when (compile load)
+    (unless (package-installed-p 'use-package)
+      (package-install 'use-package)))
+  (require 'use-package)
+#+end_src
+
+So there will be no more package-installed-p/package-install dance in this file.
+
+** req-package
+   :PROPERTIES:
+   :ID:       fefb252e-c8af-4eaf-ac8c-e7b27c0fc266
+   :END:
+#+begin_src emacs-lisp
+  (use-package req-package
+    :ensure t)
+#+end_src
+
+* Helpers
+  :PROPERTIES:
+  :ID:       da993d91-9500-4ace-9e93-6a29bf8a1b52
+  :END:
+
+#+begin_src emacs-lisp
+  (imagemagick-register-types)
+
+  (use-package f
+    :ensure t)
+
+  (use-package dash
+    :ensure t)
+
+  (use-package anaphora
+    :ensure t)
+#+end_src
+
+* Use separate lisp file for customizations made through UI.
+  :PROPERTIES:
+  :ID:       c21650a3-4e44-4713-b3cc-6a4121e7075a
+  :END:
+
+#+begin_src emacs-lisp
+  (setf custom-file "~/.emacs.d/custom.el")
+  (load-file custom-file)
+#+end_src
+
+* TODO___ (get rid of) load all elisp files from dedicated directory
+
+Soon to be removed.
+
+** cf-keymaps.el
+   :PROPERTIES:
+   :ID:       b04b5557-e261-4073-ac6b-93e62e587ed6
+   :END:
+#+begin_src emacs-lisp
+  ;; -*- coding: iso-2022-7bit-unix -*-
+  (quail-define-package
+   "russian-computer-d" "Russian" "RU" nil
+   "ЙЦУКЕН Russian computer layout over Programmers Dvorak"
+   nil t t t t nil nil nil nil nil t)
+
+  ;;  №% "7 ?5 /3 (1 =9 *0 )2 +4 -6 !8 ;: 
+  ;;   Й  Ц  У  К  Е  Н  Г  Ш  Щ  З  Х  Ъ
+  ;;    Ф  Ы  В  А  П  Р  О  Л  Д  Ж  Э
+  ;;     Я  Ч  С  М  И  Т  Ь  Б  Ю  .,
+
+  (quail-define-rules
+   ("&" ?№)
+   ("[" ?\")
+   ("{" ??)
+   ("}" ?/)
+   ("(" ?()
+   ("=" ?=)
+   ("*" ?*)
+   (")" ?))
+   ("+" ?+)
+   ("]" ?-)
+   ("!" ?!)
+   ("#" ?\;)
+   ("%" ?%)
+   ("7" ?7)
+   ("5" ?5)
+   ("3" ?3)
+   ("1" ?1)
+   ("9" ?9)
+   ("0" ?0)
+   ("2" ?2)
+   ("4" ?4)
+   ("6" ?6)
+   ("8" ?8)
+   ("`" ?:)
+
+   ("$" ?ё)
+   (";" ?й)
+   ("," ?ц)
+   ("." ?у)
+   ("p" ?к)
+   ("y" ?е)
+   ("f" ?н)
+   ("g" ?г)
+   ("c" ?ш)
+   ("r" ?щ)
+   ("l" ?з)
+   ("/" ?х)
+   ("@" ?ъ)
+   ("a" ?ф)
+   ("o" ?ы)
+   ("e" ?в)
+   ("u" ?а)
+   ("i" ?п)
+   ("d" ?р)
+   ("h" ?о)
+   ("t" ?л)
+   ("n" ?д)
+   ("s" ?ж)
+   ("-" ?э)
+   ("\\" ?\\)
+   ("'" ?я)
+   ("q" ?ч)
+   ("j" ?с)
+   ("k" ?м)
+   ("x" ?и)
+   ("b" ?т)
+   ("m" ?ь)
+   ("w" ?б)
+   ("v" ?ю)
+   ("z" ?.)
+   ("~" ?Ё)
+   (":" ?Й)
+   ("<" ?Ц)
+   (">" ?У)
+   ("P" ?К)
+   ("Y" ?Е)
+   ("F" ?Н)
+   ("G" ?Г)
+   ("C" ?Ш)
+   ("R" ?Щ)
+   ("L" ?З)
+   ("?" ?Х)
+   ("^" ?Ъ)
+   ("A" ?Ф)
+   ("O" ?Ы)
+   ("E" ?В)
+   ("U" ?А)
+   ("I" ?П)
+   ("D" ?Р)
+   ("H" ?О)
+   ("T" ?Л)
+   ("N" ?Д)
+   ("S" ?Ж)
+   ("_" ?Э)
+   ("|" ?|)
+   ("\"" ?Я)
+   ("Q" ?Ч)
+   ("J" ?С)
+   ("K" ?М)
+   ("X" ?И)
+   ("B" ?Т)
+   ("M" ?Ь)
+   ("W" ?Б)
+   ("V" ?Ю)
+   ("Z" ?,))
+
+
+#+end_src
+** settings
+   :PROPERTIES:
+   :ID:       99e66c58-7d63-4fa1-96f8-2db46881de63
+   :END:
+#+begin_src emacs-lisp
+
+  (auto-insert-mode t)
+  (transient-mark-mode t)
+  (display-time-mode -1)
+  (setq display-time-24hr-format t)
+
+  (setq frame-title-format
+        '((:eval (if (buffer-file-name)
+                     (abbreviate-file-name (buffer-file-name))
+                   "%b"))
+          " - "
+          invocation-name))
+
+  ;; (mouse-avoidance-mode 'none)
+
+  (blink-cursor-mode -1)
+  (setq inhibit-startup-screen t)
+
+  (line-number-mode t)
+  (column-number-mode t)
+
+  (setf indent-tabs-mode nil)
+  (setf tab-width 8)
+
+  (require 'uniquify)
+  (setq uniquify-buffer-name-style 'forward)
+  (setq uniquify-separator "/")
+  (setq uniquify-after-kill-buffer-p t)
+  (setq uniquify-ignore-buffers-re "^\\*")
+
+  (setf prelude-savefile-dir (expand-file-name "~/.emacs.d/save"))
+
+  (add-hook 'after-save-hook
+            'executable-make-buffer-file-executable-if-script-p)
+
+  (setf whitespace-style '(tabs trailing tab-mark face lines-tail))
+
+  (winner-mode t)
+  (require 'windmove)
+
+  (setq-default indent-tabs-mode nil)
+  (put 'narrow-to-region 'disabled nil)
+
+#+end_src
+** lang
+   :PROPERTIES:
+   :ID:       a580dee1-0e63-4969-94a2-096fab405108
+   :END:
+#+begin_src emacs-lisp
+  (set-language-environment "Russian")
+  (setq default-input-method "russian-computer-d")
+
+  (prefer-coding-system 'utf-8-unix)
+
+#+end_src
+** highlight parentheses
+   :PROPERTIES:
+   :ID:       239f7033-5510-42f0-aef9-98d6b35b7647
+   :END:
+#+begin_src emacs-lisp
+  (use-package highlight-parentheses
+    :ensure t
+    :config
+    (defun turn-on-highlight-parentheses-mode ()
+      (highlight-parentheses-mode t))
+    (define-global-minor-mode global-highlight-parentheses-mode
+      highlight-parentheses-mode
+      turn-on-highlight-parentheses-mode)
+    (global-highlight-parentheses-mode t))
+#+end_src
+** ido
+   :PROPERTIES:
+   :ID:       f5d56831-5741-4efb-8609-77f4412be4a0
+   :END:
+#+begin_src emacs-lisp
+  (req-package flx-ido
+    :init
+    (setq ido-enable-prefix nil
+          ido-enable-flex-matching t
+          ido-use-faces nil
+          ido-create-new-buffer 'always
+          ido-use-filename-at-point 'guess
+          ido-max-prospects 10
+          ido-save-directory-list-file (expand-file-name "ido.hist" prelude-savefile-dir)
+          ido-default-file-method 'selected-window
+          ido-default-buffer-method 'selected-window
+          ido-confirm-unique-completion t)
+    (require 'flx-ido)
+    (ido-mode 1)
+    (ido-everywhere 1)
+    (flx-ido-mode t))
+
+
+
+
+
+
+
+#+end_src
+** puppet
+   :PROPERTIES:
+   :ID:       365c590f-726a-427a-9f30-6036d0b3c296
+   :END:
+#+begin_src emacs-lisp
+  (req-package puppet-mode
+    :mode "\\.pp\\'"
+    :config )
+
+  (add-hook 'puppet-mode-hook #'binarin/make-buffer-whitespace-aware)
+
+  (defun puppet-class-name ()
+    (let* ((path (reverse (split-string (buffer-file-name) "/")))
+           (filename (file-name-base (buffer-file-name))))
+      (cond
+       ((and (string= "profile" (second path))
+             (string= "manifests" (third path)))
+        (message "%s" (concat (fourth path) "::profile::" filename))))))
+
+  (defun puppet-auto-insert ()
+    (let ((class (puppet-class-name)))
+      (when class
+        (insert "class " class " {\n\n}\n"))))
+
+  (define-auto-insert 'puppet-mode 'puppet-auto-insert)
+
+#+end_src
+** keys
+   :PROPERTIES:
+   :ID:       717b7450-5e01-4335-be69-a25d3a39006c
+   :END:
+#+begin_src emacs-lisp
+  (global-set-key [f2]  'save-buffer)
+
+  (global-set-key [f3]  'find-file)
+  (global-set-key [C-f3]
+                                  (lambda ()
+                                    (interactive)
+                                    (kill-buffer (current-buffer))))
+
+  (global-set-key [f4]  'replace-string)
+  (global-set-key [C-f4] 'replace-regexp)
+
+  (global-set-key "\e\eb" (lambda () (interactive) (switch-to-buffer (other-buffer))))
+  (global-set-key "\e\ec" 'comment-region)
+  (global-set-key "\e\ef" 'font-lock-fontify-buffer)
+  (global-set-key "\e\ei" 'indent-region)
+  (global-set-key "\e\el" 'goto-line)
+  (global-set-key "\e\et" 'toggle-truncate-lines)
+
+  (global-set-key (read-kbd-macro "M-<down>") 'next-error)
+  (global-set-key (read-kbd-macro "M-<up>")   'previous-error)
+
+  (global-set-key (read-kbd-macro "C-x C-x")
+                  (lambda ()
+                    (interactive)
+                    (exchange-point-and-mark t)))
+
+  (defvar ctrl-z-map (make-sparse-keymap))
+  (let ((orig-ctrl-z-binding (lookup-key (current-global-map) [(control ?z)])))
+    (global-set-key [(control ?z)] ctrl-z-map)
+    (global-set-key [(control ?z) (control ?z)] orig-ctrl-z-binding))
+
+  (global-set-key [(control ?z) (control ?g)] 'keyboard-quit)
+
+#+end_src
+
+
+* Appearance
+  :PROPERTIES:
+  :ID:       04613ff3-708d-490a-af97-890686cdde5b
+  :END:
+#+begin_src emacs-lisp
+  (setq-default truncate-lines t)
+#+end_src
+
+** Remove visual clutter
+   :PROPERTIES:
+   :ID:       8ee1f692-db6b-4fac-bb48-edb5910c779b
+   :END:
+
+   #+begin_src emacs-lisp
+     (toggle-scroll-bar -1)
+     (tool-bar-mode -1)
+   #+end_src
+
+** TODO___ smart-mode-line (move rm-blacklist to corresponding place)
+   :PROPERTIES:
+   :ID:       cbae4d1d-db7d-4e9e-8cfe-1f68b2e0ba87
+   :END:
+
+   #+begin_src emacs-lisp
+     (use-package rich-minority
+       :ensure t)
+
+     (use-package smart-mode-line-powerline-theme
+       :ensure t)
+
+     (use-package smart-mode-line
+       :ensure t
+       :init
+       (require 'rich-minority)
+       (setf sml/theme 'powerline)
+       (setf rm-blacklist '(" hl-p" " Smrt" " Paredit" " Helm" " SliNav" " yas" " MRev" " ARev" " ElDoc" " Undo-Tree" " ^_^" " FS"))
+       (sml/setup))
+   #+end_src
+
+** Estimated screen size
+   :PROPERTIES:
+   :ID:       5ee383df-5065-4f42-87ac-21975acebc72
+   :END:
+
+   #+begin_src emacs-lisp
+     (defvar binarin/minimal-screen-width 111
+       "'M+ 1mn' font at 18pt and 1366px screen gives us 111 characters.")
+     (defvar binarin/screen-width-at-startup (window-width)
+       "As the emacs window is forced to be fullscreen by xmonad, we
+       can be pretty sure this value is maximum viable screen width.")
+
+     (setq fill-column (- binarin/minimal-screen-width 10))
+   #+end_src
+
+** Theme
+   :PROPERTIES:
+   :ID:       32d9cd61-a619-44bf-8ab6-3dd0696b042a
+   :END:
+
+#+begin_src emacs-lisp
+  (req-package zenburn-theme
+    :init
+    (load-theme 'zenburn))
+
+#+end_src
+
+* Behaviour
+  :PROPERTIES:
+  :ID:       600cdb84-b762-4fcd-9aac-d868472724dd
+  :END:
+** Hydra
+   :PROPERTIES:
+   :ID:       6b54debb-92e2-42f5-befb-eed32b8090e4
+   :END:
+#+begin_src emacs-lisp
+  (use-package hydra
+    :ensure t)
+#+end_src
+
+** dired
+   :PROPERTIES:
+   :ID:       0efd7e49-0d84-43cd-8332-bcc835dc2f72
+   :END:
+
+#+begin_src emacs-lisp
+  (setf dired-bind-jump nil)
+  (add-hook 'dired-mode-hook 'dired-hide-details-mode)
+#+end_src
+
+** undo-tree
+   :PROPERTIES:
+   :ID:       b1950a05-fae3-4fb3-aaa8-d7e2885a3139
+   :END:
+#+begin_src emacs-lisp
+  (use-package undo-tree
+    :ensure t
+    :commands global-undo-tree-mode
+    :init
+    (add-hook 'after-init-hook 'global-undo-tree-mode))
+#+end_src
+
+** Scrolling
+   :PROPERTIES:
+   :ID:       6ea7fb69-4f49-4fc6-b8cf-38fe4926b19e
+   :END:
+
+   Don't recenter point on redisplay, scroll just enough text to bring
+   point into view, even if you move far away.
+
+   #+begin_src emacs-lisp
+   (setq scroll-conservatively 101)
+   #+end_src
+
+
+** Backups
+   :PROPERTIES:
+   :ID:       2e3009e4-e758-4ca3-a5fb-3995b48d3afc
+   :END:
+
+Save backups to one place and don't clutter filesystem with files ending in ~.
+
+   #+begin_src emacs-lisp
+     (setq backup-directory-alist '(("." . "~/.emacs.d/backups")))
+   #+end_src
+
+As Sacha Chua put it, "Disk space is cheap. Save lots".
+
+   #+begin_src emacs-lisp
+     (setq delete-old-versions -1)
+     (setq version-control t)
+     (setq vc-make-backup-files t)
+     (setq auto-save-file-name-transforms '((".*" "~/.emacs.d/auto-save-list/" t)))
+   #+end_src
+
+** Persistence
+*** History
+    :PROPERTIES:
+    :ID:       9dea8cec-794d-4757-84de-2c166ce10567
+    :END:
+
+    #+begin_src emacs-lisp
+      (setf savehist-file "~/.emacs.d/save/savehist"
+            savehist-additional-variables '(search-ring kill-ring regexp-search-ring)
+            savehist-autosave-interval 60
+            savehist-save-minibuffer-history t
+            history-length t
+            history-delete-duplicates t)
+      (savehist-mode t)
+    #+end_src
+
+*** Place in visited files
+    :PROPERTIES:
+    :ID:       927aecb1-11d8-4d4b-8fa8-ee8d2cac7019
+    :END:
+
+    #+begin_src emacs-lisp
+      (setf save-place-file "~/.emacs.d/save/saveplace"
+            save-place t)
+      (require 'saveplace)
+
+    #+end_src
+
+*** Recent files
+    :PROPERTIES:
+    :ID:       a675554c-fcac-405c-bfe1-4cff9e8501f8
+    :END:
+
+    #+begin_src emacs-lisp
+      (setf recentf-save-file "~/.emacs.d/save/recentf"
+            recentf-max-saved-items 200
+            recentf-max-menu-items 15)
+      (recentf-mode t)
+
+    #+end_src
+** Change "yes or no" to "y or n"
+   :PROPERTIES:
+   :ID:       28aa80f7-9512-43ac-ba91-c45510d86f2c
+   :END:
+
+   #+begin_src emacs-lisp
+     (fset 'yes-or-no-p 'y-or-n-p)
+   #+end_src
+
+** smart-tab
+   :PROPERTIES:
+   :ID:       b60f40ed-1196-4bbe-96ab-eb7ae09d99bf
+   :END:
+#+begin_src emacs-lisp
+  (req-package smart-tab
+    :commands smart-tab-mode
+    :init (progn
+            (add-hook 'emacs-lisp-mode-hook 'smart-tab-mode)))
+#+end_src
+#+end_src
+** key-chord
+   :PROPERTIES:
+   :ID:       8195773e-e4ba-4f05-8b71-7b33b4ff7fc2
+   :END:
+#+begin_src emacs-lisp
+  (req-package key-chord
+    :init
+    (progn
+      (key-chord-mode t)
+      (key-chord-define-global "jk" 'undo-tree-undo)
+      (key-chord-define-global "wm" 'undo-tree-redo)))
+#+end_src
+** ace-jump
+   :PROPERTIES:
+   :ID:       6e15850e-8e2e-45d7-ad0a-f0c83bbf4430
+   :END:
+
+#+begin_src emacs-lisp
+  (req-package-force ace-jump-mode
+    :require key-chord
+    :bind ("C-c SPC" . ace-jump-mode)
+    :init
+    (progn
+      (autoload 'ace-jump-mode "ace-jump-mode")
+      (key-chord-define-global "gc" 'ace-jump-mode)))
+#+end_src
+
+** Prompt on C-x C-c - no more accidential exits
+   :PROPERTIES:
+   :ID:       4c9e3061-cfc7-420d-b82c-b8956b8fe95a
+   :END:
+
+#+begin_src emacs-lisp
+  (setf confirm-kill-emacs #'y-or-n-p)
+#+end_src
+
+** Whitespace 
+   :PROPERTIES:
+   :ID:       b46a2f80-26d7-4636-812a-2184bacc6e1f
+   :END:
+#+begin_src emacs-lisp
+  (defun binarin/make-buffer-whitespace-aware ()
+    (add-hook 'local-write-file-hooks
+              (lambda ()
+                (save-excursion
+                  (delete-trailing-whitespace))))
+    (whitespace-mode t))
+#+end_src
+
+
+** Firestarter - running commands on save
+   :PROPERTIES:
+   :ID:       f79d0e04-bfd5-4259-aefa-9158ac5cdeeb
+   :END:
+
+#+begin_src emacs-lisp
+  (use-package firestarter
+    :ensure t
+    :init
+    (setf firestarter-lighter " FS")
+    (firestarter-mode))
+#+end_src
+
+
+* External programs
+** edit-in-chrome
+   :PROPERTIES:
+   :ID:       d8c5a6a6-ce60-4ccc-bda8-70755cc9d4c0
+   :END:
+#+begin_src emacs-lisp
+  (req-package edit-server
+    :if window-system
+    :init
+    (add-hook 'after-init-hook 'edit-server-start t))
+#+end_src
+
+* Communication
+** Email
+*** TODO___ Multiple accounts in mu4e
+*** TODO___ Old mu4e config
+    :PROPERTIES:
+    :ID:       85c43d78-8894-4d8c-8c9b-f7d55833e5b8
+    :END:
+
+#+begin_src emacs-lisp
+  (setq message-send-mail-function 'smtpmail-send-it
+        smtpmail-default-smtp-server "smtp.yandex-team.ru"
+        smtpmail-smtp-server "smtp.yandex-team.ru"
+        smtpmail-smtp-service 465
+        smtpmail-stream-type 'ssl
+        smtpmail-debug-info t)
+
+  ;; (require 'mu4e)
+  ;; (require 'smtpmail)
+
+  (setf mu4e-maildir       "~/Mail/yandex-team"
+        mu4e-sent-folder   "/Sent"
+        mu4e-drafts-folder "/Drafts"
+        mu4e-trash-folder  "/Trash"
+        mu4e-refile-folder "/Архив")
+
+  (defun my-render-html-message ()
+    (let ((dom (libxml-parse-html-region (point-min) (point-max))))
+      (erase-buffer)
+      (shr-insert-document dom)
+      (goto-char (point-min))))
+
+  (setq mu4e-html2text-command 'my-render-html-message)
+
+  (setf mu4e-bookmarks '(("flag:unread AND NOT maildir:/Trash" "Unread messages" 117)
+                         ("date:today..now AND NOT maildir:/Trash" "Today's messages" 116)
+                         ("date:7d..now AND NOT maildir:/Trash" "Last 7 days" 119)
+                         ("mime:image/* AND NOT maildir:/Trash" "Messages with images" 112)))
+
+  (defun binarin/mu4e-view-mode-hook ()
+    (toggle-truncate-lines nil))
+
+  (add-hook 'mu4e-view-mode-hook #'binarin/mu4e-view-mode-hook)
+#+end_src
+
+*** Signature
+    :PROPERTIES:
+    :ID:       67dd0a30-b082-4737-9f4c-a34b036060e3
+    :END:
+
+#+begin_src emacs-lisp
+  (setf mu4e-compose-signature-auto-include nil)
+#+end_src
+
+*** Appearance
+    :PROPERTIES:
+    :ID:       b6fdc1ae-0a67-4812-9de0-d36cf22f45fe
+    :END:
+
+#+begin_src emacs-lisp
+  (setq mu4e-view-show-images t)
+
+  ;; use 'fancy' non-ascii characters in various places in mu4e
+  (setq mu4e-use-fancy-chars t)
+#+end_src
+
+*** Behaviour
+    :PROPERTIES:
+    :ID:       2721952e-54d4-423b-8b65-cbb580f4f2d4
+    :END:
+
+#+begin_src emacs-lisp
+  ;; save attachment to my desktop (this can also be a function)
+  (setq mu4e-attachment-dir "~/Downloads")
+
+  (setf mu4e-hide-index-messages t)
+  (setf mu4e-get-mail-command "true")
+  (setf mu4e-update-interval 60)
+  (setf mu4e-confirm-quit nil
+        mu4e-headers-leave-behavior 'apply)
+    
+  (eval-after-load "org" '(require 'org-mu4e))
+
+  (defhydra binarin/mu4e-hydra (:exit t :color red)
+    "Some useful mu4e bookmarks"
+    ("i" (progn (mu4e-update-mail-and-index nil) (mu4e-headers-search "maildir:/INBOX")) "INBOX")
+    ("u" (progn (mu4e-update-mail-and-index nil) (mu4e-headers-search "flag:unread AND NOT maildir:/Trash and NOT maildir:/Lists.Yandex.bbs and NOT maildir:/Yandex.bike")) "Unread work messages")
+    ("f" (progn (mu4e-update-mail-and-index nil) (mu4e-headers-search "flag:unread AND NOT maildir:/Trash and NOT maildir:/Yandex.direct-dev and NOT maildir:/Yandex.direct-review and NOT maildir:/Yandex.perl-dev and NOT maildir:/Yandex.redrose-announces and NOT maildir:/Yandex.staff and NOT maildir:/INBOX")) "Unread fun messages"))
+
+
+  (global-set-key (kbd "<f9>") #'binarin/mu4e-hydra/body)
+#+end_src
+
+** Jabber
+   :PROPERTIES:
+   :ID:       fa9353a0-ea3d-4b28-bdec-2bb828ad192a
+   :END:
+#+begin_src emacs-lisp
+  (req-package jabber
+    :init
+    (progn
+      (setf jabber-account-list '(("binarin@yandex-team.ru" (:connection-type . starttls))))
+      (setf jabber-auto-reconnect t)
+      (define-key ctl-x-map (kbd "C-j") jabber-global-keymap)))
+#+end_src
+
+** IRC
+   :PROPERTIES:
+   :ID:       992767f0-1151-410a-81d8-80c60bf73548
+   :END:
+
+#+begin_src emacs-lisp
+  (setf erc-hide-list '("JOIN" "PART" "QUIT"))
+
+  (req-package circe
+    :commands circe
+    :config
+    (progn
+      (setf circe-network-options `(("Freenode"
+                                     :channels ("#erlang" "#erlounge"))
+                                    ("Bitlbee"
+                                     :port 6667
+                                     :pass ,(funcall (plist-get (nth 0 (auth-source-search :host "127.0.0.1" :port 6667 :user "binarin")) :secret)))))
+      (setf circe-reduce-lurker-spam t)
+      (load "lui-logging" nil t)
+      (enable-lui-logging-globally)))
+
+
+
+  (defun irc ()
+    (interactive)
+    (circe "Freenode")
+    (circe "Bitlbee"))
+
+#+end_src
+
+
+* Personal organization
+org-mode is already loaded because we needed to tangle
+emacs-config.org, so no need to use req-package.
+** Notes about setting up org-capture
+
+URL:
+javascript:location.href='org-protocol://capture://l/'+encodeURIComponent(location.href)+'/'+encodeURIComponent(document.title)+'/'+encodeURIComponent(window.getSelection())
+
+~/.local/share/applications/mimeapps.list:
+[Default Applications]
+x-scheme-handler/org-protocol=org-protocol.desktop
+
+~/.local/share/applications/org-protocol.list:
+[Desktop Entry]
+Name=org-protocol
+Exec=emacsclient %u
+Type=Application
+Terminal=false
+Categories=System;
+MimeType=x-scheme-handler/org-protocol;
+
+** TODO___ Split org-mode massive config into manageable chunks
+   :PROPERTIES:
+   :ID:       fae1c7a2-acd5-4414-9131-f0b89585e9ba
+   :END:
+
+#+begin_src emacs-lisp
+  (defadvice org-protocol-do-capture (around display-notify-after-capture)
+    (let ((result ad-do-it))
+      (if (and result
+               (file-executable-p "/usr/bin/notify-send"))
+          (call-process "/usr/bin/notify-send" nil 0 nil
+                "--expire-time" "3000" "-u" "low"
+                "-i" (expand-file-name "~/.emacs.d/org.svg")
+                "Link captured"
+                (concat (caar org-stored-links)
+                        "\n"
+                        (cadar org-stored-links))))
+      result))
+
+  (defun agenda-sorter-tag-first (tag)
+    #'(lambda (a b)
+      (let ((ta (member (downcase tag) (get-text-property 1 'tags a)))
+            (tb (member (downcase tag) (get-text-property 1 'tags b))))
+        (cond
+         ((and ta tb) nil)
+         ((not ta) -1)
+         (t +1)))))
+
+
+  (require 'org)
+  (require 'org-clock)
+  (require 'org-habit)
+
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;; Keywords & tags
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+  (setf project-matcher "+PROJ/-DONE___-BOUGHT_-WAITING-SOMEDAY-CANCELD")
+
+  (setq org-stuck-projects
+        `(,project-matcher ("WAITING") ("NEXT") ""))
+
+  (setq org-todo-keywords
+        '((sequence "TODO___(t)" "STARTED(s)" "|" "DONE___(d!)")
+          (sequence "BUY____(b)" "|" "BOUGHT_(g)")
+          (type "|" "CANCELD(c)")
+          (type "WAITING(w)" "|")))
+
+  (setq org-todo-keyword-faces
+        '(("TODO___" :foreground "red" :weight bold)
+          ("STARTED" :foreground "#93e0e3" :weight bold)
+          ("DONE___" :foreground "forest green" :weight bold)
+
+          ("BUY____" :foreground "red" :weight bold)
+          ("BOUGHT_" :foreground "forest green" :weight bold)
+
+          ("WAITING" :foreground "orange3" :weight bold)
+          ("CANCELD" :foreground "forest green" :weight bold)
+
+          ("TICKET_" :foreground "red" :weight bold)
+          ("PROGRES" :foreground "#93e0e3" :weight bold)
+          ("CLOSED_" :foreground "forest green" :weight bold)
+
+          ("REVIEW_" :foreground "orange3" :weight bold)
+          ("COMMIT_" :foreground "orange3" :weight bold)
+          ("RESOLVD" :foreground "orange3" :weight bold)
+          ("TESTRDY" :foreground "orange3" :weight bold)
+          ("TESTING" :foreground "orange3" :weight bold)
+          ("BETA___" :foreground "orange3" :weight bold)))
+
+  (setq org-todo-state-tags-triggers
+        '(("STARTED" ("NEXT" . t))
+          (done ("NEXT"))
+          ("WAITING" ("NEXT"))
+          ("CANCELD" ("NEXT"))))
+
+  (setq org-clock-in-switch-to-state
+        (lambda (state)
+          (cond
+           ((or (string= state "BUY____")
+                (string= state "BOUGHT_"))
+            "BUYING_")
+           (t "STARTED"))))
+
+  (setq context-tags
+        '(("HOME" . ?h)  ;; nagornaya
+          ("DOBR" . ?d)  ;; dobrynka
+          ("WORK" . ?w)  ;; office
+          ("AUTO" . ?r)  ;; in or around the car
+          ("CITY" . ?y)  ;; on the go
+          ("COMP" . ?c)  ;; some place that has trusted computer
+          ("PHON" . ?o)  ;; anywhere where I can make phone call
+          ))
+
+  (setq context-tag-includes
+        '(("HOME" "COMP" "PHON")
+          ("DOBR" "COMP" "PHON")
+          ("WORK" "COMP" "PHON")
+          ("AUTO" "CITY" "PHON")
+          ("CITY" "PHON")))
+
+  (setq org-tag-alist `((:startgroup . nil) ;; contexts
+                        ,@context-tags
+                        (:endgroup . nil)
+                        ("AGND" . ?a)
+                        ("PROJ" . ?p)
+                        ("NEXT" . ?n)
+                        ("HABT" . ?b)))
+
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;; Keybindings
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  (define-key global-map "\C-ca" 'org-agenda)
+  ;; (define-key global-map "\C-cb" 'org-iswitchb)
+
+  (global-set-key (kbd "<f11>") 'org-clock-goto)
+  (global-set-key (kbd "C-<f11>") 'org-clock-in)
+
+
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;; Remember
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  (setq org-default-notes-file "~/org/refile.org")
+  (define-key global-map "\C-cr" 'org-capture)
+
+  (setq org-capture-templates
+        '(("t" "todo" entry
+           (file "~/org/refile.org")
+           "* TODO___ %?\n  %u\n  %a\n  :PROPERTIES:\n  :ID: %(org-id-new)\n  :END:" :prepend t :kill-buffer nil)
+          ("w" "org-protocol" entry
+           "* TODO___ %c\n  %U\n\n  :PROPERTIES:\n  :ID: %(org-id-new)\n  :END:" :prepend t :immediate-finish t :kill-buffer nil)
+          ("l" "Link" entry
+           (file "~/org/refile.org")
+           "* TODO___ %a\n  %U\n\n  :PROPERTIES:\n  :ID: %(org-id-new)\n  :END:\n\n  %i" :prepend t :immediate-finish t :kill-buffer nil)))
+
+  (defun binarin/org-protocol-capture-postprocess ()
+    (awhen (re-search-forward " \\(@ Startrek\\|- binarin@gmail.com - Gmail\\)]]" nil t)
+      (replace-match "]]")))
+
+  (add-hook 'org-capture-prepare-finalize-hook #'binarin/org-protocol-capture-postprocess)
+
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;; Refile
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+  ; Use IDO for target completion
+  (setq org-completion-use-ido nil)
+
+  ; Targets complete in steps so we start with filename, TAB shows the next level of targets etc
+  (setq org-outline-path-complete-in-steps nil)
+
+  ; Targets include this file and any file contributing to the agenda - up to 5 levels deep
+  (setq org-refile-targets
+        '((org-agenda-files :maxlevel . 5)
+          (nil :maxlevel . 5)))
+
+  ; Targets start with the file name - allows creating level 1 tasks
+  (setq org-refile-use-outline-path 'file)
+
+  (setq org-treat-S-cursor-todo-selection-as-state-change nil)
+
+  (setf org-mobile-inbox-for-pull "~/org/refile.org")
+
+  (setf agenda-opts-all-with-time
+        '((org-agenda-todo-ignore-scheduled nil)
+          (org-agenda-todo-ignore-deadlines nil)
+          (org-agenda-todo-ignore-with-date nil)))
+
+  (defun filter-for-context (context)
+    (mapconcat 'identity
+               (list* "+NEXT"
+                      (cl-remove-if (lambda (elt)
+                                      (member elt (or (assoc context context-tag-includes)
+                                                      context)))
+                                    (mapcar 'car context-tags)))
+               "-"))
+
+
+  (setq org-agenda-custom-commands
+        `(("s" "Started Tasks" todo "STARTED" ,agenda-opts-all-with-time)
+          ("w" "Tasks waiting on something" todo "WAITING" ((org-use-tag-inheritance nil)))
+          ("r" "Refile New Notes and Tasks" tags "LEVEL=1+REFILE" ,agenda-opts-all-with-time)
+          ("p" "Projects" tags-todo ,project-matcher nil)
+          ("l" . "Context-based agenda")
+          ("la" "Agenda and people agenda"
+           ((agenda "")
+            (tags-todo "+NEXT+AGND"
+                       ((org-agenda-todo-ignore-scheduled t)
+                        (org-agenda-dim-blocked-tasks 'invisible)
+                        (org-agenda-todo-ignore-deadlines t)
+                        (org-agenda-sorting-strategy '(priority-down user-defined-down category-up))
+                        (org-agenda-cmp-user-defined 'agenda-sort-home-tags-first)))))
+          ,@(loop for (tag . char) in context-tags
+                  collect (list (concat "l" (char-to-string char))
+                                (concat "Agenda and context " tag)
+                                `((agenda "")
+                                  (tags-todo ,(filter-for-context tag)
+                                             ((org-agenda-todo-ignore-scheduled t)
+                                              (org-agenda-dim-blocked-tasks 'invisible)
+                                              (org-agenda-todo-ignore-deadlines t)
+                                              (org-agenda-sorting-strategy '(priority-down user-defined-down category-up))
+                                              (org-agenda-cmp-user-defined ',(agenda-sorter-tag-first tag)))))))))
+
+  (setq org-agenda-tags-todo-honor-ignore-options t)
+
+  ;;
+  ;; Resume clocking tasks when emacs is restarted
+  (org-clock-persistence-insinuate)
+
+  ;;
+  ;; Yes it's long... but more is better ;)
+  (setq org-clock-history-length 35)
+
+  ;; Resume clocking task on clock-in if the clock is open
+  (setq org-clock-in-resume t)
+
+  ;; Sometimes I change tasks I'm clocking quickly - this removes clocked tasks with 0:00 duration
+  (setq org-clock-out-remove-zero-time-clocks t)
+
+  ;; Don't clock out when moving task to a done state
+  (setq org-clock-out-when-done nil)
+
+  ;; Save the running clock and all clock history when exiting Emacs, load it on startup
+  (setq org-clock-persist 'history)
+
+  ;; Keep clocks running
+  (setq org-remember-clock-out-on-exit nil)
+
+  (run-at-time nil 60 'org-save-all-org-buffers)
+
+  (setq org-time-stamp-rounding-minutes (quote (1 15)))
+
+  (setq org-columns-default-format "%54ITEM(Task) %8Effort(Effort){:} %8CLOCKSUM")
+  (setq org-global-properties (quote (("Effort_ALL" . "0:10 0:30 1:00 2:00 3:00 4:00 5:00 6:00 7:00 8:00"))))
+
+  (setq org-fast-tag-selection-single-key t)
+
+  (setq org-archive-mark-done nil)
+
+  (setq org-agenda-todo-ignore-with-date t)
+  (setq org-agenda-skip-deadline-if-done t)
+  (setq org-agenda-skip-scheduled-if-done t)
+  (setq org-agenda-skip-timestamp-if-done t)
+
+  (setq org-enforce-todo-dependencies t)
+
+  (setq org-cycle-separator-lines 0)
+  (setq org-insert-heading-respect-content nil)
+
+  (setq org-deadline-warning-days 30)
+
+  (setq org-log-done 'time)
+  (setq org-log-into-drawer t)
+
+  (require 'org-protocol)
+
+  (setq org-return-follows-link t)
+
+  (setq org-tags-exclude-from-inheritance '("PROJ"))
+
+  (setq org-default-priority 68)
+
+  (setq org-agenda-window-frame-fractions '(1 . 1))
+  (setq org-agenda-restore-windows-after-quit t)
+
+  (setq org-mobile-directory (expand-file-name "~/Dropbox/org/"))
+
+  (add-hook 'org-mode-hook (lambda () (auto-revert-mode 1)))
+
+  (setf org-agenda-dim-blocked-tasks t)
+
+  (setf org-agenda-clockreport-parameter-plist '(:link t :maxlevel 2 :narrow 60))
+  (setf org-clock-report-include-clocking-task 't)
+
+  (add-to-list 'auto-mode-alist '("\\.org$" . org-mode))
+
+  (setq org-reverse-note-order t)
+  (setq org-agenda-include-diary t)
+  (setq org-agenda-span 'day)
+
+  (setq org-agenda-start-on-weekday 1)
+
+  (setq org-drawers '("PROPERTIES" "LOGBOOK" "CLOCK" "FILES"))
+  (setq org-clock-into-drawer "CLOCK")
+  (setq org-log-into-drawer t)
+  (setq org-export-with-drawers t)
+
+  (setq org-log-repeat 'time)
+  (setq org-use-fast-todo-selection 'prefix)
+
+  (setq org-agenda-window-setup 'current-window)
+
+  ;; (require 'org-mobile-sync)
+  ;; (org-mobile-sync-mode 1)
+
+  (defun clockout-nagger ()
+    (call-process "~/.emacs.d/nagger.py" nil nil nil))
+
+  (defun clockout-remove-nagger ()
+    (call-process "killall" nil nil nil "nagger.py"))
+
+  (add-hook 'org-clock-out-hook 'clockout-nagger)
+  (add-hook 'org-clock-in-hook 'clockout-remove-nagger)
+
+  ;; (remove-hook 'org-clock-out-hook 'list-open-project-files-to-drawer)
+
+  (defun list-open-project-files-to-drawer ()
+    (org-with-point-at org-clock-marker
+        (org-back-to-heading t)
+        (let ((id (cdr (assoc "ID" (org-entry-properties)))))
+          id)))
+
+  ;; (list-open-project-files-to-drawer)
+  ;; (cdr (assoc "ISSUE_ID" (list-open-project-files-to-drawer)))
+  ;; (cdr (assoc "ID" (list-open-project-files-to-drawer)))
+
+
+  ;; clock-out - сохраняем список буфферов
+  ;; clock-in-prepare-hook - (опционально) закрываем буфферы старой задачи, открываем буферы текущей
+
+  (setf org-pretty-entities nil)
+#+end_src
+** org-mode files
+   :PROPERTIES:
+   :ID:       6e8ee99a-656e-418c-be71-330bcc6b51be
+   :END:
+
+Expand filenames so we can later directly compare them with (buffer-file-name)
+
+#+begin_src emacs-lisp
+  (setf org-agenda-files
+        (-map #'f-expand
+              (-filter #'f-exists?
+                       '("~/org/personal.org"
+                         "~/org/refile.org"
+                         "~/org/yandex.org"
+                         "~/org/stk.org"
+                         "~/org/subscriptions.org"
+                         "~/.rc/emacs-config.org"
+                         "~/org/ference.org"))))
+#+end_src
+
+** org-mode appearance
+   :PROPERTIES:
+   :ID:       eb4be926-8769-4d55-801b-981f77f8fd5a
+   :END:
+
+    #+begin_src emacs-lisp
+      (setf org-ellipsis " ▾")
+    #+end_src
+
+** org-mode behaviour
+   :PROPERTIES:
+   :ID:       563b975a-c6c8-4cbf-bca6-6fe69ba8268a
+   :END:
+#+begin_src emacs-lisp
+  (setf org-catch-invisible-edits 'smart)
+  (setf org-id-link-to-org-use-id t)
+  (setf org-fast-tag-selection-include-todo nil)
+  (setf org-use-speed-commands t)
+#+end_src
+
+** Adjust org-mode to screen size                                                                      :NEXT:
+   :PROPERTIES:
+   :ID:       9cbbc46b-990c-435f-a224-ab8f219415a4
+   :END:
+
+When editining org-mode files align tags so they'll fit on the
+smallest display used by me. And for dynamic agenda use maximal
+available screen space.
+
+#+begin_src emacs-lisp
+  (setf org-tags-column (- (length org-ellipsis) binarin/minimal-screen-width)
+        org-agenda-tags-column (- (length org-ellipsis) binarin/screen-width-at-startup))
+#+end_src
+
+#+begin_src emacs-lisp
+  (setf org-habit-graph-column (- binarin/screen-width-at-startup
+                                  org-habit-preceding-days
+                                  org-habit-following-days
+                                  1))
+#+end_src
+
+
+** Focusing on currently clocked-in item
+   :PROPERTIES:
+   :ID:       ca208a73-d192-49ee-a6d6-d088c6e661a0
+   :END:
+
+Switch to perspective (if working directory is specified).
+
+#+begin_src emacs-lisp
+  (defun binarin/org-clocked-item-properties ()
+    (when (org-clocking-p)
+      ))
+
+  (defun binarin/maybe-change-perspective-on-clockin ()
+    (awhen (org-entry-get org-clock-marker "WORKING_DIR" t)
+      (let ((persp (or (org-entry-get org-clock-marker "PERSPECTIVE_NAME" t)
+                       (file-name-nondirectory (directory-file-name it)))))
+        (persp-switch persp)
+        (persp-add-buffer (dired-noselect it)))))
+
+  (defun binarin/set-main-perspective-on-clockout ()
+    (persp-switch "main"))
+
+  (add-hook 'org-clock-in-hook #'binarin/maybe-change-perspective-on-clockin)
+  (add-hook 'org-clock-out-hook #'binarin/set-main-perspective-on-clockout)
+#+end_src
+
+Access to predefined actions from everywhere.
+
+** Repetitive things
+   :PROPERTIES:
+   :ID:       f3e22cdc-f8d2-4726-b233-e6daef24622b
+   :END:
+
+#+begin_src emacs-lisp
+  (autoload 'org-drill "org-drill" "" t)
+  (setf org-drill-question-tag "drill")
+#+end_src
+
+
+
+** Calendar synchronization
+   :PROPERTIES:
+   :ID:       08c7c44a-21a7-413b-bd06-bd934f04fd67
+   :END:
+
+#+begin_src emacs-lisp
+  (setf org-caldav-url "http://195.91.211.180/cal.php/principals/binarin")
+  (setf org-caldav-calendar-id "default")
+  (setf org-caldav-inbox "~/org/calendar.org")
+  (setf org-caldav-files org-agenda-files)
+  (setf org-icalendar-timezone "Europe/Minsk")
+  (setf org-caldav-debug-level 2)
+#+end_src
+
+* Navigation
+** Bookmark+
+   :PROPERTIES:
+   :ID:       9778b5a2-8623-4235-bd08-9d2df82b8e5b
+   :END:
+#+begin_src emacs-lisp
+  (use-package bookmark+
+    :ensure t
+    :config
+    (setf bookmark-default-file "~/.emacs.d/save/bookmarks"))
+#+end_src
+
+** god-mode
+   :PROPERTIES:
+   :ID:       8eb27e9e-2a3e-4dc7-9a5a-a029ae392573
+   :END:
+#+begin_src emacs-lisp
+  (req-package god-mode
+    :bind ("<escape>" . god-local-mode)
+    :config
+    (progn
+      (global-set-key (kbd "C-x C-1") 'delete-other-windows)
+      (global-set-key (kbd "C-x C-2") 'split-window-below)
+      (global-set-key (kbd "C-x C-3") 'split-window-right)))
+#+end_src
+
+** Platinum searcher
+   :PROPERTIES:
+   :ID:       9bab7ca7-6619-4159-b594-a38b60cf6a4f
+   :END:
+
+#+begin_src emacs-lisp
+  (use-package pt
+    :ensure t
+    :commands projectile-pt)
+#+end_src
+
+** ack-grep
+   :PROPERTIES:
+   :ID:       731a908d-9d07-4c31-ad24-0108ee86f74e
+   :END:
+
+#+begin_src emacs-lisp
+  ;; (req-package ack-and-a-half
+  ;;   :commands (ack-and-a-half ack)
+  ;;   :config (defalias 'ack 'ack-and-a-half))
+  (req-package helm-ack
+    :commands (helm-ack)
+    :config (progn
+              (setf helm-ack-base-command "ack-grep -H --nocolor --nogroup")))
+#+end_src
+
+** Helm
+   :PROPERTIES:
+   :ID:       8a6ae7ca-1e23-4820-b260-4ece0d844335
+   :END:
+
+#+begin_src emacs-lisp
+  (req-package helm
+    :config
+    (progn
+      (global-set-key (kbd "C-c C-h") 'helm-command-prefix)
+      (global-unset-key (kbd "C-x c"))
+      (require 'helm-org)
+      (define-key helm-map (kbd "<tab>") 'helm-execute-persistent-action) ; rebind tab to run persistent action
+      (define-key helm-map (kbd "C-i") 'helm-execute-persistent-action) ; make TAB works in terminal
+      (define-key helm-map (kbd "C-z")  'helm-select-action) ; list actions using C-z
+
+      (when (executable-find "curl")
+        (setq helm-google-suggest-use-curl-p t))
+
+      (setq helm-quick-update                     t ; do not display invisible candidates
+            helm-split-window-in-side-p           t ; open helm buffer inside current window, not occupy whole other window
+            helm-buffers-fuzzy-matching           t ; fuzzy matching buffer names when non--nil
+            helm-move-to-line-cycle-in-source     t ; move to end or beginning of source when reaching top or bottom of source.
+            helm-ff-search-library-in-sexp        t ; search for library in `require' and `declare-function' sexp.
+            helm-scroll-amount                    8 ; scroll 8 lines other window using M-<next>/M-<prior>
+            helm-ff-file-name-history-use-recentf t)
+
+      (global-set-key (kbd "M-x") 'helm-M-x)
+      (global-set-key (kbd "M-y") 'helm-show-kill-ring)
+      (global-set-key (kbd "C-x C-b") 'helm-mini)
+      (global-set-key (kbd "C-x C-f") 'helm-find-files)
+      (helm-mode 1)))
+
+#+end_src
+
+** Perspective
+   :PROPERTIES:
+   :ID:       ed5b256e-3ecb-470f-9d63-da1a96ebb1b4
+   :END:
+
+Every file in org-agenda-files should be present in every perspective:
+- When creating new perspective add already opened items from org-agenda-files
+- When opening file from org-agenda files add it to every perspective
+
+#+begin_src emacs-lisp
+  (use-package perspective
+    :ensure t
+    :config
+    (persp-mode t)
+    (persp-turn-off-modestring)
+    (require 'perspective)
+
+    (defun binarin/perspective-preserve-shared-buffer (orig-fun persp)
+      "Preserve current buffer after perspective switch if it's a
+  member of both perspectives - so there will be no random buffer
+  switching. Also preserve tracking information in IM buffers (by
+  forbidding pers-activate to use switch-to-buffer on them)."
+      (let* ((original-switch-to-buffer (symbol-function 'switch-to-buffer))
+             (current-buffer-pre-switch (current-buffer))
+             (res (cl-letf (((symbol-function 'switch-to-buffer) (lambda (buffer &rest args)
+                                                                   (unless (member (buffer-local-value 'major-mode buffer)
+                                                                                   '(jabber-chat-mode erc-mode circe-channel-mode circe-query-mode))
+                                                                     (apply original-switch-to-buffer buffer args)))))
+                    (funcall orig-fun persp))))
+        (when (member current-buffer-pre-switch (persp-buffers persp))
+          (switch-to-buffer current-buffer-pre-switch))
+        res))
+
+    (defun binarin/add-all-perspective-buffers-to-new-perspective ()
+      (dolist (buf (-filter (lambda (buf)
+                              (or
+                               (-contains? org-agenda-files (buffer-file-name buf))
+                               (member (buffer-local-value 'major-mode buf)
+                                       '(jabber-chat-mode erc-mode circe-channel-mode circe-query-mode))))
+                            (buffer-list)))
+        (persp-add-buffer buf)))
+
+    (defun binarin/add-current-buffer-to-all-perspectives ()
+      (when persp-mode
+        (dolist (frame (frame-list))
+          (loop for persp being the hash-values of (with-selected-frame frame perspectives-hash)
+                do (unless (memq (current-buffer) (persp-buffers persp))
+                     (push (current-buffer) (persp-buffers persp)))))))
+
+    (add-hook 'persp-created-hook #'binarin/add-all-perspective-buffers-to-new-perspective)
+    (add-hook 'org-mode-hook #'binarin/add-current-buffer-to-all-perspectives)
+    (add-hook 'jabber-chat-mode-hook #'binarin/add-current-buffer-to-all-perspectives)
+    (add-hook 'circe-channel-mode-hook #'binarin/add-current-buffer-to-all-perspectives)
+    (add-hook 'circe-query-mode-hook #'binarin/add-current-buffer-to-all-perspectives)
+    (advice-add 'persp-activate :around #'binarin/perspective-preserve-shared-buffer)
+    )
+
+
+#+end_src
+
+** Projectile
+   :PROPERTIES:
+   :ID:       abc009dd-e41d-4b6b-bc08-adb768d44de6
+   :END:
+#+begin_src emacs-lisp
+  (req-package persp-projectile
+    :require (perspective projectile)
+    :init (require 'persp-projectile))
+
+  (use-package projectile
+    :ensure t
+    :init
+    (setf projectile-mode-line nil
+          projectile-enable-caching t)
+    (projectile-global-mode 1)
+    :config
+    (add-to-list 'projectile-globally-ignored-directories "logs"))
+
+  (req-package helm-projectile
+    :require (helm projectile)
+    :init
+    (progn
+      (helm-projectile-on)))
+#+end_src
+** expand-region
+   :PROPERTIES:
+   :ID:       57adccce-467c-42b8-b51c-89cbe45c6fdc
+   :END:
+#+begin_src emacs-lisp
+  (req-package expand-region
+    :bind ("C-=" . er/expand-region))
+#+end_src
+** hide-show
+   :PROPERTIES:
+   :ID:       476e0469-82dd-425d-a634-379739651f44
+   :END:
+
+#+begin_src emacs-lisp
+  (use-package hideshow
+    :ensure t
+    :commands hs-minor-mode hs-hide-level
+    :config
+    (defface my/hs-overlay-face
+      '((t . (:background "red")))
+      "Face used for hideshow overlays"
+      :group 'emacs)
+    (defun my/hs-set-overlay-face (ov)
+      (when (eq 'code (overlay-get ov 'hs))
+        (let ((keymap (make-keymap)))
+          (define-key keymap (read-kbd-macro "<return>") (lambda () (interactive) (delete-overlay ov)))
+          (define-key keymap (read-kbd-macro "q") (lambda () (interactive) (delete-overlay ov)))
+          (overlay-put ov 'keymap keymap)
+          (overlay-put ov 'display
+                       (format "... / %d"
+                               (count-lines (overlay-start ov)
+                                            (overlay-end ov))))
+          (overlay-put ov 'face '(:background "red")))))
+    (setf hs-set-up-overlay 'my/hs-set-overlay-face))
+
+#+end_src
+
+** multiple-cursors
+   :PROPERTIES:
+   :ID:       c1e09432-9c16-4673-b358-bb700707adf7
+   :END:
+#+begin_src emacs-lisp
+  (req-package multiple-cursors)
+#+end_src
+* Programming
+** zeal
+   :PROPERTIES:
+   :ID:       e4faf6e4-7e4a-43d8-91bb-f6dd54fda363
+   :END:
+#+begin_src emacs-lisp
+  (req-package zeal-at-point
+    :bind ("C-c d" . zeal-at-point))
+#+end_src
+
+** YAML
+   :PROPERTIES:
+   :ID:       4cd5af96-6577-456c-8914-1390612ad773
+   :END:
+#+begin_src emacs-lisp
+  (req-package yaml-mode
+    :mode "\\.yaml\\'")
+#+end_src
+
+** Yasnippet
+   :PROPERTIES:
+   :ID:       8db682fa-6f3f-4726-bb46-7b577e9919e4
+   :END:
+#+begin_src emacs-lisp
+  (req-package yasnippet
+    :commands yas-minor-mode
+    :config (yas-reload-all)
+    :init
+    (progn
+      (add-hook 'org-mode-hook 'yas-minor-mode)))
+#+end_src
+** Magit
+   :PROPERTIES:
+   :ID:       5992e86f-6a93-494d-b413-fdaf1ad4e5fe
+   :END:
+#+begin_src emacs-lisp
+  (req-package magit
+    :bind ("<f12>" . magit-status)
+    :init
+    (progn
+      (setf magit-last-seen-setup-instructions "1.4.0"))
+    :config
+    (progn
+      (setf magit-revert-item-confirm t)
+      (setf magit-diff-refine-hunk t)))
+#+end_src
+
+** Paredit
+   :PROPERTIES:
+   :ID:       13fbc9ee-bd2c-441b-8b36-ab2d8e153aa7
+   :END:
+
+#+begin_src emacs-lisp
+  (req-package paredit
+    :commands paredit-mode
+    :init
+    (progn
+      (add-hook 'emacs-lisp-mode-hook       (lambda () (paredit-mode +1)))
+      (add-hook 'lisp-mode-hook             (lambda () (paredit-mode +1)))
+      (add-hook 'scheme-mode-hook           (lambda () (paredit-mode +1)))
+      (add-hook 'lisp-interaction-mode-hook (lambda () (paredit-mode +1)))
+      (add-hook 'slime-repl-mode-hook       (lambda () (paredit-mode +1)))))
+#+end_src
+
+** Emacs Lisp
+   :PROPERTIES:
+   :ID:       7a30a988-2299-46e2-8799-e61a4e5e3f9d
+   :END:
+
+#+begin_src emacs-lisp
+  (req-package elisp-slime-nav
+    :commands elisp-slime-nav-mode
+    :init (add-hook 'emacs-lisp-mode-hook 'elisp-slime-nav-mode))
+
+  (add-hook 'emacs-lisp-mode-hook 'eldoc-mode)
+  (add-hook 'lisp-interaction-mode-hook 'eldoc-mode)
+  (add-hook 'ielm-mode-hook 'eldoc-mode)
+  (add-hook 'eval-expression-minibuffer-setup-hook 'eldoc-mode)
+#+end_src
+
+** Haskell
+   :PROPERTIES:
+   :ID:       63a80fe6-b71b-4612-a6af-6f886797b0ea
+   :END:
+#+begin_src emacs-lisp
+  (req-package haskell-mode
+    :defer t)
+#+end_src
+
+** Erlang
+   :PROPERTIES:
+   :ID:       f947b108-a5c9-4806-85fc-90592ca8f19a
+   :END:
+#+begin_src emacs-lisp
+  (req-package erlang
+    :mode ("\\.erl\\'" . erlang-mode)
+    :config
+    (progn
+      (add-to-list 'load-path "~/.emacs.d/distel/elisp")
+      (require 'distel)
+      (distel-setup)))
+#+end_src
+
+
+
+** JavaScript
+   :PROPERTIES:
+   :ID:       a457dc36-0b85-404d-9652-245c48acd9d2
+   :END:
+#+begin_src emacs-lisp
+  (req-package js2-mode)
+#+end_src
+
+** Evil nerd commenter
+   :PROPERTIES:
+   :ID:       0bcd9cd1-1e8c-43f4-84e4-15255b2c0f36
+   :END:
+#+begin_src emacs-lisp
+  (req-package evil-nerd-commenter
+    :defer 20
+    :bind ("M-;" . evilnc-comment-or-uncomment-lines))
+#+end_src
+** Perl
+   :PROPERTIES:
+   :ID:       07f0b3e1-2ac5-4b9e-a4da-d03170dec349
+   :END:
+#+begin_src emacs-lisp
+  (fset 'perl-mode 'cperl-mode)
+
+  (setq cperl-auto-newline t)
+  (setq cperl-hairy t)
+
+  (setq cperl-brace-offset                         0   )
+  (setq cperl-close-paren-offset                   -4  )
+  (setq cperl-continued-brace-offset               0   )
+  (setq cperl-continued-statement-offset           4   )
+  (setq cperl-extra-newline-before-brace           nil )
+  (setq cperl-extra-newline-before-brace-multiline nil )
+  (setq cperl-indent-level                         4   )
+  (setq cperl-indent-parens-as-block               t   )
+  (setq cperl-label-offset                         -4  )
+  (setq cperl-merge-trailing-else                  nil )
+  (setq cperl-tab-always-indent                    t   )
+
+
+  (setf auto-mode-alist (cons '("\\.t$" . perl-mode) auto-mode-alist))
+
+  (define-auto-insert (cons "\\.pm" "Minimal .pm file")
+    '(nil "# -*- encoding: utf-8; tab-width: 8 -*-\npackage " _ ";\nuse strict;\nuse warnings;\nuse utf8;\nuse Carp;\nuse English '-no_match_vars';\n\nuse version; our $VERSION = qv('1.0.0');\n\n1;\n"))
+
+  (define-auto-insert (cons "\\.pl" "Minimal perl script")
+    '(nil "#!/usr/bin/perl\n# -*- encoding: utf-8; tab-width: 8 -*-\nuse strict;\nuse warnings;\nuse utf8;\nuse Carp;\nuse English '-no_match_vars';\n\nuse version; our $VERSION = qv('1.0.0');\n\n" _ "\n"))
+
+  (define-auto-insert (cons "\\.t$" "Test::Class based test")
+    '(nil "#!/usr/bin/env perl
+  use 5.14.0;
+  use strict;
+  use warnings;
+  use utf8;
+  use Carp;
+  use English '-no_match_vars';
+
+  use FindBin;
+  use lib \"$FindBin::RealBin/../lib\";
+  use lib \"$FindBin::RealBin/../t\";
+
+  use base qw/Test::Class/;
+  use Test::Most qw/die/;
+
+  use Data::Dumper;
+
+  sub load_modules: Tests(startup => 1) {
+      use_ok '" _ "';
+  }
+
+  __PACKAGE__->runtests();
+  "))
+
+  (defun my-cperl-mode-hook ()
+    (hs-minor-mode t)
+    (yas-minor-mode t)
+    (setf prettify-symbols-alist '(("->" . ?→)
+                                   (">=" . ?≥)
+                                   ("<=" . ?≤)))
+    ;; ("<>" . ?≠)  ("=>" . ?⇒)
+    (prettify-symbols-mode t)
+    (setf fill-column 111)
+    (local-set-key (read-kbd-macro "C-c C-c") 'hs-toggle-hiding)
+    (local-set-key (read-kbd-macro "M-.") 'helm-etags-select)
+    (setf tags-file-name (expand-file-name "TAGS" (projectile-project-root))
+          tags-table-list nil))
+
+  (add-hook 'cperl-mode-hook 'my-cperl-mode-hook)
+
+  (defun my/hs-hide-at-function-level (arg)
+    "With hs-special-modes-alist for cperl-mode set later, this
+  will hide first level of braces inside of current function body."
+    (interactive "p")
+    (save-excursion
+      (beginning-of-defun)
+      (hs-hide-level arg)))
+
+  (defun hs-hide-block-at-point-bol-advice (orig-fun &rest args)
+    "Our hs-special-modes-alist entry for cperl-mode will match
+  only at beginning of line, but hs-hide-block-at-point expects
+  otherwise. So while in cperl-mode we are providing little help to
+  it."
+    (save-excursion
+      (when (eq major-mode 'cperl-mode) (move-beginning-of-line 1))
+      (apply orig-fun args)))
+
+  (with-eval-after-load 'hideshow
+    ;; hide/show only first and second level constructs (functions and first level of braces inside)
+    ;; So doing toggle at any place inside this constructs will toggle only first and second level braces,
+    ;; not nearest pair enclosing point.
+    (add-to-list 'hs-special-modes-alist '(cperl-mode ("^\\(?:    \\)?\\(?:\\S-.*\\|\\)\\({\\)\\s-*$" 1) "}" "/[*/]" nil nil))
+    (add-function :around (symbol-function 'hs-hide-block-at-point) 'hs-hide-block-at-point-bol-advice)
+    (define-key hs-minor-mode-map (read-kbd-macro "C-c @ C-l") 'my/hs-hide-at-function-level))
+
+#+end_src
+* Productivity
+** jammer is a tool for punishing yourself for inefficiently using Emacs.
+   :PROPERTIES:
+   :ID:       721749e7-0e27-4ed5-ad8a-9f2f73e0714b
+   :END:
+#+begin_src emacs-lisp
+    (req-package jammer
+      :config
+      (progn
+        (jammer-mode t)
+        (setf jammer-block-type 'whitelist
+              jammer-block-list '(self-insert-command)
+              jammer-repeat-type 'linear)))
+#+end_src
+
+** Markdown
+   :PROPERTIES:
+   :ID:       28e750f6-2ae6-4c4a-9a41-5d19359dbce9
+   :END:
+#+begin_src emacs-lisp
+  (req-package markdown-mode
+    :mode "\\.md\\'")
+#+end_src
+
+* Things to try/to do
+** TODO___ [[https://github.com/thierryvolpiatto/zop-to-char/][Thierry Volpiatto's wonderful zop-to-char, a better, visual replacement of zap-to-char]]
+  :PROPERTIES:
+  :ID:       4af1a65d-1d7f-4356-915d-d04b9bdc08e7
+  :END:
+[2015-02-07 сб 14:01]
+** TODO___ [[https://github.com/bburns/clipmon][Emacs as a clipboard manager with Clipmon]]
+  :PROPERTIES:
+  :ID:       4065a90d-624c-4eef-8759-d21c627f1631
+  :END:
+[2015-02-05 чт 09:32]
+
+
+** TODO___ [[https://www.reddit.com/r/emacs/comments/2up0h3/hydra_for_normal_state_in_helm/][Hydra for "Normal" State in Helm]]
+  :PROPERTIES:
+  :ID:       c3f6fde1-d263-4b5c-91b2-3a64b9b8a420
+  :END:
+[2015-02-04 ср 08:16]
+
+
+** TODO___ [[http://oremacs.com/2015/01/20/introducing-hydra/][Behold The Mighty Hydra! · (or emacs]]
+  :PROPERTIES:
+  :ID:       abff0037-77b4-4fee-a78b-184c9c02124e
+  :END:
+[2015-01-21 ср 00:18]
+** TODO___ [[https://github.com/boyw165/history][History.el - History Utility For Code Navigation (similar to pop-global-mark but more powerful)]]
+  :PROPERTIES:
+  :ID:       f4a0d202-aaf2-451c-ab7f-022a00bf235d
+  :END:
+[2015-01-16 пт 15:14]
+
+
+
+** TODO___ [[https://github.com/josteink/wsd-mode][Create sequence-diagrams on all platforms using Emacs and the new wsd-mode package]]
+  :PROPERTIES:
+  :ID:       0cb5dc3c-3135-4e07-9751-7e123515e4bb
+  :END:
+[2014-12-15 пн 20:35]
+
+
+** TODO___ [[http://definitelyaplug.b0.cx/post/dlist-a-major-mode-tutorial-5/][dlist: A Major Mode Tutorial | Definitely a plug.]]
+  :PROPERTIES:
+  :ID:       1adeead4-27ff-486b-a2ad-c2e0dac287ae
+  :END:
+[2014-12-14 вс 18:34]
+
+
+** TODO___ [[http://blog.binchen.org/posts/advanced-tip-on-using-mozrepl-to-automatically-refresh-browser.html][Advanced tip on using mozrepl to automatically refresh browser]]
+  :PROPERTIES:
+  :ID:       32cec936-f428-4686-9948-41710bfaaa7d
+  :END:
+[2014-12-03 ср 23:30]
+** TODO___ [[https://github.com/zk-phi/phi-grep][yet another recursive editable grep implementation in Elisp (beta)]]
+  :PROPERTIES:
+  :ID:       6d86b0c2-3468-4573-910f-921b3b66963e
+  :END:
+[2014-12-03 ср 23:30]
+
+
+
+
+** TODO___ [[http://www.emacswiki.org/emacs/wgrep.el][EmacsWiki: wgrep.el]]
+  :PROPERTIES:
+  :ID:       0f959938-51e1-4c7d-b39c-f758ec086cf1
+  :END:
+[2014-12-03 ср 10:13]
+
+
+** [[http://www.masteringemacs.org/article/diacritics-in-emacs][Olé! Diacritics in Emacs - Mastering Emacs]]
+  :PROPERTIES:
+  :ID:       56f3dd12-2ea1-48e3-bff4-0fab5a9a5dc1
+  :END:
+[2014-12-02 вт 00:03]
+
+
+** [[https://github.com/syl20bnr/spacemacs][GitHub · Build software better, together.]]
+  :PROPERTIES:
+  :ID:       95c866bd-8fba-4c84-90ca-fe5a4df82c71
+  :END:
+[2014-12-01 пн 23:58]
+** [[https://github.com/wasamasa/shackle][Enforce rules for popup windows]]
+  :PROPERTIES:
+  :ID:       4a421de9-61a9-49cb-817f-4315e8870d8b
+  :END:
+[2014-12-01 пн 20:34]
+
+
+** [[https://www.reddit.com/r/emacs/comments/2nwins/camcorderel_capture_screencasts_directly_from/][camcorder.el - capture screencasts directly from Emacs.]]
+  :PROPERTIES:
+  :ID:       18181d3a-4d9b-4c2b-a71e-f5fd6b57097c
+  :END:
+[2014-12-01 пн 10:20]
+
+
+** [[https://github.com/capitaomorte/sly][SLY, i.e. "Slime without the Helmut." Impressions?]]
+  :PROPERTIES:
+  :ID:       9c55a0c0-d7d8-4855-b464-b8c4a07b3ebb
+  :END:
+[2014-11-29 сб 10:06]
+
+
+** [[http://workgroups2.readthedocs.org/en/latest/][Workgroups2 - Emacs session manager — Workgroups2 1.2 documentation]]
+  :PROPERTIES:
+  :ID:       1882ffe0-17a2-410e-a6fc-7519f17bc8a9
+  :END:
+[2014-11-27 чт 09:56]
+** [[http://www.reddit.com/r/emacs/comments/2n9tj8/anyone_care_to_share_their_magit_workflow/][Anyone care to share their magit workflow?]]
+  :PROPERTIES:
+  :ID:       a30d66b2-4658-4487-b4dd-8a6d7b8d23ff
+  :END:
+[2014-11-27 чт 09:54]
+** [[http://www.reddit.com/r/emacs/comments/2n73lk/eschewing_zshell_for_emacs/][Eschewing Zshell for Emacs]]
+  :PROPERTIES:
+  :ID:       57933c78-a472-41f4-8cfc-66d496724b51
+  :END:
+[2014-11-27 чт 09:54]
+** [[http://www.reddit.com/r/emacs/comments/2n5qsg/edit_lisp_structurally_with_emacs_package_lispy/][Edit LISP structurally with Emacs package lispy]]
+  :PROPERTIES:
+  :ID:       b2132412-8603-4eff-8fe8-1a68a8822339
+  :END:
+[2014-11-27 чт 09:54]
+** [[http://endlessparentheses.com/debugging-emacs-lisp-part-1-earn-your-independence.html?source%3Drss][Debugging Emacs-Lisp Part 1: Earn your independence]]
+   :PROPERTIES:
+   :ID:       7ac3e963-372d-4ba6-bf85-8a1d1d28acb5
+   :END:
+  [2014-11-25 вт 23:44]
+
+
+** [[http://www.emacswiki.org/emacs/nameses][EmacsWiki: nameses]]
+  :PROPERTIES:
+  :ID:       b264daac-24b6-40a0-aa79-a3b1f9cd0824
+  :END:
+[2014-11-23 вс 14:09]
+
+
+** [[https://github.com/Bruce-Connor/aggressive-indent-mode][Bruce-Connor/aggressive-indent-mode · GitHub]]
+  :PROPERTIES:
+  :ID:       7556178c-9d37-4dd9-8a2b-54063f100636
+  :END:
+[2014-11-20 чт 18:59]
+** eww in mu4e - don't open links on RET
+   [2014-11-21 Пт]
+
+   :PROPERTIES:
+   :ID: 66b4186d-ff25-4441-99db-bd54c12d0bbf
+   :END:
+** restclient mode
+** [[https://github.com/promethial/paxedit][Paxedit - Structured, Context Driven LISP Editing and Refactoring]]
+  :PROPERTIES:
+  :ID:       754364d8-55bc-47f5-be21-6f418fa2f5b0
+  :END:
+[2014-11-17 пн 09:38]
+
+
+** russian programmer dvorak to elpa
+   [2014-11-16 Вс]
+   [[file:~/.emacs.d/emacs-config.org::*Emacs%20Lisp][Emacs Lisp]]
+   :PROPERTIES:
+   :ID: 43c7b0a7-18cd-430a-8861-3ac69b2533e4
+   :END:
+** http://www.reddit.com/r/emacs/comments/209s2y/my_new_emacsd_with_org_mode_and_reqpackage/
+   [2014-11-17 Пн]
+   [[file:/ssh:ppcdev1:/var/www/beta.binarin-DIRECT-35858-vcards-improvements-for-api5.8159/protected/VCards.pm::package%20VCards%3B][file:/ssh:ppcdev1:/var/www/beta.binarin-DIRECT-35858-vcards-improvements-for-api5.8159/protected/VCards.pm::package VCards;]]
+   :PROPERTIES:
+   :ID: 3c571a9a-7657-4c3b-9e1e-c6be7b35a807
+   :END:
+** org-mode link items by id
+   [2014-11-17 Пн]
+   [[file:~/org/yandex.org::*%5B%5B/ssh:ppcdev1:/var/www/beta.binarin-DIRECT-35858-vcards-improvements-for-api5.8159%5D%5Bwd%5D%5D%20%5B%5Bhttps://8159.beta1.direct.yandex.ru/registered/main.pl?cmd%253DshowSearchPage%5D%5Bbeta%5D%5D%20%5B%5Bhttps://st.yandex-team.ru/DIRECT-35858%5D%5BDIRECT-35858%20%D0%9C%D0%BE%D0%B4%D0%B8%D1%84%D0%B8%D0%BA%D0%B0%D1%86%D0%B8%D1%8F%20%D0%B2%D0%B8%D0%B7%D0%B8%D1%82%D0%BE%D0%BA%20%D0%B4%D0%BB%D1%8F%20API5%5D%5D][wd wd wd]]
+   :PROPERTIES:
+   :ID: 5f11364e-6129-4b50-8f19-48be6785b356
+   :END:
+** [[https://github.com/gregsexton/origami.el][Origami -- a new text folding minor mode]]
+  :PROPERTIES:
+  :ID:       68b68d69-ad62-405f-bb33-0abb3c2b0c9a
+  :END:
+[2014-11-16 вс 10:24]
+** mu4e and jabber should also be shared by all perspectives
+   [2014-11-17 Пн]
+
+   :PROPERTIES:
+   :ID: f0fbdccd-e5de-4875-9013-3e98037f7dc2
+   :END:
+** prelude-rename-file-and-buffer
+   [2014-11-17 Пн]
+   [[file:/ssh:ppcdev1:/var/www/beta.binarin-DIRECT-35858-vcards-improvements-for-api5.8159/bin/apache_reloader.pl]]
+   :PROPERTIES:
+   :ID: 9ec192b3-1008-4d0c-b437-0d6285771e57
+   :END:
+** how to rename files in dired
+   [2014-11-17 Пн]
+   [[file:/ssh:ppcdev1:/var/www/beta.binarin-DIRECT-35858-vcards-improvements-for-api5.8159/bin/apache_reloader.pl]]
+   :PROPERTIES:
+   :ID: 484ad75b-77d0-416c-ae78-2a5f9d63af5a
+   :END:
+** https://github.com/djcb/sauron
+** pcre2el
+** quantified awesome at sacha chua
+** eldoc
+** org-expiry
+** bbdb or org-contacts
+** [[https://github.com/xahlee/xah_emacs_init/blob/master/xah_emacs_font.el][xah-toggle-margin-right and xah-toggle-read-novel-mode]]
+** recursive-narrow  http://endlessparentheses.com/emacs-narrow-or-widen-dwim.html
+** Predefine registers for my org-mode agenda files
+** authinfo.gpg
+** ielm
+** smart-mode-line
+** nyan-mode
+** which-function-mode
+** undo-tree
+** smerge-mode
+** bookmark+ - This allows prettier visual bookmarks and bookmarking functions. I've got org-agenda, mu4e and magit-status bookmarked.
+** guide-key
+** diminish
+** https://github.com/nschum/highlight-symbol.el
+** rainbow-mode
+** https://github.com/benma/visual-regexp-steroids.el/
+** https://github.com/magnars/multiple-cursors.el
+** https://github.com/monochromegane/the_platinum_searcher
+** https://github.com/Wilfred/ag.el
+** https://github.com/edvorg/req-package
+** https://github.com/magnars/s.el
+** https://github.com/Wilfred/ht.el
+** https://github.com/rejeep/f.el
+** https://github.com/jwiegley/emacs-async
+** https://github.com/ShingoFukuyama/ov.el
+* Discarded experiments
+* File footer
+  :PROPERTIES:
+  :ID:       06755181-420b-4911-80a7-cfec7cc4b655
+  :END:
+#+begin_src emacs-lisp
+  (defun binarin/server-start ()
+    (require 'server)
+    (unless (server-running-p server-name)
+      (server-start)))
+
+  (add-hook 'after-init-hook #'binarin/server-start)
+  (req-package-finish)
+#+end_src
+
+
+* Byte-compiling this file itself
+  :PROPERTIES:
+  :ID:       3541fa88-152f-4a5c-8591-03c506a258b0
+  :END:
+
+#+begin_src emacs-lisp
+  (defun binarin/tangle-and-bytecompile-current-buffer ()
+    (interactive)
+    (let* ((source-file (buffer-file-name (current-buffer)))
+           (target-file (concat (file-name-sans-extension source-file) ".el"))
+           (visited-p (get-file-buffer (expand-file-name target-file))))
+      (org-babel-tangle-file source-file target-file "emacs-lisp")
+      (save-excursion
+        (find-file target-file)
+        (goto-char (point-min))
+        (awhen (re-search-forward "\\`\\(\n\\|\\s-+\\)+" nil t)
+          (replace-match ""))
+        (save-buffer)
+        (unless visited-p
+          (kill-buffer)))
+      (byte-compile-file target-file)))
+#+end_src
+
+# Local Variables:
+# firestarter: binarin/tangle-and-bytecompile-current-buffer
+# End:

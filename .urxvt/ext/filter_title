@@ -1,0 +1,12 @@
+#! perl
+use Data::Dumper;
+use autodie;
+open my $fh, ">>", "/tmp/osc.log";
+sub on_osc_seq {
+    my ($term, $op, $args, $resp) = @_;
+    if( $op == 0 ) {
+        return 1;
+    }
+    return;
+}
+

@@ -1,0 +1,32 @@
+#!/bin/bash
+
+if [ -z "$1" ]; then
+    echo "Usage: $0 <hostname>"
+    exit 1
+fi
+hostname="$1"
+
+rsync -avz ~/.oh-my-zsh "$hostname":
+scp ~/.emacs.d/.zshrc "$hostname":
+
+if ! ssh "$hostname" stat .ssh > /dev/null 2>&1 ; then
+  ssh "$hostname" mkdir .ssh
+fi
+rsync -avz ~/.emacs.d/ssh_rc "$hostname":.ssh/rc
+
+remote_path=`ssh "$hostname" pwd`
+echo $remote_path
+
+scp ~/.emacs.d/.tmux.conf "$hostname":
+cat <<EOF | ssh "$hostname" bash -c "cat >> .tmux.conf"
+set -g update-environment "DISPLAY SSH_ASKPASS SSH_AGENT_PID SSH_CONNECTION WINDOWID XAUTHORITY"
+set-environment -g 'SSH_AUTH_SOCK' '$remote_path/.ssh/ssh_auth_sock'
+EOF
+
+ssh "$hostname" mkdir -p .terminfo .vim .re.pl
+
+rsync -avz /usr/share/terminfo/r/rxvt* "$hostname":.terminfo/r/
+rsync -avz /usr/share/terminfo/s/screen* "$hostname":.terminfo/s/
+rsync -avz ~/.emacs.d/vim/zenburn/colors/ "$hostname":.vim/colors/
+rsync -avz ~/.emacs.d/.vimrc "$hostname":.vimrc
+rsync -avz ~/.emacs.d/repl.rc "$hostname":.re.pl/repl.rc
