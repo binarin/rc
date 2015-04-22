@@ -439,8 +439,9 @@ Soon to be removed.
    :END:
 
    #+begin_src emacs-lisp
-     (toggle-scroll-bar -1)
-     (tool-bar-mode -1)
+     (awhen (window-system)
+       (toggle-scroll-bar -1)
+       (tool-bar-mode -1))
    #+end_src
 
 ** TODO___ smart-mode-line (move rm-blacklist to corresponding place)
