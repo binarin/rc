@@ -1,8 +1,10 @@
 #!/bin/zsh
+cd ~/.rc
+git submodule update --init
+
 if [ ! -d ~/.oh-my-zsh ]; then
     git clone https://github.com/robbyrussell/oh-my-zsh.git ~/.oh-my-zsh
 fi
-
 
 cd ~
 cp -s ~/.rc/{.emacs,.xmobarrc,.zshrc,.vimrc} .
@@ -19,4 +21,3 @@ mkdir -p ~/.xmonad
 cd ~/.xmonad
 cp -s ~/.rc/.xmonad/xmonad.hs .
 ln -s ~/.rc/.xmonad/lib ~/.xmonad/lib
-

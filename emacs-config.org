@@ -126,7 +126,7 @@ So there will be no more package-installed-p/package-install dance in this file.
   :END:
 
 #+begin_src emacs-lisp
-  (setf custom-file "~/.emacs.d/custom.el")
+  (setf custom-file "~/.rc/custom.el")
   (load-file custom-file)
 #+end_src
 
@@ -254,6 +254,10 @@ Soon to be removed.
    :ID:       99e66c58-7d63-4fa1-96f8-2db46881de63
    :END:
 #+begin_src emacs-lisp
+
+  (setf x-select-enable-primary t)
+  (setf browse-url-browser-function 'browse-url-generic
+        browse-url-generic-program "x-www-browser")
 
   (auto-insert-mode t)
   (transient-mark-mode t)
