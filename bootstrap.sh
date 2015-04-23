@@ -21,3 +21,6 @@ mkdir -p ~/.xmonad
 cd ~/.xmonad
 cp -s ~/.rc/.xmonad/xmonad.hs .
 ln -s ~/.rc/.xmonad/lib ~/.xmonad/lib
+
+mkdir -p ~/.sqitch
+ln -s ~/.rc/sqitch.conf ~/.sqitch/sqitch.conf
