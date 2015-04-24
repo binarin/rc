@@ -1291,6 +1291,17 @@ Access to predefined actions from everywhere.
   (setf org-caldav-debug-level 2)
 #+end_src
 
+** Export
+   :PROPERTIES:
+   :ID:       581a79ad-e824-4f37-a774-dec825e646ce
+   :END:
+#+begin_src emacs-lisp
+  (load-file "~/.rc/ob-blockdiag.el")
+  (require 'ob-sh)
+  (require 'ob-sql)
+  (setf org-html-htmlize-output-type 'css)
+  (setf org-export-babel-evaluate 'inline-only)
+#+end_src
 * Navigation
 ** Bookmark+
    :PROPERTIES:
