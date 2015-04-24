@@ -1541,12 +1541,11 @@ Every file in org-agenda-files should be present in every perspective:
    :ID:       8db682fa-6f3f-4726-bb46-7b577e9919e4
    :END:
 #+begin_src emacs-lisp
-  (req-package yasnippet
-    :commands yas-minor-mode
-    :config (yas-reload-all)
+  (use-package yasnippet
+    :ensure t
     :init
-    (progn
-      (add-hook 'org-mode-hook 'yas-minor-mode)))
+    (setf yas-snippet-dirs '("~/.rc/snippets" yas-installed-snippets-dir))
+    (yas-global-mode 1))
 #+end_src
 ** Magit
    :PROPERTIES:
