@@ -1987,6 +1987,19 @@ Every file in org-agenda-files should be present in every perspective:
 ** https://github.com/jwiegley/emacs-async
 ** https://github.com/ShingoFukuyama/ov.el
 * Discarded experiments
+* Reference information
+** [[http://tuhdo.github.io/helm-projectile.html#sec-7][Exploring large projects with Projectile and Helm Projectile]]                                        :COMP:
+   :LOGBOOK:  
+   - State "DONE___"    from "STARTED"    [2015-04-22 Ср 16:06]
+   :END:      
+   :CLOCK:    
+   CLOCK: [2015-04-22 Ср 14:13]--[2015-04-22 Ср 14:25] =>  0:12
+   :END:      
+   :PROPERTIES:
+   :ID:       6d9eb8e7-8b4c-4271-b7b7-0d350edce565
+   :END:
+[2014-11-11 вт 19:18]
+
 * File footer
   :PROPERTIES:
   :ID:       06755181-420b-4911-80a7-cfec7cc4b655
