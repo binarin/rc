@@ -6,6 +6,9 @@
  '(ansi-color-names-vector
    ["#3F3F3F" "#CC9393" "#7F9F7F" "#F0DFAF" "#8CD0D3" "#DC8CC3" "#93E0E3" "#DCDCCC"])
  '(bmkp-last-as-first-bookmark-file "~/.emacs.d/save/bookmarks")
+ '(custom-safe-themes
+   (quote
+    ("e80932ca56b0f109f8545576531d3fc79487ca35a9a9693b62bf30d6d08c9aaf" "f0b0710b7e1260ead8f7808b3ee13c3bb38d45564e369cbe15fc6d312f0cd7a0" default)))
  '(eval-expression-print-level 4)
  '(grep-find-ignored-directories
    (quote

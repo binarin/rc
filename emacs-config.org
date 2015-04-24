@@ -1149,7 +1149,7 @@ MimeType=x-scheme-handler/org-protocol;
   ;; (org-mobile-sync-mode 1)
 
   (defun clockout-nagger ()
-    (call-process "~/.emacs.d/nagger.py" nil nil nil))
+    (call-process "~/.rc/nagger.py" nil nil nil))
 
   (defun clockout-remove-nagger ()
     (call-process "killall" nil nil nil "nagger.py"))
