@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: pprint
+# key: pp
+# --
+import pprint
+pprint.PrettyPrinter().pprint($0)

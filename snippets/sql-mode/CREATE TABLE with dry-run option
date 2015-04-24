@@ -1,0 +1,12 @@
+# -*- mode: snippet -*-
+# name: CREATE TABLE with dry-run option
+# key: drycrt
+# expand-env: ((yas/indent-line 'fixed))
+# --
+if not sp_table_exists('$1') then
+    call sp_eval_log(_do_it, '
+        CREATE TABLE $1 (
+            $0
+        ) ENGINE = InnoDB CHARSET = utf8;
+    ');
+end if;

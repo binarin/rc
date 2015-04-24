@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: with transaction cursor
+# key: spgproc
+# --
+with transaction_cursor(self.conn) as cur:
+     cur.callproc('$0', (,))
+

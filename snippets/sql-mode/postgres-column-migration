@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# name: postgres column migration
+# key: mcol
+# expand-env: ((yas/indent-line 'fixed))
+# --
+select execute($$
+    alter table $1 add column $2 $0;
+$$) where not column_exists('$1', '$2');

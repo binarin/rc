@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: mysql table
+# key: crt
+# --
+create table $1 (
+  $0
+) engine = innodb charset = utf8;

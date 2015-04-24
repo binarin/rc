@@ -1,0 +1,12 @@
+# -*- mode: snippet -*-
+# name: postgres migration - create table
+# key: mtab
+# expand-env: ((yas/indent-line 'fixed))
+# --
+
+select execute($$
+    create table $1 (
+        $0
+    );
+$$) where not table_exists('$1');
+

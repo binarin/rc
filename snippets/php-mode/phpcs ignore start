@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: phpcs ignore start
+# key: phpcss
+# --
+// @codingStandardsIgnoreStart

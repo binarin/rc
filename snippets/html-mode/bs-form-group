@@ -1,0 +1,10 @@
+# -*- mode: snippet; require-final-newline: nil -*-
+# name: <div class="form-group">....
+# key: input
+# --
+  <div class="form-group">
+    <label for="$1" class="col-sm-2 control-label">$2</label>
+    <div class="col-sm-10">
+      <input type="text" id="$1" class="form-control"/>
+    </div>
+  </div>

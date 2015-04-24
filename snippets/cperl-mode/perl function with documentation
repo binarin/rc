@@ -1,0 +1,11 @@
+# -*- mode: snippet; require-final-newline: nil -*-
+# name: perl function with documentation
+# key: h2
+# expand-env: ((yas-indent-line 'none))
+# --
+=head2 $1
+
+=cut
+sub $1 {
+    my ($0) = @_;
+}

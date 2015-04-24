@@ -1,0 +1,10 @@
+# -*- mode: snippet -*-
+# name: BeeTa database fixture
+# key: bfix
+# --
+truncate table $1 cascade;
+insert into $1 ($0) values
+();
+select setval('$1_id_seq', (select max(id) from $1)+1);
+
+

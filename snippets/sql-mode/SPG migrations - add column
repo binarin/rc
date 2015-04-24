@@ -1,0 +1,10 @@
+# -*- mode: snippet -*-
+# name: SPG migrations - add column
+# key: spgcol
+# expand-env: ((yas/indent-line 'fixed))
+# --
+select execute($$
+    alter table $1 add column $2 $3;
+    comment on column $1.$2
+      is '$0';
+$$) where not column_exists('$1', '$2');

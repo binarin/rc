@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# name: postgres index migration
+# key: midx
+# expand-env: ((yas/indent-line 'fixed))
+# --
+select execute($$
+    CREATE INDEX $2 ON $1 ($0);
+$$) where not index_exists('$1', '$2');

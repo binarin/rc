@@ -1,0 +1,14 @@
+# -*- mode: snippet -*-
+# name: spgsf
+# key: spgsf
+# --
+select udf_dropfunction('$1');
+create or replace function $1(
+) returns $2 security definer as $$
+declare
+begin
+    $0
+end;
+$$ language plpgsql;
+select udf_grantexecute('$1');
+

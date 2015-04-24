@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# name: A1 migrations sp_eval_log call
+# key: spev
+# --
+call sp_eval_log(_do_it, '
+    $0
+');
+

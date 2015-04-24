@@ -1,0 +1,9 @@
+# -*- mode: snippet -*-
+# name: moose has
+# key: has
+# --
+has $1 => (
+    is => 'r$2',
+    isa => '$3',
+);
+$0
