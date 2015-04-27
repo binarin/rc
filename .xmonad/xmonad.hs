@@ -38,9 +38,6 @@ import XMonad.Util.Loggers
 import XMonad.Util.Run(spawnPipe)
 import XMonad.Util.WorkspaceCompare
 
-import XmobarToggle
-
-
 import qualified DBus as D
 import qualified DBus.Client as D
 import qualified Codec.Binary.UTF8.String as UTF8
@@ -166,8 +163,7 @@ myConfig logHandle = ewmh defaultConfig {
   , focusedBorderColor = "#cd8b00"
   , manageHook = myManageFloats <+> manageDocks <+> myManageHook <+> manageHook defaultConfig
   , handleEventHook = mconcat $
-                      [ toggleDocksHook 30 xF86XK_Mail
-                      , unmapDocksEventHook
+                      [ docksEventHook
                       , fullscreenEventHook
                       ]
   , layoutHook = myLayoutHook
