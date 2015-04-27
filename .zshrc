@@ -130,6 +130,13 @@ fi
 if [[ -f /etc/direct/direct_shell_rc ]] ; then
     source /etc/direct/direct_shell_rc
     alias m=/usr/local/bin/direct-sql
+    alias ppc=/usr/local/bin/direct-sql devtest:ppc:all
+    alias pp1=/usr/local/bin/direct-sql devtest:ppc:1
+    alias pp2=/usr/local/bin/direct-sql devtest:ppc:2
+    alias pp3=/usr/local/bin/direct-sql devtest:ppc:3
+    alias pp4=/usr/local/bin/direct-sql devtest:ppc:4
+    alias pp5=/usr/local/bin/direct-sql devtest:ppc:5
+    alias pp6=/usr/local/bin/direct-sql devtest:ppc:6
 fi
 
 for candidate in emacsclient vim vi; do
