@@ -47,15 +47,16 @@ fi
 
 BIN_DIRS=(
 $HOME/.local/bin
-$HOME/bin $HOME/apps/scala/bin
+$HOME/bin
+$HOME/apps/scala/bin
 $HOME/apps/jdk/bin
 $HOME/apps/android-sdk-linux/tools
 $HOME/apps/android-sdk-linux/platform-tools
+$HOME/apps/emacs/bin
 $HOME/.rvm/bin
 $HOME/.gem/ruby/1.9.1/bin
 $HOME/apps/elixir/bin
 $HOME/.cabal/bin
-/usr/class/cs143/cool/bin
 )
 
 # Remove dupes from 'path', which is array tied to 'PATH'
@@ -71,6 +72,8 @@ alias ack=ack-grep
 alias a=ack-grep
 alias gl='git log  --pretty="%Cgreen%h %C(146)%an%Creset %s %Cred%ar"'
 alias v=xdg-open
+alias vi='emacsclient -nw'
+alias vim='emacsclient -nw'
 
 HISTFILE=$HOME/.zsh_history
 HISTSIZE=100000
@@ -129,9 +132,9 @@ if [[ -f /etc/direct/direct_shell_rc ]] ; then
     alias m=/usr/local/bin/direct-sql
 fi
 
-for candidate in vim vi; do
+for candidate in emacsclient vim vi; do
     if [[ ! -z $(which $candidate) ]]; then
-        export EDITOR=$candidate
+        export VISUAL=$candidate
         break
     fi
 done
