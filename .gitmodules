@@ -1,3 +1,6 @@
 [submodule "vim/zenburn"]
 	path = vim/zenburn
 	url = https://github.com/jnurmine/Zenburn.git
+[submodule "distel"]
+	path = distel
+	url = https://github.com/massemanet/distel.git
