@@ -16,10 +16,8 @@ import XMonad.Actions.OnScreen
 
 import XMonad.Config.Gnome
 
-import XMonad.Hooks.DebugStack (debugStackLogHook)
 import XMonad.Hooks.DynamicLog
 import XMonad.Hooks.EwmhDesktops
-import XMonad.Hooks.ManageDebug (debugManageHook)
 import XMonad.Hooks.ManageDocks
 import XMonad.Hooks.ManageHelpers
 import XMonad.Hooks.Place
