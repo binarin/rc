@@ -27,7 +27,6 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(default ((t (:inherit nil :stipple nil :background "#3F3F3F" :foreground "#DCDCCC" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 179 :width normal :foundry "unknown" :family "M+ 1mn"))))
  '(diff-refine-added ((t (:inherit diff-added :background "green4" :weight bold))))
  '(diff-refine-change ((t (:inherit diff-changed :background "yellow" :weight bold))))
  '(diff-refine-removed ((t (:inherit diff-removed :background "pink4" :foreground "grey" :weight bold))))

@@ -492,6 +492,34 @@ Soon to be removed.
 
 #+end_src
 
+** Fonts
+
+#+begin_src emacs-lisp
+  ;; (use-package persistent-soft
+  ;;   :ensure t
+  ;;   :init
+  ;;   (require 'persistent-soft))
+
+  ;; (use-package unicode-fonts
+  ;;   :ensure t
+  ;;   :init
+  ;;   (require 'unicode-fonts)
+  ;;   (setf unicode-fonts-block-font-mapping
+  ;;         (cl-remove-if #'(lambda (cell) (string= (car cell) "Cyrillic"))
+  ;;                       unicode-fonts-block-font-mapping))
+  ;;   (unicode-fonts-setup))
+
+  (setq default-frame-alist '((font . "M+ 1mn-18")))
+  (defun my-fix-emojis (&optional frame)
+    (set-fontset-font "fontset-default" nil (font-spec :size 48 :name "Symbola") frame 'append))
+  (my-fix-emojis)
+  (add-hook 'after-make-frame-functions 'my-fix-emojis)
+
+#+end_src
+
+
+
+
 * Behaviour
   :PROPERTIES:
   :ID:       600cdb84-b762-4fcd-9aac-d868472724dd
@@ -1614,7 +1642,7 @@ Every file in org-agenda-files should be present in every perspective:
     :mode ("\\.erl\\'" . erlang-mode)
     :config
     (progn
-      (add-to-list 'load-path "~/.emacs.d/distel/elisp")
+      (add-to-list 'load-path "~/.rc/distel/elisp")
       (require 'distel)
       (distel-setup)))
 #+end_src
