@@ -1495,7 +1495,8 @@ Every file in org-agenda-files should be present in every perspective:
           projectile-enable-caching t)
     (projectile-global-mode 1)
     :config
-    (add-to-list 'projectile-globally-ignored-directories "logs"))
+    (add-to-list 'projectile-globally-ignored-directories "logs")
+    (add-to-list 'projectile-globally-ignored-directories "desktop.bundles"))
 
   (req-package helm-projectile
     :require (helm projectile)
