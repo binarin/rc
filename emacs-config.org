@@ -118,6 +118,9 @@ So there will be no more package-installed-p/package-install dance in this file.
 
   (use-package anaphora
     :ensure t)
+
+  (use-package request
+    :ensure t)
 #+end_src
 
 * Use separate lisp file for customizations made through UI.
@@ -1320,6 +1323,15 @@ Access to predefined actions from everywhere.
   (setf org-html-htmlize-output-type 'css)
   (setf org-export-babel-evaluate 'inline-only)
 #+end_src
+** Yandex StarTrek and org-mode integration
+   :PROPERTIES:
+   :ID:       8d875f5a-45f3-4f0b-a9c4-dd98235a7fb8
+   :END:
+
+#+begin_src emacs-lisp
+  (load-file "~/.rc/org-startrek.el")
+#+end_src
+
 * Navigation
 ** Bookmark+
    :PROPERTIES:
