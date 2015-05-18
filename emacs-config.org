@@ -809,6 +809,22 @@ As Sacha Chua put it, "Disk space is cheap. Save lots".
   (global-set-key (kbd "<f9>") #'binarin/mu4e-hydra/body)
 #+end_src
 
+*** LDAP Contacts
+#+begin_src emacs-lisp
+  (eval-after-load
+      "message"
+    '(define-key message-mode-map [(control ?c) (tab)] 'eudc-expand-inline))
+
+  (setf eudc-server "bad.ld.yandex.ru:3268"
+        ldap-host-parameters-alist `(("bad.ld.yandex.ru:3268"
+                                      base "DC=ld,DC=yandex,DC=ru"
+                                      binddn "binarin@ld.yandex.ru"
+                                      passwd ,(funcall (plist-get (nth 0 (auth-source-search :host "bad.ld.yandex.ru" :port 3268 :user "binarin")) :secret))
+                                      auth krbv41))
+        eudc-protocol 'ldap
+        eudc-inline-query-format '((email) (name))
+        eudc-inline-expansion-format '("%s %s <%s>" firstname name email))
+#+end_src
 ** Jabber
    :PROPERTIES:
    :ID:       fa9353a0-ea3d-4b28-bdec-2bb828ad192a
