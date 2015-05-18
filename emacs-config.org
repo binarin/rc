@@ -936,6 +936,7 @@ MimeType=x-scheme-handler/org-protocol;
           ("TICKET_" :foreground "red" :weight bold)
           ("PROGRES" :foreground "#93e0e3" :weight bold)
           ("CLOSED_" :foreground "forest green" :weight bold)
+          ("NOTME__" :foreground "forest green" :weight bold)
 
           ("REVIEW_" :foreground "orange3" :weight bold)
           ("COMMIT_" :foreground "orange3" :weight bold)
