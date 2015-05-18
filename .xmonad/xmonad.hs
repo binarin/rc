@@ -1,3 +1,4 @@
+{-# OPTIONS_GHC -fno-warn-missing-signatures #-}
 {-# LANGUAGE OverloadedStrings #-}
 
 import qualified Data.Map as M
@@ -5,21 +6,22 @@ import qualified XMonad.StackSet as W
 import System.Exit
 import System.IO
 import Data.Monoid
+import Data.Default
 
 import XMonad
-import XMonad.Actions.CopyWindow(copy)
+-- import XMonad.Actions.CopyWindow(copy)
 import XMonad.Actions.CycleWindows
 import XMonad.Actions.CycleWS
-import XMonad.Actions.DynamicWorkspaces
+-- import XMonad.Actions.DynamicWorkspaces
 import XMonad.Actions.GridSelect
 import XMonad.Actions.OnScreen
 
-import XMonad.Config.Gnome
+-- import XMonad.Config.Gnome
 
 import XMonad.Hooks.DynamicLog
 import XMonad.Hooks.EwmhDesktops
 import XMonad.Hooks.ManageDocks
-import XMonad.Hooks.ManageHelpers
+-- import XMonad.Hooks.ManageHelpers
 import XMonad.Hooks.Place
 
 import XMonad.Layout.Grid
@@ -28,20 +30,20 @@ import XMonad.Layout.PerWorkspace
 import XMonad.Layout.NoBorders
 import XMonad.Layout.SimpleFloat(simpleFloat)
 
-import XMonad.Prompt
+-- import XMonad.Prompt
 import XMonad.Prompt.Window
 
 import XMonad.Util.EZConfig
-import XMonad.Util.Loggers
+-- import XMonad.Util.Loggers
 import XMonad.Util.Run(spawnPipe)
 import XMonad.Util.WorkspaceCompare
 
-import qualified DBus as D
-import qualified DBus.Client as D
-import qualified Codec.Binary.UTF8.String as UTF8
+-- import qualified DBus as D
+-- import qualified DBus.Client as D
+-- import qualified Codec.Binary.UTF8.String as UTF8
 import Graphics.X11.ExtraTypes.XF86
 
-
+primaryWorkspaces :: [(String, String)]
 primaryWorkspaces = 
   [ ("term", "[")
   , ("misc", "&")
@@ -51,6 +53,7 @@ primaryWorkspaces =
   , ("misc2", "=")
   ]
 
+secondaryWorkspaces :: [(String, String)]
 secondaryWorkspaces =
   [ ("secondary", "*")
   , ("coins", ")")
@@ -60,13 +63,16 @@ secondaryWorkspaces =
   , ("secondary4", "#")
   ]
 
+myWorkspaces :: [(String, String)]
 myWorkspaces = primaryWorkspaces ++ secondaryWorkspaces
 
+maxNameLength :: Int
 maxNameLength = maximum $ map (length . fst) myWorkspaces
 
 padWorkspaceName :: String -> String
 padWorkspaceName x = " " ++ x ++ take (1 + maxNameLength - length x) (repeat ' ')
 
+myManageHook :: ManageHook
 myManageHook = composeAll
     [ className =? "Sshmenu"        --> doFloat
     , resource  =? "desktop_window" --> doIgnore
@@ -115,15 +121,16 @@ myNavigation = makeXEventhandler $ shadowWithKeymap navKeyMap navDefaultHandler
        navDefaultHandler = const myNavigation
 
 gsconfig1 :: HasColorizer a => GSConfig a
-gsconfig1 = defaultGSConfig
+gsconfig1 = def
     { gs_navigate = myNavigation }
 
+main :: IO ()
 main = do
   xmobarPipe <- spawnPipe "xmobar"
   xmonad $ myConfig xmobarPipe
 
 xmobarPrettyPrinter :: Handle -> PP
-xmobarPrettyPrinter xmobarPipe = defaultPP
+xmobarPrettyPrinter xmobarPipe = def
   { ppTitle    = pad
   , ppOutput   = hPutStrLn xmobarPipe
   , ppCurrent  = xmobarColor "#2b4f98" "green" . padWorkspaceName
@@ -142,24 +149,24 @@ xmobarPrettyPrinter xmobarPipe = defaultPP
                           "Grid" -> "GR"
                           _ -> x
                  )
-  , ppOrder = \(ws:layout:title:extras) -> layout:ws:title:extras
+  , ppOrder = \(ws:layout:windowTitle:extras) -> layout:ws:windowTitle:extras
   , ppSort = mkWsSort getXineramaPhysicalWsCompare
   }
 
+prettyPrinter :: Handle -> PP
 prettyPrinter = xmobarPrettyPrinter
 
-screenOrder = [3, 2, 1]
-
+myManageFloats :: ManageHook
 myManageFloats = placeHook $ inBounds $ withGaps (16,0,16,0) (smart (0.5,0.5))
 
-myConfig logHandle = ewmh defaultConfig {
+myConfig logHandle = ewmh def {
   modMask = mod4Mask
   , workspaces = map fst myWorkspaces
   , terminal           = "urxvt"
   , borderWidth        = 3
   , normalBorderColor  = "#cccccc"
   , focusedBorderColor = "#cd8b00"
-  , manageHook = myManageFloats <+> manageDocks <+> myManageHook <+> manageHook defaultConfig
+  , manageHook = myManageFloats <+> manageDocks <+> myManageHook <+> manageHook def
   , handleEventHook = mconcat $
                       [ docksEventHook
                       , fullscreenEventHook
@@ -170,7 +177,7 @@ myConfig logHandle = ewmh defaultConfig {
         `additionalKeysP`
         ([ ("M-y", spawn "rxvt-unicode")
         -- , ("M-p", withFocused (\windowId -> do { floats <- gets (W.floating . windowset); if windowId `M.member` floats then withFocused $ windows . W.sink else float windowId }))
-        , ("M-j", windowPromptGoto defaultXPConfig)
+        , ("M-j", windowPromptGoto def)
         , ("M-l", spawn "exe=`~/.cabal/bin/yeganesh -x` && exec $exe")
         , ("M-S-l", spawn "gmrun")
         , ("M-<Print>", spawn "shutter -w")

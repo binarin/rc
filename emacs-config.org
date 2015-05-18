@@ -44,15 +44,13 @@ our server from the upstream source code using simple
 recipes. Bleeding edge code.
 
 #+begin_src emacs-lisp
-  (eval-when (compile load)
+  (eval-when (compile load eval)
       (let ((archive '("melpa" . "http://melpa.milkbox.net/packages/")))
         (add-to-list 'package-archives archive t)
         (package-read-archive-contents (car archive))
         (unless (member (car archive) (mapcar (lambda (archive) (package-desc-archive (cadr archive))) package-archive-contents))
           (package--download-one-archive archive "archive-contents")
           (package-read-archive-contents (car archive)))))
-
-
 #+end_src
 
 ** Marmalade
@@ -64,13 +62,13 @@ to upload their own packages. Package maintainers don’t have to be the
 same as the maintainers of the original code. Some packages are outdated.
 
 #+begin_src emacs-lisp
+  (eval-when (compile load eval)
     (let ((archive '("marmalade" . "http://melpa.milkbox.net/packages/")))
       (add-to-list 'package-archives archive t)
       (package-read-archive-contents (car archive))
       (unless (member (car archive) (mapcar (lambda (archive) (package-desc-archive (cadr archive))) package-archive-contents))
         (package--download-one-archive archive "archive-contents")
-        (package-read-archive-contents (car archive))))
-
+        (package-read-archive-contents (car archive)))))
 #+end_src
 
 
@@ -85,7 +83,7 @@ You can use use-package to automatically load packages from ELPA with
 package.el.
 
 #+begin_src emacs-lisp
-  (eval-when (compile load)
+  (eval-when (compile load eval)
     (unless (package-installed-p 'use-package)
       (package-install 'use-package)))
   (require 'use-package)
@@ -476,9 +474,12 @@ Soon to be removed.
    #+begin_src emacs-lisp
      (defvar binarin/minimal-screen-width 111
        "'M+ 1mn' font at 18pt and 1366px screen gives us 111 characters.")
-     (defvar binarin/screen-width-at-startup (window-width)
+     (defvar binarin/screen-width-at-startup (or (and noninteractive binarin/minimal-screen-width)
+                                                 (window-width))
        "As the emacs window is forced to be fullscreen by xmonad, we
-       can be pretty sure this value is maximum viable screen width.")
+     can be pretty sure this value is maximum viable screen width.
+
+     For batch mode we are forcing minimal width")
 
      (setq fill-column (- binarin/minimal-screen-width 10))
    #+end_src
@@ -691,20 +692,6 @@ As Sacha Chua put it, "Disk space is cheap. Save lots".
 #+end_src
 
 
-** Firestarter - running commands on save
-   :PROPERTIES:
-   :ID:       f79d0e04-bfd5-4259-aefa-9158ac5cdeeb
-   :END:
-
-#+begin_src emacs-lisp
-  (use-package firestarter
-    :ensure t
-    :init
-    (setf firestarter-lighter " FS")
-    (firestarter-mode))
-#+end_src
-
-
 * External programs
 ** edit-in-chrome
    :PROPERTIES:
@@ -871,7 +858,7 @@ As Sacha Chua put it, "Disk space is cheap. Save lots".
 
 * Personal organization
 org-mode is already loaded because we needed to tangle
-emacs-config.org, so no need to use req-package.
+emacs-config.org, so no need to use use-package.
 ** Notes about setting up org-capture
 
 URL:
@@ -1384,21 +1371,6 @@ Access to predefined actions from everywhere.
   (use-package pt
     :ensure t
     :commands projectile-pt)
-#+end_src
-
-** ack-grep
-   :PROPERTIES:
-   :ID:       731a908d-9d07-4c31-ad24-0108ee86f74e
-   :END:
-
-#+begin_src emacs-lisp
-  ;; (req-package ack-and-a-half
-  ;;   :commands (ack-and-a-half ack)
-  ;;   :config (defalias 'ack 'ack-and-a-half))
-  (req-package helm-ack
-    :commands (helm-ack)
-    :config (progn
-              (setf helm-ack-base-command "ack-grep -H --nocolor --nogroup")))
 #+end_src
 
 ** Helm
@@ -2035,6 +2007,57 @@ Every file in org-agenda-files should be present in every perspective:
 ** https://github.com/jwiegley/emacs-async
 ** https://github.com/ShingoFukuyama/ov.el
 * Discarded experiments
+** ack-grep
+   :PROPERTIES:
+   :ID:       731a908d-9d07-4c31-ad24-0108ee86f74e
+   :END:
+
+#+begin_example
+  ;; (req-package ack-and-a-half
+  ;;   :commands (ack-and-a-half ack)
+  ;;   :config (defalias 'ack 'ack-and-a-half))
+  (req-package helm-ack
+    :commands (helm-ack)
+    :config (progn
+              (setf helm-ack-base-command "ack-grep -H --nocolor --nogroup")))
+#+end_example
+
+** Firestarter - running commands on save
+   :PROPERTIES:
+   :ID:       f79d0e04-bfd5-4259-aefa-9158ac5cdeeb
+   :END:
+
+#+begin_example
+  (use-package firestarter
+    :ensure t
+    :init
+    (setf firestarter-lighter " FS")
+    (firestarter-mode))
+#+end_example
+
+
+*** Byte-compiling this file itself
+  :PROPERTIES:
+  :ID:       3541fa88-152f-4a5c-8591-03c506a258b0
+  :END:
+
+#+begin_example
+  (defun binarin/tangle-and-bytecompile-current-buffer ()
+    (interactive)
+    (let* ((source-file (buffer-file-name (current-buffer)))
+           (target-file (concat (file-name-sans-extension source-file) ".el"))
+           (visited-p (get-file-buffer (expand-file-name target-file))))
+      (org-babel-tangle-file source-file target-file "emacs-lisp")
+      (save-excursion
+        (find-file target-file)
+        (goto-char (point-min))
+        (awhen (re-search-forward "\\`\\(\n\\|\\s-+\\)+" nil t)
+          (replace-match ""))
+        (save-buffer)
+        (unless visited-p
+          (kill-buffer)))
+      (byte-compile-file target-file)))
+#+end_example
 * Reference information
 ** [[http://tuhdo.github.io/helm-projectile.html#sec-7][Exploring large projects with Projectile and Helm Projectile]]                                        :COMP:
    :LOGBOOK:  
@@ -2063,29 +2086,3 @@ Every file in org-agenda-files should be present in every perspective:
 #+end_src
 
 
-* Byte-compiling this file itself
-  :PROPERTIES:
-  :ID:       3541fa88-152f-4a5c-8591-03c506a258b0
-  :END:
-
-#+begin_src emacs-lisp
-  (defun binarin/tangle-and-bytecompile-current-buffer ()
-    (interactive)
-    (let* ((source-file (buffer-file-name (current-buffer)))
-           (target-file (concat (file-name-sans-extension source-file) ".el"))
-           (visited-p (get-file-buffer (expand-file-name target-file))))
-      (org-babel-tangle-file source-file target-file "emacs-lisp")
-      (save-excursion
-        (find-file target-file)
-        (goto-char (point-min))
-        (awhen (re-search-forward "\\`\\(\n\\|\\s-+\\)+" nil t)
-          (replace-match ""))
-        (save-buffer)
-        (unless visited-p
-          (kill-buffer)))
-      (byte-compile-file target-file)))
-#+end_src
-
-# Local Variables:
-# firestarter: binarin/tangle-and-bytecompile-current-buffer
-# End:
