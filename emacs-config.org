@@ -1598,6 +1598,32 @@ Every file in org-agenda-files should be present in every perspective:
       (setf magit-diff-refine-hunk t)))
 #+end_src
 
+** Corral - wrap text in delimiters (instead of paredit for non-lisp)
+
+#+begin_src emacs-lisp
+  (use-package corral
+    :ensure t
+    :commands (corral-parentheses-backward
+               corral-parentheses-forward
+               corral-brackets-backward
+               corral-brackets-forward
+               corral-braces-backward
+               corral-braces-forward
+               corral-double-quotes-backward)
+    :init
+    (add-hook 'cperl-mode-hook #'binarin/setup-corral-bindings))
+
+  (defun binarin/setup-corral-bindings ()
+    (local-set-key (kbd "M-9") 'corral-parentheses-backward)
+    (local-set-key (kbd "M-0") 'corral-parentheses-forward)
+    (local-set-key (kbd "M-[") 'corral-brackets-backward)
+    (local-set-key (kbd "M-]") 'corral-brackets-forward)
+    (local-set-key (kbd "M-{") 'corral-braces-backward)
+    (local-set-key (kbd "M-}") 'corral-braces-forward)
+    (local-set-key (kbd "M-\"") 'corral-double-quotes-backward))
+
+#+end_src
+
 ** Paredit
    :PROPERTIES:
    :ID:       13fbc9ee-bd2c-441b-8b36-ab2d8e153aa7
