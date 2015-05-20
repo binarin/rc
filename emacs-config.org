@@ -794,6 +794,21 @@ As Sacha Chua put it, "Disk space is cheap. Save lots".
 
 
   (global-set-key (kbd "<f9>") #'binarin/mu4e-hydra/body)
+
+
+  (defun binarin/set-from-address ()
+    "Set the From address based on the To address of the original."
+    (setq user-mail-address "binarin@yandex-team.ru")
+    (let ((msg mu4e-compose-parent-message)) ;; msg is shorter...
+      (when msg
+        (setq user-mail-address
+              (cond
+               ((mu4e-message-contact-field-matches msg :to "binarin@yandex-team.ru")
+                "binarin@yandex-team.ru")
+               (t "binarin@yandex-team.ru"))))))
+
+  (add-hook 'mu4e-compose-pre-hook #'binarin/set-from-address)
+
 #+end_src
 
 *** LDAP Contacts
@@ -810,7 +825,7 @@ As Sacha Chua put it, "Disk space is cheap. Save lots".
                                       auth krbv41))
         eudc-protocol 'ldap
         eudc-inline-query-format '((email) (name))
-        eudc-inline-expansion-format '("%s %s <%s>" firstname name email))
+        eudc-inline-expansion-format '("%s" email))
 #+end_src
 ** Jabber
    :PROPERTIES:
