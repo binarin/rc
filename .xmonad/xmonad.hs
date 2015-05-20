@@ -7,6 +7,7 @@ import System.Exit
 import System.IO
 import Data.Monoid
 import Data.Default
+import Data.List (isSuffixOf)
 
 import XMonad
 -- import XMonad.Actions.CopyWindow(copy)
@@ -84,7 +85,8 @@ myManageHook = composeAll
     , className =? "Thunderbird"    --> doF (W.shift "misc2")
     , className =? "Icedove"        --> doF (W.shift "misc2")
     , className =? "Skype"          --> doF (W.shift "msg")
-    , className =? "Workrave"       --> doFloat
+    , className =? "Workrave"       --> doFloat <+> doF (W.shift "secondary4")
+    , fmap (isSuffixOf "KeePass") title --> doF (W.shift "passwd")
     , title     =? "Simple Demo with Shaders" --> doFloat
     ]
 
