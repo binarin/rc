@@ -24,6 +24,7 @@ import XMonad.Hooks.EwmhDesktops
 import XMonad.Hooks.ManageDocks
 -- import XMonad.Hooks.ManageHelpers
 import XMonad.Hooks.Place
+import XMonad.Hooks.CurrentWorkspaceOnTop (currentWorkspaceOnTop)
 
 import XMonad.Layout.Grid
 import XMonad.Layout.MouseResizableTile
@@ -174,7 +175,7 @@ myConfig logHandle = ewmh def {
                       , fullscreenEventHook
                       ]
   , layoutHook = myLayoutHook
-  , logHook = dynamicLogWithPP (prettyPrinter logHandle)
+  , logHook = currentWorkspaceOnTop <+> dynamicLogWithPP (prettyPrinter logHandle)
   }
         `additionalKeysP`
         ([ ("M-y", spawn "rxvt-unicode")
