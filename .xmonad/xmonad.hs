@@ -46,7 +46,7 @@ import XMonad.Util.WorkspaceCompare
 import Graphics.X11.ExtraTypes.XF86
 
 primaryWorkspaces :: [(String, String)]
-primaryWorkspaces = 
+primaryWorkspaces =
   [ ("term", "[")
   , ("misc", "&")
   , ("emacs", "{")
@@ -181,7 +181,7 @@ myConfig logHandle = ewmh def {
         ([ ("M-y", spawn "rxvt-unicode")
         -- , ("M-p", withFocused (\windowId -> do { floats <- gets (W.floating . windowset); if windowId `M.member` floats then withFocused $ windows . W.sink else float windowId }))
         , ("M-j", windowPromptGoto def)
-        , ("M-l", spawn "exe=`~/.cabal/bin/yeganesh -x` && exec $exe")
+        , ("M-l", spawn "exe=$(yeganesh -x) && exec $exe")
         , ("M-S-l", spawn "gmrun")
         , ("M-<Print>", spawn "shutter -w")
         , ("M-q", spawn "xmonad --recompile && xmonad --restart")

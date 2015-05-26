@@ -24,3 +24,6 @@ ln -s ~/.rc/.xmonad/lib ~/.xmonad/lib
 
 mkdir -p ~/.sqitch
 ln -s ~/.rc/sqitch.conf ~/.sqitch/sqitch.conf
+
+mkdir -p ~/.ghc
+ln -s ~/.rc/ghci.conf ~/.ghc/ghci.conf

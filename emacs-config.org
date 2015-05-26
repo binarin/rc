@@ -146,7 +146,7 @@ Soon to be removed.
    "ЙЦУКЕН Russian computer layout over Programmers Dvorak"
    nil t t t t nil nil nil nil nil t)
 
-  ;;  №% "7 ?5 /3 (1 =9 *0 )2 +4 -6 !8 ;: 
+  ;;  №% "7 ?5 /3 (1 =9 *0 )2 +4 -6 !8 ;:
   ;;   Й  Ц  У  К  Е  Н  Г  Ш  Щ  З  Х  Ъ
   ;;    Ф  Ы  В  А  П  Р  О  Л  Д  Ж  Э
   ;;     Я  Ч  С  М  И  Т  Ь  Б  Ю  .,
@@ -678,7 +678,7 @@ As Sacha Chua put it, "Disk space is cheap. Save lots".
   (setf confirm-kill-emacs #'y-or-n-p)
 #+end_src
 
-** Whitespace 
+** Whitespace
    :PROPERTIES:
    :ID:       b46a2f80-26d7-4636-812a-2184bacc6e1f
    :END:
@@ -783,7 +783,7 @@ As Sacha Chua put it, "Disk space is cheap. Save lots".
   (setf mu4e-update-interval 60)
   (setf mu4e-confirm-quit nil
         mu4e-headers-leave-behavior 'apply)
-    
+
   (eval-after-load "org" '(when (fboundp 'mu4e) (require 'org-mu4e)))
 
   (defhydra binarin/mu4e-hydra (:exit t :color red)
@@ -1661,9 +1661,37 @@ Every file in org-agenda-files should be present in every perspective:
    :PROPERTIES:
    :ID:       63a80fe6-b71b-4612-a6af-6f886797b0ea
    :END:
+
+cabal install -j4 yeganesh hoogle hindent hlint ghc-mod hdevtools haskell-docs xmonad xmonad-contrib
+
+hoogle data
+git clone https://github.com/chrisdone/ghci-ng.git
+cabal install ghci-ng/
+
 #+begin_src emacs-lisp
-  (req-package haskell-mode
-    :defer t)
+  (use-package haskell-mode
+    :ensure t
+    :mode "\\.hs\\'"
+    :config
+    (setf haskell-process-path-ghci "ghci-ng"
+          haskell-process-type 'cabal-repl
+          haskell-process-args-cabal-repl '("--ghc-option=-ferror-spans" "--with-ghc=ghci-ng"))
+    (add-hook 'haskell-mode-hook #'interactive-haskell-mode)
+    (add-hook 'haskell-mode-hook #'haskell-simple-indent-mode)
+    (add-hook 'haskell-mode-hook #'binarin/make-buffer-whitespace-aware))
+
+  (use-package hindent
+    :ensure t
+    :commands hindent-mode
+    :init
+    (add-hook 'haskell-mode-hook #'hindent-mode))
+
+  (use-package shm
+    :ensure t
+    :commands (structured-haskell-mode structured-haskell-repl-mode)
+    :init
+    (add-hook 'haskell-mode-hook 'structured-haskell-mode)
+    (add-hook 'haskell-interactive-mode-hook 'structured-haskell-repl-mode))
 #+end_src
 
 ** Erlang
@@ -2101,12 +2129,12 @@ Every file in org-agenda-files should be present in every perspective:
 #+end_example
 * Reference information
 ** [[http://tuhdo.github.io/helm-projectile.html#sec-7][Exploring large projects with Projectile and Helm Projectile]]                                        :COMP:
-   :LOGBOOK:  
+   :LOGBOOK:
    - State "DONE___"    from "STARTED"    [2015-04-22 Ср 16:06]
-   :END:      
-   :CLOCK:    
+   :END:
+   :CLOCK:
    CLOCK: [2015-04-22 Ср 14:13]--[2015-04-22 Ср 14:25] =>  0:12
-   :END:      
+   :END:
    :PROPERTIES:
    :ID:       6d9eb8e7-8b4c-4271-b7b7-0d350edce565
    :END:
@@ -2125,5 +2153,3 @@ Every file in org-agenda-files should be present in every perspective:
   (add-hook 'after-init-hook #'binarin/server-start)
   (req-package-finish)
 #+end_src
-
-
