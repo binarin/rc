@@ -46,26 +46,20 @@ if [[ -d "$HOME/.pyenv" ]]; then
 fi
 
 BIN_DIRS=(
-$HOME/.local/bin
 $HOME/bin
-$HOME/apps/scala/bin
-$HOME/apps/jdk/bin
-$HOME/apps/android-sdk-linux/tools
-$HOME/apps/android-sdk-linux/platform-tools
-$HOME/apps/emacs/bin
-$HOME/.rvm/bin
-$HOME/.gem/ruby/1.9.1/bin
-$HOME/apps/elixir/bin
+$HOME/.local/bin
 $HOME/.cabal/bin
+$HOME/apps/*/bin
 )
 
 # Remove dupes from 'path', which is array tied to 'PATH'
 typeset -U path
 for ((i=1; i<= $#BIN_DIRS; i++)) do
-    local dir=$BIN_DIRS[i]
-    if [ -d $dir ] ; then
-        path=($dir "$path[@]")
-    fi
+    for dir in $BIN_DIRS[i]; do
+        if [ -d $dir ] ; then
+            path=($dir "$path[@]")
+        fi
+    done
 done
 
 alias ack=ack-grep
