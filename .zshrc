@@ -136,6 +136,7 @@ fi
 for candidate in emacsclient vim vi; do
     if [[ ! -z $(which $candidate) ]]; then
         export VISUAL=$candidate
+        export EDITOR=$candidate
         break
     fi
 done
