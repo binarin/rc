@@ -821,7 +821,7 @@ As Sacha Chua put it, "Disk space is cheap. Save lots".
         ldap-host-parameters-alist `(("bad.ld.yandex.ru:3268"
                                       base "DC=ld,DC=yandex,DC=ru"
                                       binddn "binarin@ld.yandex.ru"
-                                      passwd ,(funcall (plist-get (nth 0 (auth-source-search :host "bad.ld.yandex.ru" :port 3268 :user "binarin")) :secret))
+                                      passwd ,(awhen (plist-get (nth 0 (auth-source-search :host "bad.ld.yandex.ru" :port 3268 :user "binarin")) :secret) (funcall it))
                                       auth krbv41))
         eudc-protocol 'ldap
         eudc-inline-query-format '((email) (name))
