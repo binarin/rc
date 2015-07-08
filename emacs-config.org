@@ -1760,19 +1760,11 @@ cabal install ghci-ng/
 
   (define-auto-insert (cons "\\.t$" "Test::Class based test")
     '(nil "#!/usr/bin/env perl
-  use 5.14.0;
-  use strict;
-  use warnings;
-  use utf8;
-  use Carp;
-  use English '-no_match_vars';
-
-  use FindBin;
-  use lib \"$FindBin::RealBin/../lib\";
-  use lib \"$FindBin::RealBin/../t\";
+  use my_inc \"../..\";
+  use Direct::Modern;
 
   use base qw/Test::Class/;
-  use Test::Most qw/die/;
+  use Test::More;
 
   use Data::Dumper;
 
