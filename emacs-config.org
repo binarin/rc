@@ -1715,7 +1715,11 @@ cabal install ghci-ng/
    :ID:       a457dc36-0b85-404d-9652-245c48acd9d2
    :END:
 #+begin_src emacs-lisp
-  (req-package js2-mode)
+  (use-package js2-mode
+    :ensure t
+    :mode "\\.\\(js\\|bemtree\\|bemhtml\\)\\'"
+    :config
+    (add-hook 'js2-mode-hook #'binarin/make-buffer-whitespace-aware))
 #+end_src
 
 ** Evil nerd commenter
