@@ -13,14 +13,41 @@
  '(grep-find-ignored-directories
    (quote
     ("SCCS" "RCS" "CVS" "MCVS" ".svn" ".git" ".hg" ".bzr" "_MTN" "_darcs" "desktop.bundles" "{arch}" ".bem")))
+ '(haskell-complete-module-preferred
+   (quote
+    ("Data.ByteString" "Data.ByteString.Lazy" "Data.Conduit" "Data.Function" "Data.List" "Data.Map" "Data.Maybe" "Data.Monoid" "Data.Ord")))
+ '(haskell-interactive-mode-eval-mode (quote haskell-mode))
+ '(haskell-interactive-mode-eval-pretty nil)
+ '(haskell-interactive-mode-include-file-name nil)
+ '(haskell-notify-p t)
+ '(haskell-process-args-cabal-repl (quote ("--ghc-option=-ferror-spans" "--with-ghc=ghci-ng")))
+ '(haskell-process-args-ghci (quote ("-ferror-spans")))
+ '(haskell-process-auto-import-loaded-modules t)
+ '(haskell-process-generate-tags nil)
+ '(haskell-process-log t)
+ '(haskell-process-path-ghci "ghci-ng")
+ '(haskell-process-reload-with-fbytecode nil)
+ '(haskell-process-suggest-haskell-docs-imports t)
+ '(haskell-process-suggest-remove-import-lines t)
+ '(haskell-process-type (quote cabal-repl))
+ '(haskell-process-use-presentation-mode t)
+ '(haskell-stylish-on-save nil)
+ '(haskell-tags-on-save nil)
+ '(hindent-style "chris-done")
  '(pt-executable "~/bin/pt")
  '(safe-local-variable-values
    (quote
-    ((firestarter . binarin/tangle-and-bytecompile-current-buffer)
-     (Syntax . ANSI-Common-Lisp)
-     (Base . 10)
-     (encoding . utf-8-unix)
-     (encoding . utf-8)))))
+    ((encoding . utf-8)
+     (haskell-indent-spaces . 4)
+     (haskell-indent-spaces . 2)
+     (hindent-style . "chris-done")
+     (hindent-style . "gibiansky")
+     (hindent-style . "johan-tibell")
+     (haskell-process-type . cabal-repl)
+     (shm-lambda-indent-style . leftmost-parent))))
+ '(shm-auto-insert-bangs t)
+ '(shm-auto-insert-skeletons t)
+ '(shm-use-presentation-mode t))
 
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
@@ -43,4 +70,5 @@
  '(pe/directory-face ((t (:inherit dired-directory :height 0.5))))
  '(pe/file-face ((t (:inherit default :height 0.5))))
  '(shm-current-face ((t (:background "#555555"))))
+ '(shm-quarantine-face ((t (:inherit font-lock-error))))
  '(whitespace-line ((t (:background "dim gray" :foreground "#dc8cc3")))))
