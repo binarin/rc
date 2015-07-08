@@ -196,7 +196,7 @@ myConfig logHandle = ewmh def {
         , ("M-n", sendMessage Expand)
         , ("M-w", sendMessage (IncMasterN 1))
         , ("M-v", sendMessage (IncMasterN (-1)))
-	, ("M-'", goToSelected gsconfig1)
+        , ("M-'", goToSelected gsconfig1)
         , ("M-<Right>", nextScreen)
         , ("M-<Left>", prevScreen)
         , ("M-<Up>", gridselectWorkspace gsconfig1 (\ws -> W.shift ws))
