@@ -1,0 +1,9 @@
+# -*- mode: snippet -*-
+# name: add sequence migrations
+# key: mseq
+# expand-env: ((yas/indent-line 'fixed))
+# --
+select execute($$
+    create sequence $1;
+$$) where not sequence_exists('$1');
+$0

@@ -1,0 +1,5 @@
+# -*- mode: snippet; require-final-newline: nil -*-
+# name: erlang-debug-print
+# key: dd
+# --
+error_logger:info_msg("[~p:~p] ~p", [?MODULE, ?LINE, $0]),

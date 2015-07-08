@@ -2,4 +2,4 @@
 # name: warn data dumper
 # key: dd
 # --
-use Data::Dumper; warn Dumper([$0]);
+use Data::Dumper;$Data::Dumper::Useqq=1;{no warnings 'redefine';sub Data::Dumper::qquote{my $s=shift;return "'$s'";}};warn Dumper([$0]);
