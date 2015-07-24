@@ -647,8 +647,10 @@ As Sacha Chua put it, "Disk space is cheap. Save lots".
    :ID:       8195773e-e4ba-4f05-8b71-7b33b4ff7fc2
    :END:
 #+begin_src emacs-lisp
-  (req-package key-chord
-    :init
+  (use-package key-chord
+    :ensure t
+    :demand t
+    :config
     (progn
       (key-chord-mode t)
       (key-chord-define-global "jk" 'undo-tree-undo)
@@ -856,12 +858,11 @@ As Sacha Chua put it, "Disk space is cheap. Save lots".
                                      :channels ("#erlang" "#erlounge"))
                                     ("Bitlbee"
                                      :port 6667
+                                     :channels ("#erlang-talks")
                                      :pass ,(funcall (plist-get (nth 0 (auth-source-search :host "127.0.0.1" :port 6667 :user "binarin")) :secret)))))
       (setf circe-reduce-lurker-spam t)
       (load "lui-logging" nil t)
       (enable-lui-logging-globally)))
-
-
 
   (defun irc ()
     (interactive)
@@ -1699,10 +1700,14 @@ cabal install ghci-ng/
    :ID:       f947b108-a5c9-4806-85fc-90592ca8f19a
    :END:
 #+begin_src emacs-lisp
+  (defun binarin/erlang-mode-hook ()
+    (setf fill-column 111))
+
   (req-package erlang
     :mode ("\\.erl\\'" . erlang-mode)
     :config
     (add-hook 'erlang-mode-hook #'binarin/make-buffer-whitespace-aware)
+    (add-hook 'erlang-mode-hook #'binarin/erlang-mode-hook)
     (add-to-list 'load-path "~/.rc/distel/elisp")
     (require 'distel)
     (distel-setup))
