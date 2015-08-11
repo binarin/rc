@@ -715,6 +715,10 @@ As Sacha Chua put it, "Disk space is cheap. Save lots".
     :END:
 
 #+begin_src emacs-lisp
+
+  (add-to-list 'load-path "~/.nix-profile/share/emacs/site-lisp/mu4e")
+  (require 'mu4e)
+
   (setq message-send-mail-function 'smtpmail-send-it
         smtpmail-default-smtp-server "smtp.yandex-team.ru"
         smtpmail-smtp-server "smtp.yandex-team.ru"
