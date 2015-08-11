@@ -1995,11 +1995,11 @@ cabal install ghci-ng/
   :END:
 [2014-11-20 чт 18:59]
 ** eww in mu4e - don't open links on RET
-   [2014-11-21 Пт]
-
    :PROPERTIES:
    :ID: 66b4186d-ff25-4441-99db-bd54c12d0bbf
    :END:
+   [2014-11-21 Пт]
+
 ** restclient mode
 ** [[https://github.com/promethial/paxedit][Paxedit - Structured, Context Driven LISP Editing and Refactoring]]
   :PROPERTIES:
@@ -2009,46 +2009,46 @@ cabal install ghci-ng/
 
 
 ** russian programmer dvorak to elpa
-   [2014-11-16 Вс]
-   [[file:~/.emacs.d/emacs-config.org::*Emacs%20Lisp][Emacs Lisp]]
    :PROPERTIES:
    :ID: 43c7b0a7-18cd-430a-8861-3ac69b2533e4
    :END:
+   [2014-11-16 Вс]
+   [[file:~/.emacs.d/emacs-config.org::*Emacs%20Lisp][Emacs Lisp]]
 ** http://www.reddit.com/r/emacs/comments/209s2y/my_new_emacsd_with_org_mode_and_reqpackage/
-   [2014-11-17 Пн]
-   [[file:/ssh:ppcdev1:/var/www/beta.binarin-DIRECT-35858-vcards-improvements-for-api5.8159/protected/VCards.pm::package%20VCards%3B][file:/ssh:ppcdev1:/var/www/beta.binarin-DIRECT-35858-vcards-improvements-for-api5.8159/protected/VCards.pm::package VCards;]]
    :PROPERTIES:
    :ID: 3c571a9a-7657-4c3b-9e1e-c6be7b35a807
    :END:
-** org-mode link items by id
    [2014-11-17 Пн]
-   [[file:~/org/yandex.org::*%5B%5B/ssh:ppcdev1:/var/www/beta.binarin-DIRECT-35858-vcards-improvements-for-api5.8159%5D%5Bwd%5D%5D%20%5B%5Bhttps://8159.beta1.direct.yandex.ru/registered/main.pl?cmd%253DshowSearchPage%5D%5Bbeta%5D%5D%20%5B%5Bhttps://st.yandex-team.ru/DIRECT-35858%5D%5BDIRECT-35858%20%D0%9C%D0%BE%D0%B4%D0%B8%D1%84%D0%B8%D0%BA%D0%B0%D1%86%D0%B8%D1%8F%20%D0%B2%D0%B8%D0%B7%D0%B8%D1%82%D0%BE%D0%BA%20%D0%B4%D0%BB%D1%8F%20API5%5D%5D][wd wd wd]]
+   [[file:/ssh:ppcdev1:/var/www/beta.binarin-DIRECT-35858-vcards-improvements-for-api5.8159/protected/VCards.pm::package%20VCards%3B][file:/ssh:ppcdev1:/var/www/beta.binarin-DIRECT-35858-vcards-improvements-for-api5.8159/protected/VCards.pm::package VCards;]]
+** org-mode link items by id
    :PROPERTIES:
    :ID: 5f11364e-6129-4b50-8f19-48be6785b356
    :END:
+   [2014-11-17 Пн]
+   [[file:~/org/yandex.org::*%5B%5B/ssh:ppcdev1:/var/www/beta.binarin-DIRECT-35858-vcards-improvements-for-api5.8159%5D%5Bwd%5D%5D%20%5B%5Bhttps://8159.beta1.direct.yandex.ru/registered/main.pl?cmd%253DshowSearchPage%5D%5Bbeta%5D%5D%20%5B%5Bhttps://st.yandex-team.ru/DIRECT-35858%5D%5BDIRECT-35858%20%D0%9C%D0%BE%D0%B4%D0%B8%D1%84%D0%B8%D0%BA%D0%B0%D1%86%D0%B8%D1%8F%20%D0%B2%D0%B8%D0%B7%D0%B8%D1%82%D0%BE%D0%BA%20%D0%B4%D0%BB%D1%8F%20API5%5D%5D][wd wd wd]]
 ** [[https://github.com/gregsexton/origami.el][Origami -- a new text folding minor mode]]
   :PROPERTIES:
   :ID:       68b68d69-ad62-405f-bb33-0abb3c2b0c9a
   :END:
 [2014-11-16 вс 10:24]
 ** mu4e and jabber should also be shared by all perspectives
-   [2014-11-17 Пн]
-
    :PROPERTIES:
    :ID: f0fbdccd-e5de-4875-9013-3e98037f7dc2
    :END:
-** prelude-rename-file-and-buffer
    [2014-11-17 Пн]
-   [[file:/ssh:ppcdev1:/var/www/beta.binarin-DIRECT-35858-vcards-improvements-for-api5.8159/bin/apache_reloader.pl]]
+
+** prelude-rename-file-and-buffer
    :PROPERTIES:
    :ID: 9ec192b3-1008-4d0c-b437-0d6285771e57
    :END:
-** how to rename files in dired
    [2014-11-17 Пн]
    [[file:/ssh:ppcdev1:/var/www/beta.binarin-DIRECT-35858-vcards-improvements-for-api5.8159/bin/apache_reloader.pl]]
+** how to rename files in dired
    :PROPERTIES:
    :ID: 484ad75b-77d0-416c-ae78-2a5f9d63af5a
    :END:
+   [2014-11-17 Пн]
+   [[file:/ssh:ppcdev1:/var/www/beta.binarin-DIRECT-35858-vcards-improvements-for-api5.8159/bin/apache_reloader.pl]]
 ** https://github.com/djcb/sauron
 ** pcre2el
 ** quantified awesome at sacha chua
@@ -2134,14 +2134,14 @@ cabal install ghci-ng/
 #+end_example
 * Reference information
 ** [[http://tuhdo.github.io/helm-projectile.html#sec-7][Exploring large projects with Projectile and Helm Projectile]]                                        :COMP:
+   :PROPERTIES:
+   :ID:       6d9eb8e7-8b4c-4271-b7b7-0d350edce565
+   :END:
    :LOGBOOK:
    - State "DONE___"    from "STARTED"    [2015-04-22 Ср 16:06]
    :END:
    :CLOCK:
    CLOCK: [2015-04-22 Ср 14:13]--[2015-04-22 Ср 14:25] =>  0:12
-   :END:
-   :PROPERTIES:
-   :ID:       6d9eb8e7-8b4c-4271-b7b7-0d350edce565
    :END:
 [2014-11-11 вт 19:18]
 
