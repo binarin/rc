@@ -157,3 +157,4 @@ export DEBFULLNAME="Alexey Lebedeff"
 export DEBEMAIL="binarin@yandex-team.ru"
 alias dch='dch --vendor=debian'
 
+if [ -e /home/binarin/.nix-profile/etc/profile.d/nix.sh ]; then . /home/binarin/.nix-profile/etc/profile.d/nix.sh; fi
