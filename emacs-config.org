@@ -685,12 +685,11 @@ As Sacha Chua put it, "Disk space is cheap. Save lots".
    :ID:       b46a2f80-26d7-4636-812a-2184bacc6e1f
    :END:
 #+begin_src emacs-lisp
+  (use-package ws-butler
+    :commands ws-buttler-mode
+    :ensure t)
   (defun binarin/make-buffer-whitespace-aware ()
-    (add-hook 'local-write-file-hooks
-              (lambda ()
-                (save-excursion
-                  (delete-trailing-whitespace))))
-    (whitespace-mode t))
+    (ws-butler-mode))
 #+end_src
 
 
@@ -1729,13 +1728,13 @@ cabal install ghci-ng/
    :PROPERTIES:
    :ID:       a457dc36-0b85-404d-9652-245c48acd9d2
    :END:
-#+begin_src emacs-lisp
-  (use-package js2-mode
-    :ensure t
-    :mode "\\.\\(js\\|bemtree\\|bemhtml\\)\\'"
-    :config
-    (add-hook 'js2-mode-hook #'binarin/make-buffer-whitespace-aware))
-#+end_src
+   #+begin_src emacs-lisp
+     (use-package js2-mode
+       :ensure t
+       :mode "\\.\\(js\\|bemtree\\|bemhtml\\)\\'"
+       :config
+       (add-hook 'js2-mode-hook #'binarin/make-buffer-whitespace-aware))
+   #+end_src
 
 ** Evil nerd commenter
    :PROPERTIES:
@@ -1750,92 +1749,102 @@ cabal install ghci-ng/
    :PROPERTIES:
    :ID:       07f0b3e1-2ac5-4b9e-a4da-d03170dec349
    :END:
-#+begin_src emacs-lisp
-  (fset 'perl-mode 'cperl-mode)
+    #+begin_src emacs-lisp
+      (fset 'perl-mode 'cperl-mode)
 
-  (setq cperl-auto-newline t)
-  (setq cperl-hairy t)
+      (setq cperl-auto-newline t)
+      (setq cperl-hairy t)
 
-  (setq cperl-brace-offset                         0   )
-  (setq cperl-close-paren-offset                   -4  )
-  (setq cperl-continued-brace-offset               0   )
-  (setq cperl-continued-statement-offset           4   )
-  (setq cperl-extra-newline-before-brace           nil )
-  (setq cperl-extra-newline-before-brace-multiline nil )
-  (setq cperl-indent-level                         4   )
-  (setq cperl-indent-parens-as-block               t   )
-  (setq cperl-label-offset                         -4  )
-  (setq cperl-merge-trailing-else                  nil )
-  (setq cperl-tab-always-indent                    t   )
+      (setq cperl-brace-offset                         0   )
+      (setq cperl-close-paren-offset                   -4  )
+      (setq cperl-continued-brace-offset               0   )
+      (setq cperl-continued-statement-offset           4   )
+      (setq cperl-extra-newline-before-brace           nil )
+      (setq cperl-extra-newline-before-brace-multiline nil )
+      (setq cperl-indent-level                         4   )
+      (setq cperl-indent-parens-as-block               t   )
+      (setq cperl-label-offset                         -4  )
+      (setq cperl-merge-trailing-else                  nil )
+      (setq cperl-tab-always-indent                    t   )
 
 
-  (setf auto-mode-alist (cons '("\\.t$" . perl-mode) auto-mode-alist))
+      (setf auto-mode-alist (cons '("\\.t$" . perl-mode) auto-mode-alist))
 
-  (define-auto-insert (cons "\\.pm" "Minimal .pm file")
-    '(nil "# -*- encoding: utf-8; tab-width: 8 -*-\npackage " _ ";\nuse strict;\nuse warnings;\nuse utf8;\nuse Carp;\nuse English '-no_match_vars';\n\nuse version; our $VERSION = qv('1.0.0');\n\n1;\n"))
+      (define-auto-insert (cons "\\.pm" "Minimal .pm file")
+        '(nil "# -*- encoding: utf-8; tab-width: 8 -*-\npackage " _ ";\nuse strict;\nuse warnings;\nuse utf8;\nuse Carp;\nuse English '-no_match_vars';\n\nuse version; our $VERSION = qv('1.0.0');\n\n1;\n"))
 
-  (define-auto-insert (cons "\\.pl" "Minimal perl script")
-    '(nil "#!/usr/bin/perl\n# -*- encoding: utf-8; tab-width: 8 -*-\nuse strict;\nuse warnings;\nuse utf8;\nuse Carp;\nuse English '-no_match_vars';\n\nuse version; our $VERSION = qv('1.0.0');\n\n" _ "\n"))
+      (define-auto-insert (cons "\\.pl" "Minimal perl script")
+        '(nil "#!/usr/bin/perl\n# -*- encoding: utf-8; tab-width: 8 -*-\nuse strict;\nuse warnings;\nuse utf8;\nuse Carp;\nuse English '-no_match_vars';\n\nuse version; our $VERSION = qv('1.0.0');\n\n" _ "\n"))
 
-  (define-auto-insert (cons "\\.t$" "Test::Class based test")
-    '(nil "#!/usr/bin/env perl
-  use my_inc \"../..\";
-  use Direct::Modern;
+      (define-auto-insert (cons "\\.t$" "Test::Class based test")
+        '(nil "#!/usr/bin/env perl
+      use my_inc \"../..\";
+      use Direct::Modern;
 
-  use base qw/Test::Class/;
-  use Test::More;
+      use base qw/Test::Class/;
+      use Test::More;
 
-  use Data::Dumper;
+      use Data::Dumper;
 
-  sub load_modules: Tests(startup => 1) {
-      use_ok '" _ "';
-  }
+      sub load_modules: Tests(startup => 1) {
+          use_ok '" _ "';
+      }
 
-  __PACKAGE__->runtests();
-  "))
+      __PACKAGE__->runtests();
+      "))
 
-  (defun my-cperl-mode-hook ()
-    (hs-minor-mode t)
-    (yas-minor-mode t)
-    (setf prettify-symbols-alist '(("->" . ?→)
-                                   (">=" . ?≥)
-                                   ("<=" . ?≤)))
-    ;; ("<>" . ?≠)  ("=>" . ?⇒)
-    (prettify-symbols-mode t)
-    (setf fill-column 111)
-    (local-set-key (read-kbd-macro "C-c C-c") 'hs-toggle-hiding)
-    (local-set-key (read-kbd-macro "M-.") 'helm-etags-select)
-    (setf tags-file-name (expand-file-name "TAGS" (projectile-project-root))
-          tags-table-list nil))
+      (defun my-cperl-mode-hook ()
+        (hs-minor-mode t)
+        (yas-minor-mode t)
+        (setf prettify-symbols-alist '(("->" . ?→)
+                                       (">=" . ?≥)
+                                       ("<=" . ?≤)))
+        ;; ("<>" . ?≠)  ("=>" . ?⇒)
+        (prettify-symbols-mode t)
+        (setf fill-column 111)
+        (local-set-key (read-kbd-macro "C-c C-c") 'hs-toggle-hiding)
+        (local-set-key (read-kbd-macro "M-.") 'helm-etags-select)
+        (setf tags-file-name (expand-file-name "TAGS" (projectile-project-root))
+              tags-table-list nil))
 
-  (add-hook 'cperl-mode-hook 'my-cperl-mode-hook)
+      (add-hook 'cperl-mode-hook 'my-cperl-mode-hook)
+      (add-hook 'cperl-mode-hook 'ws-butler-mode)
 
-  (defun my/hs-hide-at-function-level (arg)
-    "With hs-special-modes-alist for cperl-mode set later, this
-  will hide first level of braces inside of current function body."
-    (interactive "p")
-    (save-excursion
-      (beginning-of-defun)
-      (hs-hide-level arg)))
+      (defun my/hs-hide-at-function-level (arg)
+        "With hs-special-modes-alist for cperl-mode set later, this
+      will hide first level of braces inside of current function body."
+        (interactive "p")
+        (save-excursion
+          (beginning-of-defun)
+          (hs-hide-level arg)))
 
-  (defun hs-hide-block-at-point-bol-advice (orig-fun &rest args)
-    "Our hs-special-modes-alist entry for cperl-mode will match
-  only at beginning of line, but hs-hide-block-at-point expects
-  otherwise. So while in cperl-mode we are providing little help to
-  it."
-    (save-excursion
-      (when (eq major-mode 'cperl-mode) (move-beginning-of-line 1))
-      (apply orig-fun args)))
+      (defun hs-hide-block-at-point-bol-advice (orig-fun &rest args)
+        "Our hs-special-modes-alist entry for cperl-mode will match
+      only at beginning of line, but hs-hide-block-at-point expects
+      otherwise. So while in cperl-mode we are providing little help to
+      it."
+        (save-excursion
+          (when (eq major-mode 'cperl-mode) (move-beginning-of-line 1))
+          (apply orig-fun args)))
 
-  (with-eval-after-load 'hideshow
-    ;; hide/show only first and second level constructs (functions and first level of braces inside)
-    ;; So doing toggle at any place inside this constructs will toggle only first and second level braces,
-    ;; not nearest pair enclosing point.
-    (add-to-list 'hs-special-modes-alist '(cperl-mode ("^\\(?:    \\)?\\(?:\\S-.*\\|\\)\\({\\)\\s-*$" 1) "}" "/[*/]" nil nil))
-    (add-function :around (symbol-function 'hs-hide-block-at-point) 'hs-hide-block-at-point-bol-advice)
-    (define-key hs-minor-mode-map (read-kbd-macro "C-c @ C-l") 'my/hs-hide-at-function-level))
+      (with-eval-after-load 'hideshow
+        ;; hide/show only first and second level constructs (functions and first level of braces inside)
+        ;; So doing toggle at any place inside this constructs will toggle only first and second level braces,
+        ;; not nearest pair enclosing point.
+        (add-to-list 'hs-special-modes-alist '(cperl-mode ("^\\(?:    \\)?\\(?:\\S-.*\\|\\)\\({\\)\\s-*$" 1) "}" "/[*/]" nil nil))
+        (add-function :around (symbol-function 'hs-hide-block-at-point) 'hs-hide-block-at-point-bol-advice)
+        (define-key hs-minor-mode-map (read-kbd-macro "C-c @ C-l") 'my/hs-hide-at-function-level))
 
-#+end_src
+   #+end_src
+
+** Web mode
+   #+begin_src emacs-lisp
+     (use-package web-mode
+         :ensure t
+         :commands web-mode)
+   #+end_src
+
+
 * Productivity
 ** jammer is a tool for punishing yourself for inefficiently using Emacs.
    :PROPERTIES:
