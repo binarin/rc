@@ -154,6 +154,7 @@ xmobarPrettyPrinter xmobarPipe = def
                           "MouseResizableTile" -> "M_"
                           "Mirror MouseResizableTile" -> "MM"
                           "Grid" -> "GR"
+                          "IM Grid" -> "IG"
                           _ -> x
                  )
   , ppOrder = \(ws:layout:windowTitle:extras) -> layout:ws:windowTitle:extras
