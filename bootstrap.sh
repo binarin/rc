@@ -1,4 +1,5 @@
 #!/bin/zsh
+set -e
 cd ~/.rc
 git submodule update --init
 
@@ -15,23 +16,29 @@ if [ ! -f ~/personal-workspace/org-mode/lisp/org.elc ]; then
 fi
 
 cd ~
-cp -s ~/.rc/{.emacs,.xmobarrc,.zshrc,.vimrc} .
-ln -s ~/.rc/.urxvt .
+cp -sn ~/.rc/{.emacs,.xmobarrc,.zshrc,.vimrc} .
+if [ ! -e ~/.urxvt ]; then
+    ln -s ~/.rc/.urxvt .
+fi
 
 mkdir -p ~/.vim/colors
-ln -s ~/.rc/vim/zenburn/colors/zenburn.vim ~/.vim/colors
+if [ ! -e ~/.vim/colors/zenburn.vim ]; then
+    ln -s ~/.rc/vim/zenburn/colors/zenburn.vim ~/.vim/colors
+fi
 
 mkdir -p ~/bin
 cd ~/bin
-cp -s ~/.rc/{workrave-break.sh,xmobar-clock-monitor.sh,xmobar-workrave-monitor.sh,zsh-remote-setup} .
+cp -sn ~/.rc/{workrave-break.sh,xmobar-clock-monitor.sh,xmobar-workrave-monitor.sh,zsh-remote-setup} .
 
 mkdir -p ~/.xmonad
 cd ~/.xmonad
-cp -s ~/.rc/.xmonad/xmonad.hs .
-ln -s ~/.rc/.xmonad/lib ~/.xmonad/lib
+cp -sn ~/.rc/.xmonad/xmonad.hs .
 
-mkdir -p ~/.sqitch
-ln -s ~/.rc/sqitch.conf ~/.sqitch/sqitch.conf
+if [ ! -e ~/.xmonad/lib ]; then
+    ln -s ~/.rc/.xmonad/lib ~/.xmonad/lib
+fi
 
 mkdir -p ~/.ghc
-ln -s ~/.rc/ghci.conf ~/.ghc/ghci.conf
+if [[ ! -e ~/.ghc/ghci.conf ]] ; then
+    ln -s ~/.rc/ghci.conf ~/.ghc/ghci.conf
+fi
