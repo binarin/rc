@@ -6,6 +6,14 @@ if [ ! -d ~/.oh-my-zsh ]; then
     git clone https://github.com/robbyrussell/oh-my-zsh.git ~/.oh-my-zsh
 fi
 
+if [ ! -d ~/personal-workspace/org-mode ]; then
+    git clone git://orgmode.org/org-mode.git ~/personal-workspace/org-mode
+fi
+
+if [ ! -f ~/personal-workspace/org-mode/lisp/org.elc ]; then
+    make 'ORG_ADD_CONTRIB=*' -C ~/personal-workspace/org-mode
+fi
+
 cd ~
 cp -s ~/.rc/{.emacs,.xmobarrc,.zshrc,.vimrc} .
 ln -s ~/.rc/.urxvt .

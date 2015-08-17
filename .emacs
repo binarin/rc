@@ -23,11 +23,15 @@
     (package-read-archive-contents name)))
 
 ;; Use org-mode with contrib from it's own elpa archive.
-(binarin/package-add-archive "org" "http://orgmode.org/elpa/")
-(message "Org archive %s" (let ((delta (- (float-time) prev))) (setf prev (float-time)) delta))
 
-(unless (package-installed-p 'org-plus-contrib)
-  (package-install 'org-plus-contrib))
+(if (file-exists-p "~/personal-workspace/org-mode/lisp/org.elc")
+    (progn
+      (add-to-list 'load-path "~/personal-workspace/org-mode/lisp")
+      (require 'org))
+  (binarin/package-add-archive "org" "http://orgmode.org/elpa/")
+  (message "Org archive %s" (let ((delta (- (float-time) prev))) (setf prev (float-time)) delta))
+  (unless (package-installed-p 'org-plus-contrib)
+    (package-install 'org-plus-contrib)))
 
 (message "Org %s" (let ((delta (- (float-time) prev))) (setf prev (float-time)) delta))
 
