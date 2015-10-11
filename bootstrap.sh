@@ -16,7 +16,7 @@ if [ ! -f ~/personal-workspace/org-mode/lisp/org.elc ]; then
 fi
 
 cd ~
-cp -sn ~/.rc/{.emacs,.xmobarrc,.zshrc,.vimrc} .
+cp -sn ~/.rc/{.emacs,.xmobarrc,.zshrc,.vimrc,.Xresources,.xsession} .
 if [ ! -e ~/.urxvt ]; then
     ln -s ~/.rc/.urxvt .
 fi

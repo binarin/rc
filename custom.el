@@ -8,7 +8,7 @@
  '(bmkp-last-as-first-bookmark-file "/home/binarin/.emacs.d/save/bookmarks")
  '(custom-safe-themes
    (quote
-    ("a444b2e10bedc64e4c7f312a737271f9a2f2542c67caa13b04d525196562bf38" "26614652a4b3515b4bbbb9828d71e206cc249b67c9142c06239ed3418eff95e2" default)))
+    ("11636897679ca534f0dec6f5e3cb12f28bf217a527755f6b9e744bd240ed47e1" "a444b2e10bedc64e4c7f312a737271f9a2f2542c67caa13b04d525196562bf38" "26614652a4b3515b4bbbb9828d71e206cc249b67c9142c06239ed3418eff95e2" default)))
  '(eval-expression-print-level 4)
  '(grep-find-ignored-directories
    (quote

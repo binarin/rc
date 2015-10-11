@@ -1,0 +1,2 @@
+class binarin::profile::base {
+}

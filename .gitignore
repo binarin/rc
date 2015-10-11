@@ -3,3 +3,5 @@ emacs-config.el*
 /emacs-config.html
 /.xmonad/xmonad.hi
 /.xmonad/xmonad.o
+.tmp/
+modules/

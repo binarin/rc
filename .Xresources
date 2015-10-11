@@ -1,0 +1,31 @@
+XXkb.mainwindow.enable: no
+XXkb.mainwindow.type: tray
+rxvt.font: -xos4-terminus-bold-r-*-*-20-*-*-*-*-*-iso10646-*
+rxvt.boldFont: -xos4-terminus-bold-r-*-*-20-*-*-*-*-*-iso10646-*
+rxvt.foreground: grey
+rxvt.background: black
+rxvt.scrollBar: false
+URxvt.font: -xos4-terminus-bold-r-*-*-20-*-*-*-*-*-iso10646-*
+URxvt.boldFont: -xos4-terminus-bold-r-*-*-20-*-*-*-*-*-iso10646-*
+URxvt.foreground: grey
+URxvt.background: black
+URxvt.scrollBar: false
+URxvt*termName: rxvt-unicode-256color
+! URxvt*termName: rxvt
+URxvt.perl-ext: filter_title
+URxvt.perl-ext-common: default,matcher
+URxvt.url-launcher: x-www-browser
+URxvt.colorUL: #86a2be
+URxvt.colorIT:
+URxvt.geometry: 100x30
+emacs*font: -*-terminus-bold-r-*-*-*-320-*-*-*-*-iso10646-*
+!emacs*font: -*-terminus-bold-r-normal-*-24-*-*-*-*-*-iso10646-1
+!emacs*font: -*-*-*-r-normal-*-*-280-*-*-c-*-iso10646-*
+! !emacs*font: -rfx-fixed-*-r-*-*-20-*-*-*-*-*-iso10646-1
+! !emacs*font: -misc-fixed-*-*-*-*-20-*-*-*-*-*-iso10646-*
+! !emacs*font: -*-dejavu sans mono-*-r-*-*-*-*-*-*-c-*-iso10646-*
+! !emacs*font: -*-courier new-*-r-*-*-*-*-*-*-c-*-iso10646-*
+! emacs*font: -*-lucidasans typewriter-*-r-*-*-*-*-*-*-c-*-iso10646-*
+! emacs*font: -*-droid sans mono-*-*-*-*-*-200-*-*-*-*-iso10646-*
+
+
