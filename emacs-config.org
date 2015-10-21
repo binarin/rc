@@ -4,15 +4,15 @@
   :PROPERTIES:
   :ID:       872629ce-4d48-47d4-b276-f7935cd31243
   :END:
-#+begin_src emacs-lisp
-  ;; -*- lexical-binding: t -*-
-  (require 'cl-lib)
-  (eval-when (compile load)
-    (setf byte-compile-warnings '(not make-local)))
+  #+begin_src emacs-lisp
+    ;; -*- lexical-binding: t -*-
+    (require 'cl-lib)
+    (eval-when (compile load)
+      (setf byte-compile-warnings '(not make-local)))
 
-  ;; (setf req-package-log-level 'trace)
+    ;; (setf req-package-log-level 'trace)
 
-#+end_src
+  #+end_src
 
 * Personal information
   :PROPERTIES:
@@ -865,11 +865,12 @@ As Sacha Chua put it, "Disk space is cheap. Save lots".
     :config
     (progn
       (setf circe-network-options `(("Freenode"
-                                     :channels ("#erlang" "#erlounge"))
-                                    ("Bitlbee"
-                                     :port 6667
-                                     :channels ("#erlang-talks")
-                                     :pass ,(funcall (plist-get (nth 0 (auth-source-search :host "127.0.0.1" :port 6667 :user "binarin")) :secret)))))
+                                     :channels ("#erlang" "#erlounge" "#openstack-oslo" "#rabbitmq"))
+                                    ;; ("Bitlbee"
+                                    ;;  :port 6667
+                                    ;;  :channels ("#erlang-talks")
+                                    ;;  :pass ,(funcall (plist-get (nth 0 (auth-source-search :host "127.0.0.1" :port 6667 :user "binarin")) :secret)))
+                                    ))
       (setf circe-reduce-lurker-spam t)
       (load "lui-logging" nil t)
       (enable-lui-logging-globally)))
