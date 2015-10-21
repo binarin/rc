@@ -1242,8 +1242,9 @@ Expand filenames so we can later directly compare them with (buffer-file-name)
               (-filter #'f-exists?
                        '("~/org/personal.org"
                          "~/org/refile.org"
-                         "~/org/yandex.org"
                          "~/org/subscriptions.org"
+                         "~/org/mirantis.org"
+                         "~/org/mira-cal.org"
                          "~/.rc/emacs-config.org"
                          "~/org/ference.org"))))
 #+end_src
