@@ -1,0 +1,27 @@
+[user]
+        name = Alexey Lebedeff
+	email = binarin@gmail.com
+
+[color]
+        ui = auto
+
+[url "git@github.com:binarin/"]
+     insteadOf = gh:
+     pushInsteadOf = gh:
+
+[url "ssh://binarin@gerrit.a1a:29418/"]
+     insteadOf = a1:
+     pushInsteadOf = a1:
+
+
+[url "ssh://binarin@gerrit.dev.mainpay.ru:29418/"]
+     insteadOf = spg:
+     pushInsteadOf = spg:
+
+[core]
+	autocrlf = false
+
+[alias]
+	gfetch = fetch origin '+refs/changes/*:refs/remotes/origin/changes/*'
+[push]
+	default = simple
