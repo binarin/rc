@@ -888,14 +888,16 @@ org-mode is already loaded because we needed to tangle
 emacs-config.org, so no need to use use-package.
 ** Notes about setting up org-capture
 
+update-desktop-database
+
 URL:
 javascript:location.href='org-protocol://capture://l/'+encodeURIComponent(location.href)+'/'+encodeURIComponent(document.title)+'/'+encodeURIComponent(window.getSelection())
 
-~/.local/share/applications/mimeapps.list:
+~/.local/share/applications/mimeapps.list
 [Default Applications]
 x-scheme-handler/org-protocol=org-protocol.desktop
 
-~/.local/share/applications/org-protocol.list:
+~/.local/share/applications/org-protocol.desktop
 [Desktop Entry]
 Name=org-protocol
 Exec=emacsclient %u
