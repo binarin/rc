@@ -1854,6 +1854,20 @@ cabal install ghci-ng/
    #+end_src
 
 
+** electric-operator
+   #+begin_src emacs-lisp
+     (use-package electric-operator
+       :ensure t
+       :commands electric-operator electric-operator-add-rules-for-mode
+       :config
+       (add-hook 'erlang-mode-hook #'electric-operator-mode)
+       :init
+       (electric-operator-add-rules-for-mode
+        'erlang-mode
+        (cons "+" " + ")
+        (cons "," ", ")))
+   #+end_src
+
 * Productivity
 ** jammer is a tool for punishing yourself for inefficiently using Emacs.
    :PROPERTIES:
