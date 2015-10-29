@@ -1714,16 +1714,21 @@ cabal install ghci-ng/
    :END:
 #+begin_src emacs-lisp
   (defun binarin/erlang-mode-hook ()
+    (local-set-key (kbd "M-*") #'edts-find-source-unwind)
     (setf fill-column 111))
 
-  (req-package erlang
+  (use-package erlang
+    :ensure t
     :mode ("\\.erl\\'" . erlang-mode)
     :config
     (add-hook 'erlang-mode-hook #'binarin/make-buffer-whitespace-aware)
-    (add-hook 'erlang-mode-hook #'binarin/erlang-mode-hook)
-    (add-to-list 'load-path "~/.rc/distel/elisp")
-    (require 'distel)
-    (distel-setup))
+    (add-hook 'erlang-mode-hook #'binarin/erlang-mode-hook))
+
+  (use-package edts
+    :ensure t
+    :config
+    (require 'edts-start))
+
 #+end_src
 
 
