@@ -132,6 +132,9 @@ So there will be no more package-installed-p/package-install dance in this file.
 #+end_src
 
 * TODO___ (get rid of) load all elisp files from dedicated directory
+  :PROPERTIES:
+  :ID:       3f54ce25-9fb5-44f8-9386-81d06e832a37
+  :END:
 
 Soon to be removed.
 
@@ -715,6 +718,9 @@ As Sacha Chua put it, "Disk space is cheap. Save lots".
 * Communication
 ** Email
 *** TODO___ Multiple accounts in mu4e
+    :PROPERTIES:
+    :ID:       6a5423c1-3525-492a-90c6-9f68a8cbf7aa
+    :END:
 *** TODO___ Old mu4e config
     :PROPERTIES:
     :ID:       85c43d78-8894-4d8c-8c9b-f7d55833e5b8
@@ -735,7 +741,7 @@ As Sacha Chua put it, "Disk space is cheap. Save lots".
   ;; (require 'mu4e)
   ;; (require 'smtpmail)
 
-  (setf mu4e-maildir       "~/Mail/yandex-team"
+  (setf mu4e-maildir       "~/.mail/gmail"
         mu4e-sent-folder   "/Sent"
         mu4e-drafts-folder "/Drafts"
         mu4e-trash-folder  "/Trash"

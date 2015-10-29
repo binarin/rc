@@ -5,10 +5,11 @@
  ;; If there is more than one, they won't work right.
  '(ansi-color-names-vector
    ["#3F3F3F" "#CC9393" "#7F9F7F" "#F0DFAF" "#8CD0D3" "#DC8CC3" "#93E0E3" "#DCDCCC"])
- '(bmkp-last-as-first-bookmark-file "/home/binarin/.emacs.d/save/bookmarks")
+ '(bmkp-last-as-first-bookmark-file "~/.emacs.d/bookmarks")
  '(custom-safe-themes
    (quote
     ("11636897679ca534f0dec6f5e3cb12f28bf217a527755f6b9e744bd240ed47e1" "a444b2e10bedc64e4c7f312a737271f9a2f2542c67caa13b04d525196562bf38" "26614652a4b3515b4bbbb9828d71e206cc249b67c9142c06239ed3418eff95e2" default)))
+ '(edts-man-root "/home/binarin/.emacs.d/edts/doc/18.1")
  '(eval-expression-print-level 4)
  '(grep-find-ignored-directories
    (quote
@@ -34,10 +35,14 @@
  '(haskell-stylish-on-save nil)
  '(haskell-tags-on-save nil)
  '(hindent-style "chris-done")
+ '(org-agenda-files
+   (quote
+    ("~/org/mirantis.org" "~/org/mira-cal.org" "/home/binarin/org/personal.org" "/home/binarin/org/refile.org" "/home/binarin/org/subscriptions.org" "/home/binarin/.rc/emacs-config.org" "/home/binarin/org/ference.org")))
  '(pt-executable "~/bin/pt")
  '(safe-local-variable-values
    (quote
-    ((encoding . utf-8)
+    ((time-stamp-active . t)
+     (encoding . utf-8)
      (haskell-indent-spaces . 4)
      (haskell-indent-spaces . 2)
      (hindent-style . "chris-done")
