@@ -1868,6 +1868,18 @@ cabal install ghci-ng/
         (cons "," ", ")))
    #+end_src
 
+
+** vimish-fold
+   #+begin_src emacs-lisp
+     (use-package vimish-fold
+       :ensure t
+       :bind (("C-`" . vimish-fold))
+       :init
+       (vimish-fold-global-mode 1)
+       (define-key vimish-fold-folded-keymap (kbd "C-#") #'vimish-fold-unfold)
+       (define-key vimish-fold-unfolded-keymap (kbd "C-#") #'vimish-fold-refold))
+   #+end_src
+
 * Productivity
 ** jammer is a tool for punishing yourself for inefficiently using Emacs.
    :PROPERTIES:
