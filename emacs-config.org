@@ -844,12 +844,12 @@ As Sacha Chua put it, "Disk space is cheap. Save lots".
    :ID:       fa9353a0-ea3d-4b28-bdec-2bb828ad192a
    :END:
 #+begin_src emacs-lisp
-  (req-package jabber
-    :init
-    (progn
-      (setf jabber-account-list '(("binarin@yandex-team.ru" (:connection-type . starttls))))
-      (setf jabber-auto-reconnect t)
-      (define-key ctl-x-map (kbd "C-j") jabber-global-keymap)))
+  ;; (req-package jabber
+  ;;   :init
+  ;;   (progn
+  ;;     (setf jabber-account-list '(("binarin@yandex-team.ru" (:connection-type . starttls))))
+  ;;     (setf jabber-auto-reconnect t)
+  ;;     (define-key ctl-x-map (kbd "C-j") jabber-global-keymap)))
 #+end_src
 
 ** IRC
