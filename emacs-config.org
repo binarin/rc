@@ -1949,6 +1949,18 @@ cabal install ghci-ng/
 #+end_src
 
 * Things to try/to do
+** [[https://glyph.twistedmatrix.com/2015/11/editor-malware.html][Deciphering Glyph :: Your Text Editor Is Malware]]
+ [2015-11-13 пт 11:10]
+** [[https://www.reddit.com/r/programming/comments/3sed38/parinfer_simpler_lisp_editing/][Parinfer - simpler Lisp editing]]
+   :PROPERTIES:
+   :ID:       d2c4cca7-8973-45a5-9af3-aad6dae25185
+   :END:
+ [2015-11-12 чт 07:35]
+** [[https://github.com/Malabarba/beacon][Malabarba/beacon]]
+   :PROPERTIES:
+   :ID:       c0ca77b7-65d2-4948-97e0-e83db65f2092
+   :END:
+
 ** TODO___ [[https://github.com/thierryvolpiatto/zop-to-char/][Thierry Volpiatto's wonderful zop-to-char, a better, visual replacement of zap-to-char]]
   :PROPERTIES:
   :ID:       4af1a65d-1d7f-4356-915d-d04b9bdc08e7
