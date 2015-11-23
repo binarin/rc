@@ -1917,6 +1917,13 @@ cabal install ghci-ng/
        (define-key vimish-fold-unfolded-keymap (kbd "C-#") #'vimish-fold-refold))
    #+end_src
 
+** python
+   #+begin_src emacs-lisp
+     (defun binarin/python-mode-hook ()
+       (local-set-key (kbd "M-.") 'helm-etags-select))
+
+     (add-hook 'python-mode-hook 'binarin/python-mode-hook)
+   #+end_src
 * Productivity
 ** jammer is a tool for punishing yourself for inefficiently using Emacs.
    :PROPERTIES:
