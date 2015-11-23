@@ -1205,8 +1205,10 @@ MimeType=x-scheme-handler/org-protocol;
 
   (setq org-agenda-window-setup 'current-window)
 
-  ;; (require 'org-mobile-sync)
-  ;; (org-mobile-sync-mode 1)
+  ;; (when (and (string= system-name "demandred.home.binarin.ru")
+  ;;            (f-exists? "~/personal-workspace/org-mobile-sync/org-mobile-sync.el"))
+  ;;   (load-file "~/personal-workspace/org-mobile-sync/org-mobile-sync.el")
+  ;;   (org-mobile-sync-mode 1))
 
   (defun clockout-nagger ()
     (call-process "~/.rc/nagger.py" nil nil nil))
