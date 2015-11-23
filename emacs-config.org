@@ -811,7 +811,7 @@ As Sacha Chua put it, "Disk space is cheap. Save lots".
     ("f" (progn (mu4e-update-mail-and-index nil) (mu4e-headers-search "flag:unread AND NOT maildir:/Trash and NOT maildir:/Yandex.direct-dev and NOT maildir:/Yandex.direct-review and NOT maildir:/Yandex.perl-dev and NOT maildir:/Yandex.redrose-announces and NOT maildir:/Yandex.staff and NOT maildir:/INBOX")) "Unread fun messages"))
 
 
-  (global-set-key (kbd "<f9>") #'binarin/mu4e-hydra/body)
+  ;; (global-set-key (kbd "<f9>") #'binarin/mu4e-hydra/body)
 
 
   (defun binarin/set-from-address ()
