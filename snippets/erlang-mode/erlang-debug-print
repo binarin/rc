@@ -2,4 +2,4 @@
 # name: erlang-debug-print
 # key: dd
 # --
-error_logger:info_msg("[~p:~p] ~p", [?MODULE, ?LINE, $0]),
+?DD("~p", [$0]),
