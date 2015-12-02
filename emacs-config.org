@@ -111,6 +111,9 @@ So there will be no more package-installed-p/package-install dance in this file.
   (use-package f
     :ensure t)
 
+  (use-package s
+    :ensure t)
+
   (use-package dash
     :ensure t)
 
@@ -1763,10 +1766,16 @@ cabal install ghci-ng/
     (add-hook 'erlang-mode-hook #'binarin/make-buffer-whitespace-aware)
     (add-hook 'erlang-mode-hook #'binarin/erlang-mode-hook))
 
-  (use-package edts
-    :ensure t
-    :config
+  (use-package auto-complete :ensure t)
+  (use-package eproject :ensure t)
+  (use-package popup :ensure t)
+  (use-package auto-highlight-symbol :ensure t)
+
+  (when (f-dir? "~/personal-workspace/edts")
+    (add-to-list 'load-path "~/personal-workspace/edts")
     (require 'edts-start))
+
+
 
 #+end_src
 

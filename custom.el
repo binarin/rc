@@ -8,7 +8,8 @@
  '(bmkp-last-as-first-bookmark-file "~/.emacs.d/bookmarks")
  '(custom-safe-themes
    (quote
-    ("11636897679ca534f0dec6f5e3cb12f28bf217a527755f6b9e744bd240ed47e1" "a444b2e10bedc64e4c7f312a737271f9a2f2542c67caa13b04d525196562bf38" "26614652a4b3515b4bbbb9828d71e206cc249b67c9142c06239ed3418eff95e2" default)))
+    ("f5eb916f6bd4e743206913e6f28051249de8ccfd070eae47b5bde31ee813d55f" "11636897679ca534f0dec6f5e3cb12f28bf217a527755f6b9e744bd240ed47e1" "a444b2e10bedc64e4c7f312a737271f9a2f2542c67caa13b04d525196562bf38" "26614652a4b3515b4bbbb9828d71e206cc249b67c9142c06239ed3418eff95e2" default)))
+ '(edts-inhibit-package-check t)
  '(edts-man-root "/home/binarin/.emacs.d/edts/doc/18.1")
  '(eval-expression-print-level 4)
  '(grep-find-ignored-directories
@@ -41,7 +42,10 @@
  '(pt-executable "~/bin/pt")
  '(safe-local-variable-values
    (quote
-    ((time-stamp-active . t)
+    ((c-continued-statement-offset . 2)
+     (c-indent-level . 2)
+     (allout-layout . t)
+     (time-stamp-active . t)
      (encoding . utf-8)
      (haskell-indent-spaces . 4)
      (haskell-indent-spaces . 2)
