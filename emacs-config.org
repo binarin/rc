@@ -1960,6 +1960,16 @@ cabal install ghci-ng/
 #+end_src
 
 * Things to try/to do
+** TODO___ [[https://www.reddit.com/r/emacs/comments/36cq0k/corral_a_fast_intuitive_way_to_wrap_parentheses/][Corral - a fast, intuitive way to wrap parentheses and other delimiters around text]]
+   :PROPERTIES:
+   :ID:       90a5e876-1a4f-47dd-9acd-6b1e87e559f9
+   :END:
+   :LOGBOOK:
+   - State "DONE___"    from "STARTED"    [2015-05-20 Ср 19:01]
+   :END:
+   :CLOCK:
+   CLOCK: [2015-05-20 Ср 18:53]--[2015-05-20 Ср 19:01] =>  0:08
+   :END:
 ** [[https://glyph.twistedmatrix.com/2015/11/editor-malware.html][Deciphering Glyph :: Your Text Editor Is Malware]]
  [2015-11-13 пт 11:10]
 ** [[https://www.reddit.com/r/programming/comments/3sed38/parinfer_simpler_lisp_editing/][Parinfer - simpler Lisp editing]]
