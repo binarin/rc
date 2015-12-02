@@ -31,7 +31,7 @@
    :ID:       dfe9ecac-32f8-46ab-bf0e-6eff073d7d25
    :END:
    #+begin_src emacs-lisp
-     (setq load-prefer-newer t)
+     ;; (setq load-prefer-newer t)
    #+end_src
 
 ** MELPA
