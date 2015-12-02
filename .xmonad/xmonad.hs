@@ -46,6 +46,7 @@ import XMonad.Util.WorkspaceCompare
 -- import qualified DBus.Client as D
 -- import qualified Codec.Binary.UTF8.String as UTF8
 import Graphics.X11.ExtraTypes.XF86
+import Xkb
 
 primaryWorkspaces :: [(String, String)]
 primaryWorkspaces =
@@ -97,11 +98,12 @@ myManageHook = composeAll
 myLayout = smartBorders Full ||| (mouseResizableTile) ||| (mouseResizableTile { isMirrored = True })
 
 myLayoutHook =
+  xkbLayout $
   avoidStruts $
   onWorkspace "coins" Grid $
   onWorkspace "passwd" (noBorders Grid) $
   onWorkspace "secondary" simpleFloat $
-  onWorkspace "msg" (withIM (1%4) (Title "binarin - Skype™") Grid) $
+  onWorkspace "msg" (withIM (1%5) (Title "binarin - Skype™") Grid) $
   myLayout
 
 myNavigation :: TwoD a (Maybe a)
@@ -210,6 +212,7 @@ myConfig logHandle = ewmh def {
         , ("M-S-p", screenWorkspace 2 >>= flip whenJust (windows . W.shift))
         , ("M-k", kill)
         , ("M-<Backspace>", cycleRecentWindows [xK_Super_L, xK_Super_R] xK_BackSpace xK_Delete)
+        , ("C-\\", sendMessage (XkbToggle Nothing))
         -- , ("M-S-<Backspace>", removeWorkspace)
         -- , ("M-S-j", selectWorkspace defaultXPConfig)
         -- , ("M-a", withWorkspace defaultXPConfig (windows . W.shift))

@@ -5,3 +5,5 @@ emacs-config.el*
 /.xmonad/xmonad.o
 .tmp/
 modules/
+*.o
+*.hi
