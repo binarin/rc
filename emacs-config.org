@@ -588,6 +588,13 @@ As Sacha Chua put it, "Disk space is cheap. Save lots".
      (setq auto-save-file-name-transforms '((".*" "~/.emacs.d/auto-save-list/" t)))
    #+end_src
 
+   I don't care about preventing simultaneous edits, it still will be
+   detected when saving is made. But disabling it prevents our working
+   dirs from being clobbered with lock-files.
+   #+begin_src emacs-lisp
+     (setf create-lockfiles nil)
+   #+end_src
+
 ** Persistence
 *** History
     :PROPERTIES:
