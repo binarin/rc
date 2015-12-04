@@ -1,0 +1,24 @@
+#    -*- mode: org -*-
+
+
+Archived entries from file /home/binarin/.rc/emacs-config.org
+
+
+* Calendar synchronization
+  :PROPERTIES:
+  :ID:       08c7c44a-21a7-413b-bd06-bd934f04fd67
+  :ARCHIVE_TIME: 2015-12-04 Пт 16:58
+  :ARCHIVE_FILE: ~/.rc/emacs-config.org
+  :ARCHIVE_OLPATH: Personal organization
+  :ARCHIVE_CATEGORY: emacs-config
+  :END:
+
+#+begin_src emacs-lisp
+  (setf org-caldav-url "http://195.91.211.180/cal.php/principals/binarin")
+  (setf org-caldav-calendar-id "default")
+  (setf org-caldav-inbox "~/org/calendar.org")
+  (setf org-caldav-files org-agenda-files)
+  (setf org-icalendar-timezone "Europe/Minsk")
+  (setf org-caldav-debug-level 2)
+#+end_src
+
