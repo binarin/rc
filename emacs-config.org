@@ -1084,8 +1084,6 @@ MimeType=x-scheme-handler/org-protocol;
 
   (setq org-treat-S-cursor-todo-selection-as-state-change nil)
 
-  (setf org-mobile-inbox-for-pull "~/org/refile.org")
-
   (setf agenda-opts-all-with-time
         '((org-agenda-todo-ignore-scheduled nil)
           (org-agenda-todo-ignore-deadlines nil)
@@ -1188,8 +1186,6 @@ MimeType=x-scheme-handler/org-protocol;
   (setq org-agenda-window-frame-fractions '(1 . 1))
   (setq org-agenda-restore-windows-after-quit t)
 
-  (setq org-mobile-directory (expand-file-name "~/Dropbox/org/"))
-
   (add-hook 'org-mode-hook (lambda () (auto-revert-mode 1)))
 
   (setf org-agenda-dim-blocked-tasks t)
@@ -1214,11 +1210,6 @@ MimeType=x-scheme-handler/org-protocol;
   (setq org-use-fast-todo-selection 'prefix)
 
   (setq org-agenda-window-setup 'current-window)
-
-  ;; (when (and (string= system-name "demandred.home.binarin.ru")
-  ;;            (f-exists? "~/personal-workspace/org-mobile-sync/org-mobile-sync.el"))
-  ;;   (load-file "~/personal-workspace/org-mobile-sync/org-mobile-sync.el")
-  ;;   (org-mobile-sync-mode 1))
 
   (defun clockout-nagger ()
     (call-process "~/.rc/nagger.py" nil nil nil))
@@ -1252,21 +1243,20 @@ MimeType=x-scheme-handler/org-protocol;
    :ID:       6e8ee99a-656e-418c-be71-330bcc6b51be
    :END:
 
-Expand filenames so we can later directly compare them with (buffer-file-name)
+   Expand filenames so we can later directly compare them with (buffer-file-name)
 
-#+begin_src emacs-lisp
-  (setf org-agenda-files
-        (-map #'f-expand
-              (-filter #'f-exists?
-                       '("~/org/personal.org"
-                         "~/org/refile.org"
-                         "~/org/subscriptions.org"
-                         "~/org/mirantis.org"
-                         "~/org/mira-cal.org"
-                         "~/.rc/emacs-config.org"
-                         "~/org/ference.org"))))
-#+end_src
-
+    #+begin_src emacs-lisp
+      (setf org-agenda-files
+            (-map #'f-expand
+                  (-filter #'f-exists?
+                           '("~/org/personal.org"
+                             "~/org/refile.org"
+                             "~/org/subscriptions.org"
+                             "~/org/mirantis.org"
+                             "~/org/mira-cal.org"
+                             "~/.rc/emacs-config.org"
+                             "~/org/ference.org"))))
+    #+end_src
 ** org-mode appearance
    :PROPERTIES:
    :ID:       eb4be926-8769-4d55-801b-981f77f8fd5a
@@ -1349,20 +1339,6 @@ Access to predefined actions from everywhere.
 
 
 
-** Calendar synchronization
-   :PROPERTIES:
-   :ID:       08c7c44a-21a7-413b-bd06-bd934f04fd67
-   :END:
-
-#+begin_src emacs-lisp
-  (setf org-caldav-url "http://195.91.211.180/cal.php/principals/binarin")
-  (setf org-caldav-calendar-id "default")
-  (setf org-caldav-inbox "~/org/calendar.org")
-  (setf org-caldav-files org-agenda-files)
-  (setf org-icalendar-timezone "Europe/Minsk")
-  (setf org-caldav-debug-level 2)
-#+end_src
-
 ** Export
    :PROPERTIES:
    :ID:       581a79ad-e824-4f37-a774-dec825e646ce
@@ -1412,6 +1388,57 @@ Access to predefined actions from everywhere.
     (org-sort-entries nil ?f #'binarin/todo-to-started-first-int))
 #+end_src
 
+
+
+** Syncing with mobile
+
+    Don't sync with mobile calendars that were downloaded from Google.
+
+    #+begin_src emacs-lisp
+      (setf org-mobile-files (-filter #'(lambda (file) (not (s-suffix? "-cal.org" file))) org-agenda-files))
+    #+end_src
+
+    #+begin_src emacs-lisp
+      (setf org-mobile-inbox-for-pull "~/org/refile.org")
+      (setq org-mobile-directory (expand-file-name "~/Dropbox/org/"))
+    #+end_src
+
+    Automatic synchronization
+    #+begin_src emacs-lisp
+      (defvar org-mobile-push-timer nil
+        "Timer that `org-mobile-push-timer' used to reschedule itself, or nil.")
+
+      (defun org-mobile-push-with-delay (secs)
+        (when org-mobile-push-timer
+          (cancel-timer org-mobile-push-timer))
+        (setq org-mobile-push-timer
+              (run-with-idle-timer
+               (* 1 secs) nil #'(lambda ()
+                                  (org-mobile-pull)
+                                  (org-mobile-push)))))
+
+      (add-hook 'after-save-hook
+                (lambda ()
+                  (when (eq major-mode 'org-mode)
+                    (dolist (file org-mobile-files)
+                      (if (string= (file-truename (expand-file-name file))
+                                   (file-truename (buffer-file-name)))
+                          (org-mobile-push-with-delay 30))))))
+
+      (run-at-time "00:05am" 86400 '(lambda () (org-mobile-push-with-delay 1))) ;; refreshes agenda file each day
+
+      (require 'filenotify)
+      (when (and (string= system-name "demandred.home.binarin.ru"))
+        (file-notify-add-watch (file-truename
+                                (concat (file-name-as-directory org-mobile-directory) "mobileorg.org"))
+                               '(change)
+                               #'(lambda (event) (org-mobile-push-with-delay 30))))
+
+      ;; Do a pull every 5 minutes to circumvent problems with timestamping
+      ;; (ie. dropbox bugs)
+      ;; (run-with-timer 0 (* 5 60) 'org-mobile-pull)
+
+    #+end_src
 
 
 * Navigation
