@@ -1424,14 +1424,17 @@ Access to predefined actions from everywhere.
                                    (file-truename (buffer-file-name)))
                           (org-mobile-push-with-delay 30))))))
 
-      (run-at-time "00:05am" 86400 '(lambda () (org-mobile-push-with-delay 1))) ;; refreshes agenda file each day
+      ;; refreshes agenda file each day
+      (run-at-time "00:05am" 86400 '(lambda ()
+                                      (org-mobile-push-with-delay 30)))
 
       (require 'filenotify)
       (when (and (string= system-name "demandred.home.binarin.ru"))
         (file-notify-add-watch (file-truename
                                 (concat (file-name-as-directory org-mobile-directory) "mobileorg.org"))
                                '(change)
-                               #'(lambda (event) (org-mobile-push-with-delay 30))))
+                               #'(lambda (event)
+                                   (org-mobile-push-with-delay 30))))
 
       ;; Do a pull every 5 minutes to circumvent problems with timestamping
       ;; (ie. dropbox bugs)
