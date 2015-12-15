@@ -1645,51 +1645,13 @@ Every file in org-agenda-files should be present in every perspective:
   (req-package multiple-cursors)
 #+end_src
 * Programming
-** zeal
-   :PROPERTIES:
-   :ID:       e4faf6e4-7e4a-43d8-91bb-f6dd54fda363
-   :END:
-#+begin_src emacs-lisp
-  (req-package zeal-at-point
-    :bind ("C-c d" . zeal-at-point))
-#+end_src
+** C
+   #+begin_src emacs-lisp
+     (defun binarin/c-mode-hook ()
+       (local-set-key (read-kbd-macro "M-.") 'helm-etags-select))
 
-** YAML
-   :PROPERTIES:
-   :ID:       4cd5af96-6577-456c-8914-1390612ad773
-   :END:
-#+begin_src emacs-lisp
-  (req-package yaml-mode
-    :mode "\\.yaml\\'")
-#+end_src
-
-** Yasnippet
-   :PROPERTIES:
-   :ID:       8db682fa-6f3f-4726-bb46-7b577e9919e4
-   :END:
-#+begin_src emacs-lisp
-  (use-package yasnippet
-    :ensure t
-    :init
-    (setf yas-snippet-dirs '("~/.rc/snippets" yas-installed-snippets-dir))
-    (yas-global-mode 1))
-#+end_src
-** Magit
-   :PROPERTIES:
-   :ID:       5992e86f-6a93-494d-b413-fdaf1ad4e5fe
-   :END:
-#+begin_src emacs-lisp
-  (req-package magit
-    :bind ("<f12>" . magit-status)
-    :init
-    (progn
-      (setf magit-last-seen-setup-instructions "1.4.0"))
-    :config
-    (progn
-      (setf magit-revert-item-confirm t)
-      (setf magit-diff-refine-hunk t)))
-#+end_src
-
+     (add-hook 'c-mode-hook 'binarin/c-mode-hook)
+   #+end_src
 ** Corral - wrap text in delimiters (instead of paredit for non-lisp)
 
 #+begin_src emacs-lisp
@@ -1716,22 +1678,20 @@ Every file in org-agenda-files should be present in every perspective:
 
 #+end_src
 
-** Paredit
-   :PROPERTIES:
-   :ID:       13fbc9ee-bd2c-441b-8b36-ab2d8e153aa7
-   :END:
+** electric-operator
+   #+begin_src emacs-lisp
+     (use-package electric-operator
+       :ensure t
+       :commands electric-operator electric-operator-add-rules-for-mode
+       :config
+       (add-hook 'erlang-mode-hook #'electric-operator-mode)
+       :init
+       (electric-operator-add-rules-for-mode
+        'erlang-mode
+        (cons "+" " + ")
+        (cons "," ", ")))
+   #+end_src
 
-#+begin_src emacs-lisp
-  (req-package paredit
-    :commands paredit-mode
-    :init
-    (progn
-      (add-hook 'emacs-lisp-mode-hook       (lambda () (paredit-mode +1)))
-      (add-hook 'lisp-mode-hook             (lambda () (paredit-mode +1)))
-      (add-hook 'scheme-mode-hook           (lambda () (paredit-mode +1)))
-      (add-hook 'lisp-interaction-mode-hook (lambda () (paredit-mode +1)))
-      (add-hook 'slime-repl-mode-hook       (lambda () (paredit-mode +1)))))
-#+end_src
 
 ** Emacs Lisp
    :PROPERTIES:
@@ -1749,6 +1709,46 @@ Every file in org-agenda-files should be present in every perspective:
   (add-hook 'eval-expression-minibuffer-setup-hook 'eldoc-mode)
 #+end_src
 
+** Erlang
+   :PROPERTIES:
+   :ID:       f947b108-a5c9-4806-85fc-90592ca8f19a
+   :END:
+#+begin_src emacs-lisp
+  (defun binarin/erlang-mode-hook ()
+    (local-set-key (kbd "M-*") #'edts-find-source-unwind)
+    (setf fill-column 111))
+
+  (use-package erlang
+    :ensure t
+    :mode ("\\.erl\\'" . erlang-mode)
+    :config
+    (add-hook 'erlang-mode-hook #'binarin/make-buffer-whitespace-aware)
+    (add-hook 'erlang-mode-hook #'binarin/erlang-mode-hook))
+
+  (use-package auto-complete :ensure t)
+  (use-package eproject :ensure t)
+  (use-package popup :ensure t)
+  (use-package auto-highlight-symbol :ensure t)
+
+  (when (f-dir? "~/personal-workspace/edts")
+    (add-to-list 'load-path "~/personal-workspace/edts")
+    (require 'edts-start))
+
+
+
+#+end_src
+
+
+
+** Evil nerd commenter
+   :PROPERTIES:
+   :ID:       0bcd9cd1-1e8c-43f4-84e4-15255b2c0f36
+   :END:
+#+begin_src emacs-lisp
+  (req-package evil-nerd-commenter
+    :defer 20
+    :bind ("M-;" . evilnc-comment-or-uncomment-lines))
+#+end_src
 ** Haskell
    :PROPERTIES:
    :ID:       63a80fe6-b71b-4612-a6af-6f886797b0ea
@@ -1786,37 +1786,6 @@ cabal install ghci-ng/
     (add-hook 'haskell-interactive-mode-hook 'structured-haskell-repl-mode))
 #+end_src
 
-** Erlang
-   :PROPERTIES:
-   :ID:       f947b108-a5c9-4806-85fc-90592ca8f19a
-   :END:
-#+begin_src emacs-lisp
-  (defun binarin/erlang-mode-hook ()
-    (local-set-key (kbd "M-*") #'edts-find-source-unwind)
-    (setf fill-column 111))
-
-  (use-package erlang
-    :ensure t
-    :mode ("\\.erl\\'" . erlang-mode)
-    :config
-    (add-hook 'erlang-mode-hook #'binarin/make-buffer-whitespace-aware)
-    (add-hook 'erlang-mode-hook #'binarin/erlang-mode-hook))
-
-  (use-package auto-complete :ensure t)
-  (use-package eproject :ensure t)
-  (use-package popup :ensure t)
-  (use-package auto-highlight-symbol :ensure t)
-
-  (when (f-dir? "~/personal-workspace/edts")
-    (add-to-list 'load-path "~/personal-workspace/edts")
-    (require 'edts-start))
-
-
-
-#+end_src
-
-
-
 ** JavaScript
    :PROPERTIES:
    :ID:       a457dc36-0b85-404d-9652-245c48acd9d2
@@ -1829,15 +1798,39 @@ cabal install ghci-ng/
        (add-hook 'js2-mode-hook #'binarin/make-buffer-whitespace-aware))
    #+end_src
 
-** Evil nerd commenter
+** Magit
    :PROPERTIES:
-   :ID:       0bcd9cd1-1e8c-43f4-84e4-15255b2c0f36
+   :ID:       5992e86f-6a93-494d-b413-fdaf1ad4e5fe
    :END:
 #+begin_src emacs-lisp
-  (req-package evil-nerd-commenter
-    :defer 20
-    :bind ("M-;" . evilnc-comment-or-uncomment-lines))
+  (req-package magit
+    :bind ("<f12>" . magit-status)
+    :init
+    (progn
+      (setf magit-last-seen-setup-instructions "1.4.0"))
+    :config
+    (progn
+      (setf magit-revert-item-confirm t)
+      (setf magit-diff-refine-hunk t)))
 #+end_src
+
+** Paredit
+   :PROPERTIES:
+   :ID:       13fbc9ee-bd2c-441b-8b36-ab2d8e153aa7
+   :END:
+
+#+begin_src emacs-lisp
+  (req-package paredit
+    :commands paredit-mode
+    :init
+    (progn
+      (add-hook 'emacs-lisp-mode-hook       (lambda () (paredit-mode +1)))
+      (add-hook 'lisp-mode-hook             (lambda () (paredit-mode +1)))
+      (add-hook 'scheme-mode-hook           (lambda () (paredit-mode +1)))
+      (add-hook 'lisp-interaction-mode-hook (lambda () (paredit-mode +1)))
+      (add-hook 'slime-repl-mode-hook       (lambda () (paredit-mode +1)))))
+#+end_src
+
 ** Perl
    :PROPERTIES:
    :ID:       07f0b3e1-2ac5-4b9e-a4da-d03170dec349
@@ -1930,29 +1923,13 @@ cabal install ghci-ng/
 
    #+end_src
 
-** Web mode
+** python
    #+begin_src emacs-lisp
-     (use-package web-mode
-         :ensure t
-         :commands web-mode)
+     (defun binarin/python-mode-hook ()
+       (local-set-key (kbd "M-.") 'helm-etags-select))
+
+     (add-hook 'python-mode-hook 'binarin/python-mode-hook)
    #+end_src
-
-
-** electric-operator
-   #+begin_src emacs-lisp
-     (use-package electric-operator
-       :ensure t
-       :commands electric-operator electric-operator-add-rules-for-mode
-       :config
-       (add-hook 'erlang-mode-hook #'electric-operator-mode)
-       :init
-       (electric-operator-add-rules-for-mode
-        'erlang-mode
-        (cons "+" " + ")
-        (cons "," ", ")))
-   #+end_src
-
-
 ** vimish-fold
    #+begin_src emacs-lisp
      (use-package vimish-fold
@@ -1964,13 +1941,43 @@ cabal install ghci-ng/
        (define-key vimish-fold-unfolded-keymap (kbd "C-#") #'vimish-fold-refold))
    #+end_src
 
-** python
+** Web mode
    #+begin_src emacs-lisp
-     (defun binarin/python-mode-hook ()
-       (local-set-key (kbd "M-.") 'helm-etags-select))
-
-     (add-hook 'python-mode-hook 'binarin/python-mode-hook)
+     (use-package web-mode
+         :ensure t
+         :commands web-mode)
    #+end_src
+
+
+** YAML
+   :PROPERTIES:
+   :ID:       4cd5af96-6577-456c-8914-1390612ad773
+   :END:
+#+begin_src emacs-lisp
+  (req-package yaml-mode
+    :mode "\\.yaml\\'")
+#+end_src
+
+** Yasnippet
+   :PROPERTIES:
+   :ID:       8db682fa-6f3f-4726-bb46-7b577e9919e4
+   :END:
+#+begin_src emacs-lisp
+  (use-package yasnippet
+    :ensure t
+    :init
+    (setf yas-snippet-dirs '("~/.rc/snippets" yas-installed-snippets-dir))
+    (yas-global-mode 1))
+#+end_src
+** zeal
+   :PROPERTIES:
+   :ID:       e4faf6e4-7e4a-43d8-91bb-f6dd54fda363
+   :END:
+#+begin_src emacs-lisp
+  (req-package zeal-at-point
+    :bind ("C-c d" . zeal-at-point))
+#+end_src
+
 * Productivity
 ** jammer is a tool for punishing yourself for inefficiently using Emacs.
    :PROPERTIES:
