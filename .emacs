@@ -1,5 +1,11 @@
 ;; -*- lexical-binding: t -*-
 (require 'cl)
+
+(make-directory user-emacs-directory t)
+(defvar binarin/primary-emacs-config (concat (file-name-directory (file-truename load-file-name))
+                                             "emacs-config.org"))
+(defvar binarin/tangled-emacs-config (concat user-emacs-directory "emacs-config.el"))
+
 (setq gc-cons-threshold 20000000)
 
 (setf prev (float-time))
@@ -35,26 +41,27 @@
 
 (message "Org %s" (let ((delta (- (float-time) prev))) (setf prev (float-time)) delta))
 
-(if (file-newer-than-file-p "~/.rc/emacs-config.org" "~/.rc/emacs-config.el")
-    (let ((block-counter 0))
-      (cl-flet
-          ((delete-empty-lines-at-buffer-start
-            ()
-            (save-excursion
-              (beginning-of-buffer)
-              (replace-regexp "\\`\\(\n\\|\\s-+\\)+" "")
-              (save-buffer)))
-           (profile-block
-            ()
-            (save-excursion
-              (end-of-buffer)
-              (insert "(message \"Block " (format "%s" (incf block-counter)) " %s\" (let ((delta (- (float-time) prev))) (setf prev (float-time)) delta))"))))
-        (require 'ob-tangle)
-        (let ((org-babel-post-tangle-hook (cons #'delete-empty-lines-at-buffer-start org-babel-post-tangle-hook))
-              ;; (org-babel-tangle-body-hook (cons #'profile-block org-babel-tangle-body-hook))
-              )
-          (message "Org pre-tangle %s" (let ((delta (- (float-time) prev))) (setf prev (float-time)) delta))
-          (org-babel-load-file "~/.rc/emacs-config.org"))))
-  (load-file "~/.rc/emacs-config.el"))
+(when (file-newer-than-file-p binarin/primary-emacs-config binarin/tangled-emacs-config)
+  (let ((block-counter 0))
+    (cl-flet
+        ((delete-empty-lines-at-buffer-start
+          ()
+          (save-excursion
+            (beginning-of-buffer)
+            (replace-regexp "\\`\\(\n\\|\\s-+\\)+" "")
+            (save-buffer)))
+         (profile-block
+          ()
+          (save-excursion
+            (end-of-buffer)
+            (insert "(message \"Block " (format "%s" (incf block-counter)) " %s\" (let ((delta (- (float-time) prev))) (setf prev (float-time)) delta))"))))
+      (require 'ob-tangle)
+      (let ((org-babel-post-tangle-hook (cons #'delete-empty-lines-at-buffer-start org-babel-post-tangle-hook))
+            ;; (org-babel-tangle-body-hook (cons #'profile-block org-babel-tangle-body-hook))
+            )
+        (message "Org pre-tangle %s" (let ((delta (- (float-time) prev))) (setf prev (float-time)) delta))
+        (org-babel-tangle-file binarin/primary-emacs-config binarin/tangled-emacs-config "emacs-lisp")))))
+
+(load-file binarin/tangled-emacs-config)
 
 (message "emacs-config %s" (let ((delta (- (float-time) prev))) (setf prev (float-time)) delta))

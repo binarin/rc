@@ -18,22 +18,14 @@
   :PROPERTIES:
   :ID:       04b545bf-52b7-412d-9ce5-80ee4bbe10cf
   :END:
-#+begin_src emacs-lisp
-  (setf user-full-name "Alexey Lebedeff"
-        user-mail-address "binarin@binarin.ru")
-  (setf password-cache-expiry nil)
-  (setf password-cache t)
-#+end_src
+  #+begin_src emacs-lisp
+    (setf user-full-name "Alexey Lebedeff"
+          user-mail-address "binarin@binarin.ru")
+    (setf password-cache-expiry nil)
+    (setf password-cache t)
+  #+end_src
 
 * External packages
-** Don't load outdated compiled files
-   :PROPERTIES:
-   :ID:       dfe9ecac-32f8-46ab-bf0e-6eff073d7d25
-   :END:
-   #+begin_src emacs-lisp
-     ;; (setq load-prefer-newer t)
-   #+end_src
-
 ** MELPA
    :PROPERTIES:
    :ID:       fbea2e34-f728-49ab-9f99-80f7a53d8052
@@ -124,16 +116,33 @@ So there will be no more package-installed-p/package-install dance in this file.
     :ensure t)
 #+end_src
 
-* Use separate lisp file for customizations made through UI.
+* Configuration pieces from other places
+** Finding configuration pieces from sibling repos
+   #+begin_src emacs-lisp
+     (defvar binarin/sibling-config-repos-dir (file-name-directory (directory-file-name (file-name-directory binarin/primary-emacs-config))))
+     (defvar binarin/sibling-config-repos (-map #'file-name-as-directory (directory-files binarin/sibling-config-repos-dir t "^[a-z]")))
+
+     (defun binarin/sibling-repo-files (filename)
+       (loop for dir in binarin/sibling-config-repos
+             for fullname = (concat dir filename)
+             when (file-exists-p fullname)
+             collect fullname))
+   #+end_src
+
+** Use separate lisp file for customizations made through UI.
   :PROPERTIES:
   :ID:       c21650a3-4e44-4713-b3cc-6a4121e7075a
   :END:
 
-#+begin_src emacs-lisp
-  (setf custom-file "~/.rc/custom.el")
-  (load-file custom-file)
-#+end_src
+  #+begin_src emacs-lisp
+    (setf custom-file (concat (file-name-directory binarin/primary-emacs-config) "custom.el"))
+    (load-file custom-file)
+  #+end_src
 
+** Search for authinfo files
+   #+begin_src emacs-lisp
+     (setf auth-sources (binarin/sibling-repo-files ".authinfo.gpg"))
+   #+end_src
 * TODO___ (get rid of) load all elisp files from dedicated directory
   :PROPERTIES:
   :ID:       3f54ce25-9fb5-44f8-9386-81d06e832a37
