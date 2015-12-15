@@ -15,13 +15,13 @@ if [ ! -f ~/personal-workspace/org-mode/lisp/org.elc ]; then
     make 'ORG_ADD_CONTRIB=*' -C ~/personal-workspace/org-mode
 fi
 
-if [ ! -f ~/personal-workspace/edts ]; then
+if [ ! -d ~/personal-workspace/edts ]; then
     git clone https://github.com/tjarvstrand/edts ~/personal-workspace/edts
     make -C ~/personal-workspace/edts
 fi
 
 cd ~
-cp -sn ~/.rc/{.emacs,.xmobarrc,.zshrc,.vimrc,.Xresources,.xsession,.sbclrc,.tmux.conf,.gitconfig} .
+cp -sn ~/.rc/{.emacs,.xmobarrc,.zshrc,.vimrc,.Xresources,.xsession,.sbclrc,.tmux.conf,.gitconfig,.quiltrc} .
 if [ ! -e ~/.urxvt ]; then
     ln -s ~/.rc/.urxvt .
 fi
