@@ -3,12 +3,12 @@
 # key: ddd
 # --
 -define(DD(__Fmt, __Args),
-        begin
+        (fun() ->
             __UserMsg = io_lib:format(__Fmt, __Args),
             {{__Year, __Month, __Day}, {__Hour, __Minute, __Second}} = calendar:now_to_local_time(erlang:timestamp()),
             __Msg = io_lib:format("[~4..0B-~2..0B-~2..0BT~2..0B:~2..0B:~2..0B ~s ~s:~B] ~s~n",
                                   [__Year, __Month, __Day, __Hour, __Minute, __Second, node(), ?MODULE, ?LINE, __UserMsg]),
             file:write_file("/tmp/erl-debug.log", __Msg, [append]),
             error_logger:info_msg("~s", [__Msg])
-        end).
+        end)()).
 $0
