@@ -21,7 +21,7 @@ if [ ! -d ~/personal-workspace/edts ]; then
 fi
 
 cd ~
-cp -sn ~/.rc/{.emacs,.xmobarrc,.zshrc,.vimrc,.Xresources,.xsession,.sbclrc,.tmux.conf,.gitconfig,.quiltrc} .
+cp -sn ~/.rc/{.emacs,.xmobarrc,.zshrc,.vimrc,.Xresources,.xsession,.sbclrc,.tmux.conf,.gitconfig,.quiltrc,.mbsyncrc} .
 if [ ! -e ~/.urxvt ]; then
     ln -s ~/.rc/.urxvt .
 fi

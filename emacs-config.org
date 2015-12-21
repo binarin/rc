@@ -117,13 +117,13 @@ So there will be no more package-installed-p/package-install dance in this file.
 #+end_src
 
 * Configuration pieces from other places
-** Finding configuration pieces from sibling repos
+** Finding configuration pieces from optional directories
    #+begin_src emacs-lisp
-     (defvar binarin/sibling-config-repos-dir (file-name-directory (directory-file-name (file-name-directory binarin/primary-emacs-config))))
-     (defvar binarin/sibling-config-repos (-map #'file-name-as-directory (directory-files binarin/sibling-config-repos-dir t "^[a-z]")))
+     (defvar binarin/optional-config-repos-dir (expand-file-name "~/.rc.d/"))
+     (defvar binarin/optional-config-repos (-map #'file-name-as-directory (directory-files binarin/optional-config-repos-dir t "^[0-9a-zA-Z]")))
 
-     (defun binarin/sibling-repo-files (filename)
-       (loop for dir in binarin/sibling-config-repos
+     (defun binarin/optional-repo-files (filename)
+       (loop for dir in binarin/optional-config-repos
              for fullname = (concat dir filename)
              when (file-exists-p fullname)
              collect fullname))
@@ -141,7 +141,7 @@ So there will be no more package-installed-p/package-install dance in this file.
 
 ** Search for authinfo files
    #+begin_src emacs-lisp
-     (setf auth-sources (binarin/sibling-repo-files ".authinfo.gpg"))
+     (setf auth-sources (binarin/optional-repo-files ".authinfo.gpg"))
    #+end_src
 * TODO___ (get rid of) load all elisp files from dedicated directory
   :PROPERTIES:
@@ -736,63 +736,96 @@ As Sacha Chua put it, "Disk space is cheap. Save lots".
 
 * Communication
 ** Email
-*** TODO___ Multiple accounts in mu4e
-    :PROPERTIES:
-    :ID:       6a5423c1-3525-492a-90c6-9f68a8cbf7aa
-    :END:
-*** TODO___ Old mu4e config
-    :PROPERTIES:
-    :ID:       85c43d78-8894-4d8c-8c9b-f7d55833e5b8
-    :END:
+*** Load custom-built mu4e
+    #+begin_src emacs-lisp
+      (add-to-list 'load-path "~/apps/mu/share/emacs/site-lisp/mu4e")
+      (add-to-list 'Info-directory-list "~/apps/mu/share/info")
+      (setf mu4e-mu-binary "~/apps/mu/bin/mu")
 
-#+begin_src emacs-lisp
+      (autoload 'mu4e "mu4e" nil t)
+    #+end_src
 
-  (add-to-list 'load-path "~/.nix-profile/share/emacs/site-lisp/mu4e")
-  ;; (require 'mu4e)
+*** Unread count extension
+    #+begin_src emacs-lisp
+      (use-package mu4e-maildirs-extension
+        :ensure t
+        :commands mu4e-maildirs-extension
 
-  (setq message-send-mail-function 'smtpmail-send-it
-        smtpmail-default-smtp-server "smtp.yandex-team.ru"
-        smtpmail-smtp-server "smtp.yandex-team.ru"
-        smtpmail-smtp-service 465
-        smtpmail-stream-type 'ssl
-        smtpmail-debug-info t)
+        :init
+        (eval-after-load "mu4e" '(mu4e-maildirs-extension))
 
-  ;; (require 'mu4e)
-  ;; (require 'smtpmail)
+        :config
+        (setf mu4e-maildirs-extension-count-command-format
+              (replace-regexp-in-string "^mu" mu4e-mu-binary mu4e-maildirs-extension-count-command-format))
+        (setf mu4e-maildirs-extension-custom-list (-remove #'(lambda (x) (or (s-contains? "[Gmail]" x)
+                                                                             (s-contains? "-archive" x)
+                                                                             (s-contains? "Trash" x))) (mu4e-get-maildirs)))
+        (setf mu4e-maildirs-extension-insert-before-str "\n  Basics"))
+    #+end_src
 
-  (setf mu4e-maildir       "~/.mail/gmail"
-        mu4e-sent-folder   "/Sent"
-        mu4e-drafts-folder "/Drafts"
-        mu4e-trash-folder  "/Trash"
-        mu4e-refile-folder "/Архив")
+*** Multiple mail accounts
+    #+begin_src emacs-lisp
+      (defvar binarin/gmail-accounts '("binarin@gmail.com" "binarin@binarin.ru" "alebedev@mirantis.com"))
 
-  (defun my-render-html-message ()
-    (let ((dom (libxml-parse-html-region (point-min) (point-max))))
-      (erase-buffer)
-      (shr-insert-document dom)
-      (goto-char (point-min))))
+      (setf mu4e-user-mail-address-list binarin/gmail-accounts)
 
-  (setq mu4e-html2text-command 'my-render-html-message)
+      (defun binarin/gmail-maildir (email dir)
+        (concat "/" email "/" dir))
 
-  (setf mu4e-bookmarks '(("flag:unread AND NOT maildir:/Trash" "Unread messages" 117)
-                         ("date:today..now AND NOT maildir:/Trash" "Today's messages" 116)
-                         ("date:7d..now AND NOT maildir:/Trash" "Last 7 days" 119)
-                         ("mime:image/* AND NOT maildir:/Trash" "Messages with images" 112)))
+      (defun binarin/gmail-archive-dir (email)
+        (concat "/" email "-archive/Archive"))
 
-  (defun binarin/mu4e-view-mode-hook ()
-    (toggle-truncate-lines nil))
+      (setf mu4e-maildir       "~/.mail/"
+            mu4e-sent-folder   (binarin/gmail-maildir (car binarin/gmail-accounts) "Sent")
+            mu4e-drafts-folder (binarin/gmail-maildir (car binarin/gmail-accounts) "Drafts")
+            mu4e-trash-folder  (binarin/gmail-maildir (car binarin/gmail-accounts) "Trash"))
 
-  (add-hook 'mu4e-view-mode-hook #'binarin/mu4e-view-mode-hook)
-#+end_src
+      (setf message-send-mail-function 'smtpmail-send-it
+            smtpmail-default-smtp-server "smtp.gmail.com"
+            smtpmail-smtp-server "smtp.gmail.com"
+            smtpmail-smtp-service 465
+            smtpmail-stream-type 'ssl)
 
-*** Signature
-    :PROPERTIES:
-    :ID:       67dd0a30-b082-4737-9f4c-a34b036060e3
-    :END:
+      (defun binarin/make-mu4e-contexts ()
+        `(,(make-mu4e-context
+            :name "binarin@gmail.com"
+            :match-func (lambda (msg)
+                          (when msg
+                            (mu4e-message-contact-field-matches msg :to "binarin@gmail.com")))
+            :vars '((mail-reply-to . "binarin@gmail.com")
+                    (user-mail-address . "binarin@gmail.com")
+                    (smtpmail-smtp-user . "binarin@gmail.com")))
+          ,(make-mu4e-context
+            :name "binarin@binarin.ru"
+            :match-func (lambda (msg)
+                          (when msg
+                            (mu4e-message-contact-field-matches msg :to ".*@binarin.ru")))
+            :vars '((mail-reply-to . "binarin@binarin.ru")
+                    (user-mail-address . "binarin@binarin.ru")
+                    (smtpmail-smtp-user . "binarin@binarin.ru")))
+          ,(make-mu4e-context
+            :name "Mirantis"
+            :match-func (lambda (msg)
+                          (when msg
+                            (mu4e-message-contact-field-matches msg :to ".*@mirantis.com")))
+            :vars '((mail-reply-to . "alebedev@mirantis.com")
+                    (user-mail-address . "alebedev@mirantis.com")
+                    (smtpmail-smtp-user . "alebedev@mirantis.com")))))
 
-#+begin_src emacs-lisp
-  (setf mu4e-compose-signature-auto-include nil)
-#+end_src
+      (eval-after-load "mu4e" '(setf mu4e-contexts (binarin/make-mu4e-contexts)))
+
+      (defun binarin/mu4e-choose-account ()
+        (helm-comp-read "Select an account: " binarin/gmail-accounts :must-match t))
+
+      (defun binarin/mu4e-find-account-from-parent ()
+        (awhen mu4e-compose-parent-message
+          (message "%s" it)
+          (-first (lambda (account) (mu4e-message-contact-field-matches it :to account)) binarin/gmail-accounts)))
+
+      (setf mu4e-refile-folder
+            (lambda (msg)
+              (binarin/gmail-archive-dir (cadr (s-match "^/\\([^/]+?\\)\\(-archive\\)?/" (mu4e-message-field msg :maildir))))))
+    #+end_src
 
 *** Appearance
     :PROPERTIES:
@@ -800,10 +833,17 @@ As Sacha Chua put it, "Disk space is cheap. Save lots".
     :END:
 
 #+begin_src emacs-lisp
+  (defun binarin/mu4e-view-mode-hook ()
+    (toggle-truncate-lines nil))
+
+  (add-hook 'mu4e-view-mode-hook #'binarin/mu4e-view-mode-hook)
+
   (setq mu4e-view-show-images t)
 
+  (setq mu4e-headers-show-threads t)
+
   ;; use 'fancy' non-ascii characters in various places in mu4e
-  (setq mu4e-use-fancy-chars t)
+  (setq mu4e-use-fancy-chars nil)
 #+end_src
 
 *** Behaviour
@@ -811,9 +851,20 @@ As Sacha Chua put it, "Disk space is cheap. Save lots".
     :ID:       2721952e-54d4-423b-8b65-cbb580f4f2d4
     :END:
 
+    This is needed for mbsync compatibility:
+    #+begin_src emacs-lisp
+      (setf mu4e-change-filenames-when-moving t)
+    #+end_src
+
+    Don't save messages to Sent Messages, Gmail/IMAP takes care of this.
+    #+begin_src emacs-lisp
+      (setq mu4e-sent-messages-behavior 'delete)
+    #+end_src
+
+
 #+begin_src emacs-lisp
   ;; save attachment to my desktop (this can also be a function)
-  (setq mu4e-attachment-dir "~/Downloads")
+    (setq mu4e-attachment-dir "~/Downloads")
 
   (setf mu4e-hide-index-messages t)
   (setf mu4e-get-mail-command "true")
@@ -821,7 +872,13 @@ As Sacha Chua put it, "Disk space is cheap. Save lots".
   (setf mu4e-confirm-quit nil
         mu4e-headers-leave-behavior 'apply)
 
-  (eval-after-load "org" '(when (fboundp 'mu4e) (require 'org-mu4e)))
+  (defun binarin/lazy-load-org-mu4e ()
+    (autoload 'org-mu4e-open "org-mu4e")
+    (autoload 'org-mu4e-store-link "org-mu4e")
+    (org-add-link-type "mu4e" 'org-mu4e-open)
+    (add-hook 'org-store-link-functions 'org-mu4e-store-link))
+
+  (eval-after-load "org" '(when (fboundp 'mu4e) (binarin/lazy-load-org-mu4e)))
 
   (defhydra binarin/mu4e-hydra (:exit t :color red)
     "Some useful mu4e bookmarks"
@@ -831,21 +888,6 @@ As Sacha Chua put it, "Disk space is cheap. Save lots".
 
 
   ;; (global-set-key (kbd "<f9>") #'binarin/mu4e-hydra/body)
-
-
-  (defun binarin/set-from-address ()
-    "Set the From address based on the To address of the original."
-    (setq user-mail-address "binarin@yandex-team.ru")
-    (let ((msg mu4e-compose-parent-message)) ;; msg is shorter...
-      (when msg
-        (setq user-mail-address
-              (cond
-               ((mu4e-message-contact-field-matches msg :to "binarin@yandex-team.ru")
-                "binarin@yandex-team.ru")
-               (t "binarin@yandex-team.ru"))))))
-
-  (add-hook 'mu4e-compose-pre-hook #'binarin/set-from-address)
-
 #+end_src
 
 *** LDAP Contacts
@@ -888,16 +930,15 @@ As Sacha Chua put it, "Disk space is cheap. Save lots".
   (use-package circe
     :commands circe
     :config
-    (progn
-      (setf circe-network-options `(("Freenode"
-                                     :channels ("#erlang" "#erlounge" "#openstack-oslo" "#rabbitmq"))
-                                    ("Bitlbee"
-                                     :port 6667
-                                     :channels ("#erlang-talks")
-                                     :pass ,(funcall (plist-get (nth 0 (auth-source-search :host "127.0.0.1" :port 6667 :user "binarin")) :secret)))))
-      (setf circe-reduce-lurker-spam t)
-      (load "lui-logging" nil t)
-      (enable-lui-logging-globally)))
+    (setf circe-network-options `(("Freenode"
+                                   :channels ("#erlang" "#erlounge" "#openstack-oslo" "#rabbitmq"))
+                                  ("Bitlbee"
+                                   :port 6667
+                                   :channels ("#erlang-talks")
+                                   :pass ,(funcall (plist-get (nth 0 (auth-source-search :host "127.0.0.1" :port 6667 :user "binarin")) :secret)))))
+    (setf circe-reduce-lurker-spam t)
+    (load "lui-logging" nil t)
+    (enable-lui-logging-globally))
 
   (defun irc ()
     (interactive)

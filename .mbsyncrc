@@ -1,0 +1,244 @@
+SyncState *
+
+############################# binarin@gmail.com
+IMAPAccount binarin@gmail.com
+Host imap.gmail.com
+User binarin@gmail.com
+PassCmd "gpg2 -q --for-your-eyes-only --no-tty -d ~/.rc.d/10-desktop-secrets/binarin@gmail.com.gpg"
+CertificateFile /etc/ssl/certs/ca-certificates.crt
+SSLType IMAPS
+
+IMAPStore binarin@gmail.com-remote
+Account binarin@gmail.com
+
+MaildirStore binarin@gmail.com-local
+Path ~/.mail/binarin@gmail.com/
+Inbox ~/.mail/binarin@gmail.com/INBOX
+SubFolders Verbatim
+
+MaildirStore binarin@gmail.com-archive
+Path ~/.mail/binarin@gmail.com-archive/
+
+Channel binarin@gmail.com-archive
+Master ":binarin@gmail.com-remote:[Gmail]/All Mail"
+Slave ":binarin@gmail.com-archive:Archive"
+Create Slave
+SyncState *
+Expunge None
+Sync Push Flags
+
+Channel binarin@gmail.com-trash
+Master ":binarin@gmail.com-remote:[Gmail]/Trash"
+Slave ":binarin@gmail.com-local:Trash"
+Create Slave
+Sync All
+Expunge Both
+
+Channel binarin@gmail.com-drafts
+Master ":binarin@gmail.com-remote:[Gmail]/Drafts"
+Slave ":binarin@gmail.com-local:Drafts"
+Create Slave
+Sync All
+Expunge Both
+
+Channel binarin@gmail.com-sent
+Master ":binarin@gmail.com-remote:[Gmail]/Sent Mail"
+Slave ":binarin@gmail.com-local:Sent"
+Create Slave
+Sync All
+Expunge Both
+
+Channel binarin@gmail.com-inbox
+Master ":binarin@gmail.com-remote:INBOX"
+Slave ":binarin@gmail.com-local:INBOX"
+Create Slave
+Sync All
+Expunge Both
+
+Channel binarin@gmail.com-user-labels
+Master :binarin@gmail.com-remote:
+Slave :binarin@gmail.com-local:
+Create Slave
+Sync All
+Expunge Both
+Patterns "*" "!Drafts" "!Sent" "!Trash" "![Gmail]*" "!INBOX" "!Lists*" "!Cron*"
+
+Channel binarin@gmail.com-mailing-lists-and-notifications
+Master :binarin@gmail.com-remote:
+Slave :binarin@gmail.com-local:
+Create Slave
+Sync All
+Expunge Both
+Patterns "Lists*" "Cron*"
+MaxMessages 2000
+
+Group binarin@gmail.com
+Channel binarin@gmail.com-trash
+Channel binarin@gmail.com-inbox
+Channel binarin@gmail.com-drafts
+Channel binarin@gmail.com-sent
+Channel binarin@gmail.com-user-labels
+Channel binarin@gmail.com-mailing-lists-and-notifications
+Channel binarin@gmail.com-archive
+
+############################# binarin@binarin.ru
+IMAPAccount binarin@binarin.ru
+Host imap.gmail.com
+User binarin@binarin.ru
+PassCmd "gpg2 -q --for-your-eyes-only --no-tty -d ~/.rc.d/10-desktop-secrets/binarin@binarin.ru.gpg"
+CertificateFile /etc/ssl/certs/ca-certificates.crt
+SSLType IMAPS
+
+IMAPStore binarin@binarin.ru-remote
+Account binarin@binarin.ru
+
+MaildirStore binarin@binarin.ru-local
+Path ~/.mail/binarin@binarin.ru/
+Inbox ~/.mail/binarin@binarin.ru/INBOX
+SubFolders Verbatim
+
+MaildirStore binarin@binarin.ru-archive
+Path ~/.mail/binarin@binarin.ru-archive/
+
+Channel binarin@binarin.ru-archive
+Master ":binarin@binarin.ru-remote:[Gmail]/All Mail"
+Slave ":binarin@binarin.ru-archive:Archive"
+Create Slave
+SyncState *
+Expunge None
+Sync Push Flags
+
+Channel binarin@binarin.ru-trash
+Master ":binarin@binarin.ru-remote:[Gmail]/Trash"
+Slave ":binarin@binarin.ru-local:Trash"
+Create Slave
+Sync All
+Expunge Both
+
+Channel binarin@binarin.ru-drafts
+Master ":binarin@binarin.ru-remote:[Gmail]/Drafts"
+Slave ":binarin@binarin.ru-local:Drafts"
+Create Slave
+Sync All
+Expunge Both
+
+Channel binarin@binarin.ru-sent
+Master ":binarin@binarin.ru-remote:[Gmail]/Sent Mail"
+Slave ":binarin@binarin.ru-local:Sent"
+Create Slave
+Sync All
+Expunge Both
+
+Channel binarin@binarin.ru-inbox
+Master ":binarin@binarin.ru-remote:INBOX"
+Slave ":binarin@binarin.ru-local:INBOX"
+Create Slave
+Sync All
+Expunge Both
+
+Channel binarin@binarin.ru-user-labels
+Master :binarin@binarin.ru-remote:
+Slave :binarin@binarin.ru-local:
+Create Slave
+Sync All
+Expunge Both
+Patterns "*" "!Drafts" "!Sent" "!Trash" "![Gmail]*" "!INBOX" "!Lists*" "!Cron*"
+
+Channel binarin@binarin.ru-mailing-lists-and-notifications
+Master :binarin@binarin.ru-remote:
+Slave :binarin@binarin.ru-local:
+Create Slave
+Sync All
+Expunge Both
+Patterns "Lists*" "Cron*"
+MaxMessages 2000
+
+Group binarin@binarin.ru
+Channel binarin@binarin.ru-trash
+Channel binarin@binarin.ru-inbox
+Channel binarin@binarin.ru-drafts
+Channel binarin@binarin.ru-sent
+Channel binarin@binarin.ru-user-labels
+Channel binarin@binarin.ru-mailing-lists-and-notifications
+Channel binarin@binarin.ru-archive
+
+############################# alebedev@mirantis.com
+IMAPAccount alebedev@mirantis.com
+Host imap.gmail.com
+User alebedev@mirantis.com
+PassCmd "gpg2 -q --for-your-eyes-only --no-tty -d ~/.rc.d/10-desktop-secrets/alebedev@mirantis.com.gpg"
+CertificateFile /etc/ssl/certs/ca-certificates.crt
+SSLType IMAPS
+
+IMAPStore alebedev@mirantis.com-remote
+Account alebedev@mirantis.com
+
+MaildirStore alebedev@mirantis.com-local
+Path ~/.mail/alebedev@mirantis.com/
+Inbox ~/.mail/alebedev@mirantis.com/INBOX
+SubFolders Verbatim
+
+MaildirStore alebedev@mirantis.com-archive
+Path ~/.mail/alebedev@mirantis.com-archive/
+
+Channel alebedev@mirantis.com-archive
+Master ":alebedev@mirantis.com-remote:[Gmail]/All Mail"
+Slave ":alebedev@mirantis.com-archive:Archive"
+Create Slave
+SyncState *
+Expunge None
+Sync Push Flags
+
+Channel alebedev@mirantis.com-trash
+Master ":alebedev@mirantis.com-remote:[Gmail]/Trash"
+Slave ":alebedev@mirantis.com-local:Trash"
+Create Slave
+Sync All
+Expunge Both
+
+Channel alebedev@mirantis.com-drafts
+Master ":alebedev@mirantis.com-remote:[Gmail]/Drafts"
+Slave ":alebedev@mirantis.com-local:Drafts"
+Create Slave
+Sync All
+Expunge Both
+
+Channel alebedev@mirantis.com-sent
+Master ":alebedev@mirantis.com-remote:[Gmail]/Sent Mail"
+Slave ":alebedev@mirantis.com-local:Sent"
+Create Slave
+Sync All
+Expunge Both
+
+Channel alebedev@mirantis.com-inbox
+Master ":alebedev@mirantis.com-remote:INBOX"
+Slave ":alebedev@mirantis.com-local:INBOX"
+Create Slave
+Sync All
+Expunge Both
+
+Channel alebedev@mirantis.com-user-labels
+Master :alebedev@mirantis.com-remote:
+Slave :alebedev@mirantis.com-local:
+Create Slave
+Sync All
+Expunge Both
+Patterns "*" "!Drafts" "!Sent" "!Trash" "![Gmail]*" "!INBOX" "!Lists*" "!Cron*"
+
+Channel alebedev@mirantis.com-mailing-lists-and-notifications
+Master :alebedev@mirantis.com-remote:
+Slave :alebedev@mirantis.com-local:
+Create Slave
+Sync All
+Expunge Both
+Patterns "Lists*" "Cron*"
+MaxMessages 2000
+
+Group alebedev@mirantis.com
+Channel alebedev@mirantis.com-trash
+Channel alebedev@mirantis.com-inbox
+Channel alebedev@mirantis.com-drafts
+Channel alebedev@mirantis.com-sent
+Channel alebedev@mirantis.com-user-labels
+Channel alebedev@mirantis.com-mailing-lists-and-notifications
+Channel alebedev@mirantis.com-archive
