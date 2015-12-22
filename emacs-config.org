@@ -783,11 +783,6 @@ As Sacha Chua put it, "Disk space is cheap. Save lots".
       (defun binarin/gmail-archive-dir (email)
         (concat "/" email "-archive/Archive"))
 
-      (setf mu4e-maildir       "~/.mail/"
-            mu4e-sent-folder   (binarin/gmail-maildir (car binarin/gmail-accounts) "Sent")
-            mu4e-drafts-folder (binarin/gmail-maildir (car binarin/gmail-accounts) "Drafts")
-            mu4e-trash-folder  (binarin/gmail-maildir (car binarin/gmail-accounts) "Trash"))
-
       (setf message-send-mail-function 'smtpmail-send-it
             smtpmail-default-smtp-server "smtp.gmail.com"
             smtpmail-smtp-server "smtp.gmail.com"
@@ -800,7 +795,7 @@ As Sacha Chua put it, "Disk space is cheap. Save lots".
             :match-func (lambda (msg)
                           (when msg
                             (mu4e-message-contact-field-matches msg :to "binarin@gmail.com")))
-            :vars '((mail-reply-to . "binarin@gmail.com")
+            :vars `((mail-reply-to . "binarin@gmail.com")
                     (user-mail-address . "binarin@gmail.com")
                     (smtpmail-smtp-user . "binarin@gmail.com")))
           ,(make-mu4e-context
@@ -816,7 +811,7 @@ As Sacha Chua put it, "Disk space is cheap. Save lots".
             :match-func (lambda (msg)
                           (when msg
                             (mu4e-message-contact-field-matches msg :to ".*@mirantis.com")))
-            :vars '((mail-reply-to . "alebedev@mirantis.com")
+            :vars `((mail-reply-to . "alebedev@mirantis.com")
                     (user-mail-address . "alebedev@mirantis.com")
                     (smtpmail-smtp-user . "alebedev@mirantis.com")))))
 
@@ -830,9 +825,20 @@ As Sacha Chua put it, "Disk space is cheap. Save lots".
           (message "%s" it)
           (-first (lambda (account) (mu4e-message-contact-field-matches it :to account)) binarin/gmail-accounts)))
 
-      (setf mu4e-refile-folder
-            (lambda (msg)
-              (binarin/gmail-archive-dir (cadr (s-match "^/\\([^/]+?\\)\\(-archive\\)?/" (mu4e-message-field msg :maildir))))))
+      (defun binarin/mu4e-maildir-to-account (maildir)
+        (cadr (s-match "^/\\([^/]+?\\)\\(-archive\\)?/" maildir)))
+
+      (defun binarin/mu4e-sibling-folder (maildir folder)
+        (binarin/gmail-maildir (binarin/mu4e-maildir-to-account maildir) folder))
+
+      (defun binarin/mu4e-sibling-archive-folder (maildir)
+        (binarin/gmail-archive-dir (binarin/mu4e-maildir-to-account maildir)))
+
+      (setf mu4e-maildir       "~/.mail/"
+            mu4e-refile-folder #'(lambda (msg) (binarin/mu4e-sibling-archive-folder (mu4e-message-field msg :maildir)))
+            mu4e-sent-folder   #'(lambda (msg) (binarin/mu4e-sibling-folder (mu4e-message-field msg :maildir) "Sent"))
+            mu4e-drafts-folder #'(lambda (msg) (binarin/mu4e-sibling-folder (mu4e-message-field msg :maildir) "Drafts"))
+            mu4e-trash-folder  #'(lambda (msg) (binarin/mu4e-sibling-folder (mu4e-message-field msg :maildir) "Trash")))
     #+end_src
 
 *** Appearance
