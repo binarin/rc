@@ -496,7 +496,7 @@ Soon to be removed.
 
      For batch mode we are forcing minimal width")
 
-     (setq fill-column (- binarin/minimal-screen-width 10))
+     (set-default 'fill-column (- binarin/minimal-screen-width 10))
    #+end_src
 
 ** Theme
@@ -1780,8 +1780,7 @@ Every file in org-agenda-files should be present in every perspective:
    :END:
 #+begin_src emacs-lisp
   (defun binarin/erlang-mode-hook ()
-    (local-set-key (kbd "M-*") #'edts-find-source-unwind)
-    (setf fill-column 111))
+    (local-set-key (kbd "M-*") #'edts-find-source-unwind))
 
   (use-package erlang
     :ensure t
@@ -1952,7 +1951,6 @@ cabal install ghci-ng/
                                        ("<=" . ?≤)))
         ;; ("<>" . ?≠)  ("=>" . ?⇒)
         (prettify-symbols-mode t)
-        (setf fill-column 111)
         (local-set-key (read-kbd-macro "C-c C-c") 'hs-toggle-hiding)
         (local-set-key (read-kbd-macro "M-.") 'helm-etags-select)
         (setf tags-file-name (expand-file-name "TAGS" (projectile-project-root))
