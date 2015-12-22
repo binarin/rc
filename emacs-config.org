@@ -523,11 +523,17 @@ Soon to be removed.
       (set-fontset-font "fontset-default" nil (font-spec :size 48 :name "Symbola") frame 'append)))
   (my-fix-emojis)
   (add-hook 'after-make-frame-functions 'my-fix-emojis)
-
 #+end_src
 
 
 
+
+** Word wrapping
+   #+begin_src emacs-lisp
+     (use-package visual-fill-column
+       :ensure t
+       :commands visual-fill-column-mode)
+   #+end_src
 
 * Behaviour
   :PROPERTIES:
@@ -753,10 +759,12 @@ As Sacha Chua put it, "Disk space is cheap. Save lots".
 
         :init
         (eval-after-load "mu4e" '(mu4e-maildirs-extension))
-
         :config
         (setf mu4e-maildirs-extension-count-command-format
+
               (replace-regexp-in-string "^mu" mu4e-mu-binary mu4e-maildirs-extension-count-command-format))
+
+
         (setf mu4e-maildirs-extension-custom-list (-remove #'(lambda (x) (or (s-contains? "[Gmail]" x)
                                                                              (s-contains? "-archive" x)
                                                                              (s-contains? "Trash" x))) (mu4e-get-maildirs)))
@@ -834,7 +842,8 @@ As Sacha Chua put it, "Disk space is cheap. Save lots".
 
 #+begin_src emacs-lisp
   (defun binarin/mu4e-view-mode-hook ()
-    (toggle-truncate-lines nil))
+    (visual-line-mode t)
+    (visual-fill-column-mode t))
 
   (add-hook 'mu4e-view-mode-hook #'binarin/mu4e-view-mode-hook)
 
@@ -844,6 +853,12 @@ As Sacha Chua put it, "Disk space is cheap. Save lots".
 
   ;; use 'fancy' non-ascii characters in various places in mu4e
   (setq mu4e-use-fancy-chars nil)
+
+  (setf mu4e-headers-fields '((:human-date . 12)
+                              (:flags . 6)
+                              (:mailing-list . 10)
+                              (:from . 22)
+                              (:thread-subject)))
 #+end_src
 
 *** Behaviour
