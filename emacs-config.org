@@ -789,31 +789,19 @@ As Sacha Chua put it, "Disk space is cheap. Save lots".
             smtpmail-smtp-service 465
             smtpmail-stream-type 'ssl)
 
+      (defun binarin/make-maildir-mu4e-context (account)
+        (make-mu4e-context
+         :name account
+         :match-func #'(lambda (msg)
+                         (when msg
+                           (s-equals? account (binarin/mu4e-maildir-to-account
+                                               (mu4e-message-field msg :maildir)))))
+         :vars `((mail-reply-to . ,account)
+                 (user-mail-address . ,account)
+                 (smtpmail-smtp-user . ,account))))
+
       (defun binarin/make-mu4e-contexts ()
-        `(,(make-mu4e-context
-            :name "binarin@gmail.com"
-            :match-func (lambda (msg)
-                          (when msg
-                            (mu4e-message-contact-field-matches msg :to "binarin@gmail.com")))
-            :vars `((mail-reply-to . "binarin@gmail.com")
-                    (user-mail-address . "binarin@gmail.com")
-                    (smtpmail-smtp-user . "binarin@gmail.com")))
-          ,(make-mu4e-context
-            :name "binarin@binarin.ru"
-            :match-func (lambda (msg)
-                          (when msg
-                            (mu4e-message-contact-field-matches msg :to ".*@binarin.ru")))
-            :vars '((mail-reply-to . "binarin@binarin.ru")
-                    (user-mail-address . "binarin@binarin.ru")
-                    (smtpmail-smtp-user . "binarin@binarin.ru")))
-          ,(make-mu4e-context
-            :name "Mirantis"
-            :match-func (lambda (msg)
-                          (when msg
-                            (mu4e-message-contact-field-matches msg :to ".*@mirantis.com")))
-            :vars `((mail-reply-to . "alebedev@mirantis.com")
-                    (user-mail-address . "alebedev@mirantis.com")
-                    (smtpmail-smtp-user . "alebedev@mirantis.com")))))
+        (-map 'binarin/make-maildir-mu4e-context binarin/gmail-accounts))
 
       (eval-after-load "mu4e" '(setf mu4e-contexts (binarin/make-mu4e-contexts)))
 
