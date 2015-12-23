@@ -17,22 +17,20 @@ Inbox ~/.mail/binarin@gmail.com/INBOX
 SubFolders Verbatim
 
 MaildirStore binarin@gmail.com-archive
-Path ~/.mail/binarin@gmail.com-archive/
+Path ~/.mail/archive-binarin@gmail.com/
 
 Channel binarin@gmail.com-archive
 Master ":binarin@gmail.com-remote:[Gmail]/All Mail"
 Slave ":binarin@gmail.com-archive:Archive"
 Create Slave
 SyncState *
-Expunge None
 Sync Push Flags
 
 Channel binarin@gmail.com-trash
 Master ":binarin@gmail.com-remote:[Gmail]/Trash"
-Slave ":binarin@gmail.com-local:Trash"
+Slave ":binarin@gmail.com-archive:Trash"
 Create Slave
 Sync All
-Expunge Both
 
 Channel binarin@gmail.com-drafts
 Master ":binarin@gmail.com-remote:[Gmail]/Drafts"
@@ -60,17 +58,17 @@ Master :binarin@gmail.com-remote:
 Slave :binarin@gmail.com-local:
 Create Slave
 Sync All
-Expunge Both
 Patterns "*" "!Drafts" "!Sent" "!Trash" "![Gmail]*" "!INBOX" "!Lists*" "!Cron*"
+Expunge Both
 
 Channel binarin@gmail.com-mailing-lists-and-notifications
 Master :binarin@gmail.com-remote:
 Slave :binarin@gmail.com-local:
 Create Slave
 Sync All
-Expunge Both
 Patterns "Lists*" "Cron*"
 MaxMessages 2000
+Expunge Both
 
 Group binarin@gmail.com
 Channel binarin@gmail.com-trash
@@ -98,22 +96,20 @@ Inbox ~/.mail/binarin@binarin.ru/INBOX
 SubFolders Verbatim
 
 MaildirStore binarin@binarin.ru-archive
-Path ~/.mail/binarin@binarin.ru-archive/
+Path ~/.mail/archive-binarin@binarin.ru/
 
 Channel binarin@binarin.ru-archive
 Master ":binarin@binarin.ru-remote:[Gmail]/All Mail"
 Slave ":binarin@binarin.ru-archive:Archive"
 Create Slave
 SyncState *
-Expunge None
 Sync Push Flags
 
 Channel binarin@binarin.ru-trash
 Master ":binarin@binarin.ru-remote:[Gmail]/Trash"
-Slave ":binarin@binarin.ru-local:Trash"
+Slave ":binarin@binarin.ru-archive:Trash"
 Create Slave
 Sync All
-Expunge Both
 
 Channel binarin@binarin.ru-drafts
 Master ":binarin@binarin.ru-remote:[Gmail]/Drafts"
@@ -141,17 +137,17 @@ Master :binarin@binarin.ru-remote:
 Slave :binarin@binarin.ru-local:
 Create Slave
 Sync All
-Expunge Both
 Patterns "*" "!Drafts" "!Sent" "!Trash" "![Gmail]*" "!INBOX" "!Lists*" "!Cron*"
+Expunge Both
 
 Channel binarin@binarin.ru-mailing-lists-and-notifications
 Master :binarin@binarin.ru-remote:
 Slave :binarin@binarin.ru-local:
 Create Slave
 Sync All
-Expunge Both
 Patterns "Lists*" "Cron*"
 MaxMessages 2000
+Expunge Both
 
 Group binarin@binarin.ru
 Channel binarin@binarin.ru-trash
@@ -179,22 +175,20 @@ Inbox ~/.mail/alebedev@mirantis.com/INBOX
 SubFolders Verbatim
 
 MaildirStore alebedev@mirantis.com-archive
-Path ~/.mail/alebedev@mirantis.com-archive/
+Path ~/.mail/archive-alebedev@mirantis.com/
 
 Channel alebedev@mirantis.com-archive
 Master ":alebedev@mirantis.com-remote:[Gmail]/All Mail"
 Slave ":alebedev@mirantis.com-archive:Archive"
 Create Slave
 SyncState *
-Expunge None
 Sync Push Flags
 
 Channel alebedev@mirantis.com-trash
 Master ":alebedev@mirantis.com-remote:[Gmail]/Trash"
-Slave ":alebedev@mirantis.com-local:Trash"
+Slave ":alebedev@mirantis.com-archive:Trash"
 Create Slave
 Sync All
-Expunge Both
 
 Channel alebedev@mirantis.com-drafts
 Master ":alebedev@mirantis.com-remote:[Gmail]/Drafts"
@@ -222,17 +216,17 @@ Master :alebedev@mirantis.com-remote:
 Slave :alebedev@mirantis.com-local:
 Create Slave
 Sync All
-Expunge Both
 Patterns "*" "!Drafts" "!Sent" "!Trash" "![Gmail]*" "!INBOX" "!Lists*" "!Cron*"
+Expunge Both
 
 Channel alebedev@mirantis.com-mailing-lists-and-notifications
 Master :alebedev@mirantis.com-remote:
 Slave :alebedev@mirantis.com-local:
 Create Slave
 Sync All
-Expunge Both
 Patterns "Lists*" "Cron*"
 MaxMessages 2000
+Expunge Both
 
 Group alebedev@mirantis.com
 Channel alebedev@mirantis.com-trash

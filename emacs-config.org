@@ -766,7 +766,7 @@ As Sacha Chua put it, "Disk space is cheap. Save lots".
 
 
         (setf mu4e-maildirs-extension-custom-list (-remove #'(lambda (x) (or (s-contains? "[Gmail]" x)
-                                                                             (s-contains? "-archive" x)
+                                                                             (s-contains? "archive-" x)
                                                                              (s-contains? "Trash" x))) (mu4e-get-maildirs)))
         (setf mu4e-maildirs-extension-insert-before-str "\n  Basics"))
     #+end_src
@@ -780,8 +780,8 @@ As Sacha Chua put it, "Disk space is cheap. Save lots".
       (defun binarin/gmail-maildir (email dir)
         (concat "/" email "/" dir))
 
-      (defun binarin/gmail-archive-dir (email)
-        (concat "/" email "-archive/Archive"))
+      (defun binarin/gmail-archive-dir (email folder)
+        (concat "/archive-" email "/" folder))
 
       (setf message-send-mail-function 'smtpmail-send-it
             smtpmail-default-smtp-server "smtp.gmail.com"
@@ -814,19 +814,19 @@ As Sacha Chua put it, "Disk space is cheap. Save lots".
           (-first (lambda (account) (mu4e-message-contact-field-matches it :to account)) binarin/gmail-accounts)))
 
       (defun binarin/mu4e-maildir-to-account (maildir)
-        (cadr (s-match "^/\\([^/]+?\\)\\(-archive\\)?/" maildir)))
+        (caddr (s-match "^/\\(archive-\\)?\\([^/]+?\\)/" maildir)))
 
       (defun binarin/mu4e-sibling-folder (maildir folder)
         (binarin/gmail-maildir (binarin/mu4e-maildir-to-account maildir) folder))
 
-      (defun binarin/mu4e-sibling-archive-folder (maildir)
-        (binarin/gmail-archive-dir (binarin/mu4e-maildir-to-account maildir)))
+      (defun binarin/mu4e-sibling-archive-folder (maildir folder)
+        (binarin/gmail-archive-dir (binarin/mu4e-maildir-to-account maildir) folder))
 
       (setf mu4e-maildir       "~/.mail/"
-            mu4e-refile-folder #'(lambda (msg) (binarin/mu4e-sibling-archive-folder (mu4e-message-field msg :maildir)))
+            mu4e-refile-folder #'(lambda (msg) (binarin/mu4e-sibling-archive-folder (mu4e-message-field msg :maildir) "Archive"))
             mu4e-sent-folder   #'(lambda (msg) (binarin/mu4e-sibling-folder (mu4e-message-field msg :maildir) "Sent"))
             mu4e-drafts-folder #'(lambda (msg) (binarin/mu4e-sibling-folder (mu4e-message-field msg :maildir) "Drafts"))
-            mu4e-trash-folder  #'(lambda (msg) (binarin/mu4e-sibling-folder (mu4e-message-field msg :maildir) "Trash")))
+            mu4e-trash-folder  #'(lambda (msg) (binarin/mu4e-sibling-archive-folder (mu4e-message-field msg :maildir) "Trash")))
     #+end_src
 
 *** Appearance
