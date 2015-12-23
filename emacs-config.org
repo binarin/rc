@@ -835,7 +835,11 @@ As Sacha Chua put it, "Disk space is cheap. Save lots".
     :END:
 
 #+begin_src emacs-lisp
+  (autoload 'mu4e-shr2text "mu4e-contrib")
+  (setq mu4e-html2text-command 'mu4e-shr2text)
+
   (defun binarin/mu4e-view-mode-hook ()
+    (yas-minor-mode nil)
     (visual-line-mode t)
     (visual-fill-column-mode t))
 
@@ -868,6 +872,11 @@ As Sacha Chua put it, "Disk space is cheap. Save lots".
     Don't save messages to Sent Messages, Gmail/IMAP takes care of this.
     #+begin_src emacs-lisp
       (setq mu4e-sent-messages-behavior 'delete)
+    #+end_src
+
+    Use helm for completion
+    #+begin_src emacs-lisp
+      (eval-after-load "mu4e" '(fset 'mu4e-read-option 'helm-comp-read))
     #+end_src
 
 
