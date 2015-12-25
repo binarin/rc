@@ -876,7 +876,16 @@ As Sacha Chua put it, "Disk space is cheap. Save lots".
 
     Use helm for completion
     #+begin_src emacs-lisp
-      (eval-after-load "mu4e" '(fset 'mu4e-read-option 'helm-comp-read))
+      (defun binarin/mu4e-read-option (prompt options)
+        (helm-comp-read prompt (-map (lambda (option)
+                                       (cons (replace-regexp-in-string "^\\(.\\)" "[\\1]" (car option))
+                                             (cdr option)))
+                                     options)
+                        ;; :sort #'(lambda (a b)
+                        ;;           (string-lessp (car a) (car b)))
+                        ))
+
+      (eval-after-load "mu4e" '(fset 'mu4e-read-option 'binarin/mu4e-read-option))
     #+end_src
 
 
