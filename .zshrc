@@ -9,9 +9,6 @@ ZSH_THEME="nebirhos"
 # Comment this out to disable weekly auto-update checks
 DISABLE_AUTO_UPDATE="true"
 
-# Uncomment following line if you want to disable colors in ls
-# DISABLE_LS_COLORS="true"
-
 # Uncomment following line if you want to disable autosetting terminal title.
 DISABLE_AUTO_TITLE="true"
 
@@ -29,7 +26,6 @@ plugins=(
     cpanm
     deb
     debian
-    emacs
     git
     perl
     pip
@@ -51,12 +47,6 @@ else
     fi
 fi
 
-if [[ -d "$HOME/.pyenv" ]]; then
-    export PYENV_ROOT="$HOME/.pyenv"
-    $PYENV_ROOT/bin
-    eval "$(pyenv init -)"
-fi
-
 BIN_DIRS=(
 $HOME/bin
 $HOME/.local/bin
@@ -74,10 +64,7 @@ for ((i=1; i<= $#BIN_DIRS; i++)) do
     done
 done
 
-alias ack=ack-grep
-alias a=ack-grep
 alias gl='git log  --pretty="%Cgreen%h %C(146)%an%Creset %s %Cred%ar"'
-alias v=xdg-open
 alias vi='emacsclient -nw'
 alias vim='emacsclient -nw'
 
@@ -126,25 +113,6 @@ add-zsh-hook precmd log_commands_precmd
 add-zsh-hook precmd notifyosd-precmd
 add-zsh-hook preexec notifyosd-preexec
 
-export ANDROID_SDK_HOME=~/apps/android-sdk-linux
-export ANDROID_HOME=~/apps/android-sdk-linux
-
-if [[ -f ~/perl5/perlbrew/etc/bashrc ]] ; then
-    source ~/perl5/perlbrew/etc/bashrc
-fi
-
-if [[ -f /etc/direct/direct_shell_rc ]] ; then
-    source /etc/direct/direct_shell_rc
-    alias m=/usr/local/bin/direct-sql
-    alias ppc='/usr/local/bin/direct-sql devtest:ppc:all'
-    alias pp1='/usr/local/bin/direct-sql devtest:ppc:1'
-    alias pp2='/usr/local/bin/direct-sql devtest:ppc:2'
-    alias pp3='/usr/local/bin/direct-sql devtest:ppc:3'
-    alias pp4='/usr/local/bin/direct-sql devtest:ppc:4'
-    alias pp5='/usr/local/bin/direct-sql devtest:ppc:5'
-    alias pp6='/usr/local/bin/direct-sql devtest:ppc:6'
-fi
-
 for candidate in emacsclient vim vi; do
     if [[ ! -z $(which $candidate) ]]; then
         export VISUAL=$candidate
@@ -154,7 +122,9 @@ for candidate in emacsclient vim vi; do
 done
 
 export DEBFULLNAME="Alexey Lebedeff"
-export DEBEMAIL="binarin@yandex-team.ru"
+export DEBEMAIL="binarin@binarin.ru"
 alias dch='dch --vendor=debian'
 
-if [ -e /home/binarin/.nix-profile/etc/profile.d/nix.sh ]; then . /home/binarin/.nix-profile/etc/profile.d/nix.sh; fi
+function sudoedit() {
+    /usr/bin/emacsclient -nw /sudo:root@localhost:$1
+}

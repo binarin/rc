@@ -373,33 +373,6 @@ Soon to be removed.
 
 
 #+end_src
-** puppet
-   :PROPERTIES:
-   :ID:       365c590f-726a-427a-9f30-6036d0b3c296
-   :END:
-#+begin_src emacs-lisp
-  (req-package puppet-mode
-    :mode "\\.pp\\'"
-    :config )
-
-  (add-hook 'puppet-mode-hook #'binarin/make-buffer-whitespace-aware)
-
-  (defun puppet-class-name ()
-    (let* ((path (reverse (split-string (buffer-file-name) "/")))
-           (filename (file-name-base (buffer-file-name))))
-      (cond
-       ((and (string= "profile" (second path))
-             (string= "manifests" (third path)))
-        (message "%s" (concat (fourth path) "::profile::" filename))))))
-
-  (defun puppet-auto-insert ()
-    (let ((class (puppet-class-name)))
-      (when class
-        (insert "class " class " {\n\n}\n"))))
-
-  (define-auto-insert 'puppet-mode 'puppet-auto-insert)
-
-#+end_src
 ** keys
    :PROPERTIES:
    :ID:       717b7450-5e01-4335-be69-a25d3a39006c
@@ -752,6 +725,30 @@ As Sacha Chua put it, "Disk space is cheap. Save lots".
     #+end_src
 
 *** Unread count extension
+
+    #+begin_src scheme
+      (use-modules (mu) (mu stats) (mu plot))
+      (mu:initialize)
+      (let ((total-count (make-hash-table))
+            (unread-count (make-hash-table)))
+        (mu:for-each-message
+         (lambda (msg)
+           (let ((maildir (mu:maildir msg)))
+             (hash-set! total-count maildir (1+ (hash-ref total-count maildir 0)))
+             (hash-set! unread-count maildir (+ (if (member 'mu:flag:seen (mu:flags msg)) 0 1)
+                                                (hash-ref unread-count maildir 0))))))
+        (hash-for-each
+         (lambda (maildir total-num)
+           (display maildir)
+           (display "\t")
+           (display (hash-ref unread-count maildir 0))
+           (display "\t")
+           (display total-num)
+           (display "\n"))
+         total-count)
+        '())
+    #+end_src
+
     #+begin_src emacs-lisp
       (use-package mu4e-maildirs-extension
         :ensure t
@@ -761,9 +758,7 @@ As Sacha Chua put it, "Disk space is cheap. Save lots".
         (eval-after-load "mu4e" '(mu4e-maildirs-extension))
         :config
         (setf mu4e-maildirs-extension-count-command-format
-
               (replace-regexp-in-string "^mu" mu4e-mu-binary mu4e-maildirs-extension-count-command-format))
-
 
         (setf mu4e-maildirs-extension-custom-list (-remove #'(lambda (x) (or (s-contains? "[Gmail]" x)
                                                                              (s-contains? "archive-" x)
@@ -781,6 +776,8 @@ As Sacha Chua put it, "Disk space is cheap. Save lots".
         (concat "/" email "/" dir))
 
       (defun binarin/gmail-archive-dir (email folder)
+        "\"archive-\" is prefix because of way mu handles wildcards
+        like \"/dir/\*\", which is actually interpreted as \"/dir*\""
         (concat "/archive-" email "/" folder))
 
       (setf message-send-mail-function 'smtpmail-send-it
@@ -804,14 +801,6 @@ As Sacha Chua put it, "Disk space is cheap. Save lots".
         (-map 'binarin/make-maildir-mu4e-context binarin/gmail-accounts))
 
       (eval-after-load "mu4e" '(setf mu4e-contexts (binarin/make-mu4e-contexts)))
-
-      (defun binarin/mu4e-choose-account ()
-        (helm-comp-read "Select an account: " binarin/gmail-accounts :must-match t))
-
-      (defun binarin/mu4e-find-account-from-parent ()
-        (awhen mu4e-compose-parent-message
-          (message "%s" it)
-          (-first (lambda (account) (mu4e-message-contact-field-matches it :to account)) binarin/gmail-accounts)))
 
       (defun binarin/mu4e-maildir-to-account (maildir)
         (caddr (s-match "^/\\(archive-\\)?\\([^/]+?\\)/" maildir)))
@@ -933,19 +922,6 @@ As Sacha Chua put it, "Disk space is cheap. Save lots".
         eudc-inline-query-format '((email) (name))
         eudc-inline-expansion-format '("%s" email))
 #+end_src
-** Jabber
-   :PROPERTIES:
-   :ID:       fa9353a0-ea3d-4b28-bdec-2bb828ad192a
-   :END:
-#+begin_src emacs-lisp
-  ;; (req-package jabber
-  ;;   :init
-  ;;   (progn
-  ;;     (setf jabber-account-list '(("binarin@yandex-team.ru" (:connection-type . starttls))))
-  ;;     (setf jabber-auto-reconnect t)
-  ;;     (define-key ctl-x-map (kbd "C-j") jabber-global-keymap)))
-#+end_src
-
 ** IRC
    :PROPERTIES:
    :ID:       992767f0-1151-410a-81d8-80c60bf73548
@@ -1722,6 +1698,33 @@ Every file in org-agenda-files should be present in every perspective:
   (req-package multiple-cursors)
 #+end_src
 * Programming
+** puppet
+   :PROPERTIES:
+   :ID:       365c590f-726a-427a-9f30-6036d0b3c296
+   :END:
+#+begin_src emacs-lisp
+  (req-package puppet-mode
+    :mode "\\.pp\\'"
+    :config )
+
+  (add-hook 'puppet-mode-hook #'binarin/make-buffer-whitespace-aware)
+
+  (defun puppet-class-name ()
+    (let* ((path (reverse (split-string (buffer-file-name) "/")))
+           (filename (file-name-base (buffer-file-name))))
+      (cond
+       ((and (string= "profile" (second path))
+             (string= "manifests" (third path)))
+        (message "%s" (concat (fourth path) "::profile::" filename))))))
+
+  (defun puppet-auto-insert ()
+    (let ((class (puppet-class-name)))
+      (when class
+        (insert "class " class " {\n\n}\n"))))
+
+  (define-auto-insert 'puppet-mode 'puppet-auto-insert)
+
+#+end_src
 ** C
    #+begin_src emacs-lisp
      (defun binarin/c-mode-hook ()
@@ -2341,7 +2344,7 @@ cabal install ghci-ng/
               (setf helm-ack-base-command "ack-grep -H --nocolor --nogroup")))
 #+end_example
 
-** Firestarter - running commands on save
+** firestarter - running commands on save
    :PROPERTIES:
    :ID:       f79d0e04-bfd5-4259-aefa-9158ac5cdeeb
    :END:
