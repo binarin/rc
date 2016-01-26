@@ -1171,10 +1171,10 @@ MimeType=x-scheme-handler/org-protocol;
                                 `((agenda "")
                                   (tags-todo ,(filter-for-context tag)
                                              ((org-agenda-todo-ignore-scheduled t)
-                                              (org-agenda-dim-blocked-tasks 'invisible)
                                               (org-agenda-todo-ignore-deadlines t)
                                               (org-agenda-sorting-strategy '(priority-down user-defined-down category-up))
-                                              (org-agenda-cmp-user-defined ',(agenda-sorter-tag-first tag)))))))))
+                                              (org-agenda-cmp-user-defined ',(agenda-sorter-tag-first tag)))))
+                                `((org-agenda-dim-blocked-tasks 'invisible))))))
 
   (setq org-agenda-tags-todo-honor-ignore-options t)
 
