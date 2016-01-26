@@ -80,4 +80,5 @@
  '(pe/file-face ((t (:inherit default :height 0.5))))
  '(shm-current-face ((t (:background "#555555"))))
  '(shm-quarantine-face ((t (:inherit font-lock-error))))
- '(whitespace-line ((t (:background "dim gray" :foreground "#dc8cc3")))))
+ '(whitespace-line ((t (:background "dim gray" :foreground "#dc8cc3"))))
+ '(woman-bold ((t (:inherit bold :foreground "orange")))))
