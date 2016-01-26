@@ -2081,6 +2081,22 @@ cabal install ghci-ng/
 #+end_src
 
 * Things to try/to do
+** [[https://github.com/bbatsov/crux/blob/master/crux.el][GitHub · Where software is built]]
+   :PROPERTIES:
+   :ID:       1a6641f0-ec33-43f9-aed4-32844b49be77
+   :END:
+ [2015-12-30 ср 18:49]
+
+
+
+** [[https://github.com/bbatsov/super-save][bbatsov/super-save]]
+   :PROPERTIES:
+   :ID:       c6f3cd1f-a5b7-43b0-980d-9cf12cc20dfb
+   :END:
+ [2015-12-27 вс 12:37]
+
+
+
 ** TODO___ [[https://www.reddit.com/r/emacs/comments/36cq0k/corral_a_fast_intuitive_way_to_wrap_parentheses/][Corral - a fast, intuitive way to wrap parentheses and other delimiters around text]]
    :PROPERTIES:
    :ID:       90a5e876-1a4f-47dd-9acd-6b1e87e559f9
