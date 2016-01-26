@@ -1417,7 +1417,7 @@ Access to predefined actions from everywhere.
 
 
 #+begin_src emacs-lisp
-  (defvar binarin/priority-todos-for-sorting '("STARTED"))
+  (defvar binarin/priority-todos-for-sorting '("STARTED" "WAITING"))
   (defun binarin/todo-to-started-first-int ()
     "Default todo order is modified by giving more priority to
   todo's from binarin/priority-todos-for-sorting and entries
