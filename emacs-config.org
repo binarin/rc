@@ -877,6 +877,17 @@ As Sacha Chua put it, "Disk space is cheap. Save lots".
       (eval-after-load "mu4e" '(fset 'mu4e-read-option 'binarin/mu4e-read-option))
     #+end_src
 
+    Mark messages as read while refiling
+    #+begin_src emacs-lisp
+      (eval-after-load "mu4e"
+        #'(lambda ()
+            (setf (cdr (assoc 'refile mu4e-marks))
+                  '(:char ("r" . "▶")
+                          :prompt "refile"
+                          :dyn-target (lambda (target msg) (mu4e-get-refile-folder msg))
+                          :action (lambda (docid msg target)
+                                    (mu4e~proc-move docid (mu4e~mark-check-target target) "+S-u-N"))))))
+    #+end_src
 
 #+begin_src emacs-lisp
   ;; save attachment to my desktop (this can also be a function)
