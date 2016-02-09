@@ -1,0 +1,35 @@
+# -*- mode: snippet; require-final-newline: nil -*-
+# name: minimal gen_fsm
+# key: gen_fsm
+# binding: direct-keybinding
+# --
+-module($1).
+-behaviour(gen_fsm).
+
+-export([terminate/3, init/1, handle_sync_event/4, handle_info/3, handle_event/3, code_change/4]).
+
+-export([start_link/0]).
+
+start_link() ->
+    gen_fsm:start_link(?MODULE, [], []).
+
+init([]) ->
+    StateName = initial,
+    StateData = [],
+    {ok, StateName, StateData}.
+
+handle_sync_event(_Event, _From, StateName, StateData) ->
+    Reply = ok,
+    {next_state, Reply, StateName, StateData}.
+
+handle_info(_Info, StateName, StateData) ->
+    {next_state, StateName, StateData}.
+
+handle_event(_Event, StateName, StateData) ->
+    {next_state, StateName, StateData}.
+
+terminate(_Reason, _StateName, _StateData) ->
+    ok.
+
+code_change(_OldVsn, StateName, StateData, _Extra) ->
+    {ok, StateName, StateData}.
