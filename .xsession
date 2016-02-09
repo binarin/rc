@@ -1,8 +1,11 @@
 #!/bin/zsh
 . ~/.zshrc
 
-dropbox start || true
-insync start || true
+
+which dropbox > /dev/null && dropbox start
+which insync > /dev/null && insync start
+which yandex-disc > /dev/null && yandex-disc start
+
 which kupfer > /dev/null && kupfer --no-splash &
 
 which ssh-agent > /dev/null && has_ssh_agent_binary=1
