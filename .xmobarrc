@@ -1,4 +1,4 @@
-Config { font = "xft:M+ 1mn:pixelsize=14,style=Regular"
+Config { font = "xft:M+ 1mn:size=8,style=Regular"
        , bgColor = "black"
        , fgColor = "grey"
        , position = TopSize L 100 24

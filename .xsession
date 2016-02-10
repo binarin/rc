@@ -1,6 +1,14 @@
 #!/bin/zsh
 . ~/.zshrc
+HOST=$(hostname)
+if [[ $HOST == demandred ]]; then
+    xrandr --output DP1 --auto --primary --left-of HDMI2 --output HDMI2 --auto --rotate left --dpi 160
+fi
 
+CUSTOM_XRESOURCES_FILE="~/.rc/.Xresources.$HOST"
+if [[ -f $CUSTOM_XRESOURCES_FILE ]]; then
+    xrdb -merge $CUSTOM_XRESOURCES_FILE
+fi
 
 which dropbox > /dev/null && dropbox start
 which insync > /dev/null && insync start

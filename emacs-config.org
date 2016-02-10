@@ -508,6 +508,19 @@ Soon to be removed.
        :commands visual-fill-column-mode)
    #+end_src
 
+** Zooming
+   #+begin_src emacs-lisp
+     (use-package zoom-frm
+       :ensure t
+       :bind
+       ("C-x C-+" . zoom-in/out)
+       ("C-x C--" . zoom-in/out)
+       ("C-x C-=" . zoom-in/out)
+       ("C-x C-0" . zoom-in/out)
+       :config
+       (setf frame-zoom-font-difference 2))
+   #+end_src
+
 * Behaviour
   :PROPERTIES:
   :ID:       600cdb84-b762-4fcd-9aac-d868472724dd
