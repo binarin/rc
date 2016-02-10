@@ -908,8 +908,7 @@ As Sacha Chua put it, "Disk space is cheap. Save lots".
         (setq mu4e-attachment-dir "~/Downloads")
 
       (setf mu4e-hide-index-messages t)
-      (setf mu4e-get-mail-command "true")
-      (setf mu4e-update-interval 60)
+      (setf mu4e-get-mail-command (s-concat "parallel --no-notice mbsync ::: " (s-join " " binarin/gmail-accounts)))
       (setf mu4e-confirm-quit nil
             mu4e-headers-leave-behavior 'apply)
 
