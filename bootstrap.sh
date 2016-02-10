@@ -21,6 +21,7 @@ if [ ! -d ~/personal-workspace/edts ]; then
 fi
 
 cd ~
+
 cp -sn ~/.rc/{.emacs,.xmobarrc,.zshrc,.vimrc,.Xresources,.xsession,.sbclrc,.tmux.conf,.gitconfig,.quiltrc,.mbsyncrc} .
 if [ ! -e ~/.urxvt ]; then
     ln -s ~/.rc/.urxvt .
@@ -46,4 +47,8 @@ fi
 mkdir -p ~/.ghc
 if [[ ! -e ~/.ghc/ghci.conf ]] ; then
     ln -s ~/.rc/ghci.conf ~/.ghc/ghci.conf
+fi
+
+if [[ ! -d ~/.tmux/plugins/tpm ]]; then
+    git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
 fi
