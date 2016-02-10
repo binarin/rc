@@ -867,6 +867,23 @@ As Sacha Chua put it, "Disk space is cheap. Save lots".
     :ID:       2721952e-54d4-423b-8b65-cbb580f4f2d4
     :END:
 
+    mu4e regenerates main buffer on exiting headers view. But it's annoying when main buffer also
+    contains mu4e-maildirs-extension output, because position is lost and it's inconvinient for
+    reading unread mailboxes sequentially.
+    #+begin_src emacs-lisp
+      (defun binarin/mu4e~headers-quit-buffer--non-destructive ()
+        (interactive)
+        (aif (get-buffer mu4e~main-buffer-name)
+            (cl-letf (((symbol-function 'mu4e~main-view) (lambda () nil)))
+              (mu4e~headers-quit-buffer)
+              (switch-to-buffer it))
+            (mu4e~headers-quit-buffer)))
+
+      (eval-after-load "mu4e"
+        #'(lambda () (define-key mu4e-headers-mode-map (kbd "q") #'binarin/mu4e~headers-quit-buffer--non-destructive)))
+    #+end_src
+
+
     This is needed for mbsync compatibility:
     #+begin_src emacs-lisp
       (setf mu4e-change-filenames-when-moving t)
