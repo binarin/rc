@@ -731,7 +731,8 @@ As Sacha Chua put it, "Disk space is cheap. Save lots".
 *** Load custom-built mu4e
     #+begin_src emacs-lisp
       (add-to-list 'load-path "~/apps/mu/share/emacs/site-lisp/mu4e")
-      (add-to-list 'Info-directory-list "~/apps/mu/share/info")
+      (eval-after-load "info"
+        '(add-to-list 'Info-directory-list "~/apps/mu/share/info"))
       (setf mu4e-mu-binary "~/apps/mu/bin/mu")
 
       (autoload 'mu4e "mu4e" nil t)
