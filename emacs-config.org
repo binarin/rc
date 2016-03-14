@@ -883,6 +883,17 @@ As Sacha Chua put it, "Disk space is cheap. Save lots".
         #'(lambda () (define-key mu4e-headers-mode-map (kbd "q") #'binarin/mu4e~headers-quit-buffer--non-destructive)))
     #+end_src
 
+    Sync mail in background after exiting mu4e
+    #+begin_src emacs-lisp
+      (defun binarin/mu4e-quit ()
+        (interactive)
+        (mu4e-update-mail-and-index t)
+        (mu4e-quit))
+
+      (eval-after-load "mu4e"
+        '(define-key mu4e-main-mode-map "q" #'binarin/mu4e-quit))
+    #+end_src
+
 
     This is needed for mbsync compatibility:
     #+begin_src emacs-lisp
