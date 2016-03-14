@@ -273,7 +273,7 @@ Soon to be removed.
 
   (setf x-select-enable-primary t)
   (setf browse-url-browser-function 'browse-url-generic
-        browse-url-generic-program "x-www-browser")
+        browse-url-generic-program "xdg-open")
 
   (auto-insert-mode t)
   (transient-mark-mode t)
