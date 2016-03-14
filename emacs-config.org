@@ -1792,6 +1792,7 @@ Every file in org-agenda-files should be present in every perspective:
        :init
        (electric-operator-add-rules-for-mode
         'erlang-mode
+        (cons "++" " ++ ")
         (cons "+" " + ")
         (cons "," ", ")))
    #+end_src
