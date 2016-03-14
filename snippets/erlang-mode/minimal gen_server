@@ -1,0 +1,29 @@
+# -*- mode: snippet -*-
+# name: minimal gen_server
+# key: min_gs
+# --
+-module(sut_server).
+-behaviour(gen_server).
+
+-export([terminate/2, init/1, handle_info/2, handle_cast/2, handle_call/3, code_change/3]).
+
+-record(state, {}).
+
+init([]) ->
+    {ok, #state{}}.
+
+handle_call(_Msg, _From, State) ->
+    Reply = ok,
+    {reply, Reply, State}.
+
+handle_cast(_Request, State) ->
+    {noreply, State}.
+
+handle_info(_Info, State) ->
+    {noreply, State}.
+
+terminate(_Reason, _State) ->
+    ok.
+
+code_change(_OldVsn, State, _Extra) ->
+    {ok, State}.
