@@ -462,14 +462,14 @@ Soon to be removed.
    #+begin_src emacs-lisp
      (defvar binarin/minimal-screen-width 111
        "'M+ 1mn' font at 18pt and 1366px screen gives us 111 characters.")
-     (defvar binarin/screen-width-at-startup (or (and noninteractive binarin/minimal-screen-width)
-                                                 (window-width))
+     (defvar binarin/screen-width-at-startup binarin/minimal-screen-width
        "As the emacs window is forced to be fullscreen by xmonad, we
      can be pretty sure this value is maximum viable screen width.
 
      For batch mode we are forcing minimal width")
 
-     (set-default 'fill-column (- binarin/minimal-screen-width 10))
+     ;; (set-default 'fill-column (- binarin/minimal-screen-width 10))
+
    #+end_src
 
 ** Theme
