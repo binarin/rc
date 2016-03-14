@@ -25,3 +25,5 @@
 	gfetch = fetch origin '+refs/changes/*:refs/remotes/origin/changes/*'
 [push]
 	default = simple
+[commit]
+	template = /home/binarin/.rc/.git-commit-template.txt
