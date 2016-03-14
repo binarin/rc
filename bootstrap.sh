@@ -52,3 +52,10 @@ fi
 if [[ ! -d ~/.tmux/plugins/tpm ]]; then
     git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
 fi
+
+if [[ ! -L ~/.ssh/config ]]; then
+    if [[ -d ~/.ssh ]]; then
+        mkdir -p ~/.ssh
+    fi
+    ln -sf ~/.rc/ssh_config ~/.ssh/config
+fi
