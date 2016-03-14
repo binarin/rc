@@ -42,7 +42,23 @@
  '(pt-executable "~/bin/pt")
  '(safe-local-variable-values
    (quote
-    ((c-continued-statement-offset . 2)
+    ((nxml-child-indent . 2)
+     (eval c-set-offset
+           (quote arglist-close)
+           0)
+     (eval c-set-offset
+           (quote arglist-intro)
+           (quote ++))
+     (eval c-set-offset
+           (quote case-label)
+           0)
+     (eval c-set-offset
+           (quote statement-case-open)
+           0)
+     (eval c-set-offset
+           (quote substatement-open)
+           0)
+     (c-continued-statement-offset . 2)
      (c-indent-level . 2)
      (allout-layout . t)
      (time-stamp-active . t)
