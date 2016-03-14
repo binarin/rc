@@ -29,7 +29,7 @@ import XMonad.Hooks.CurrentWorkspaceOnTop (currentWorkspaceOnTop)
 
 import XMonad.Layout.Grid
 import XMonad.Layout.IM
-import XMonad.Layout.MouseResizableTile
+-- import XMonad.Layout.MouseResizableTile
 import XMonad.Layout.PerWorkspace
 import XMonad.Layout.NoBorders
 import XMonad.Layout.SimpleFloat(simpleFloat)
@@ -95,7 +95,12 @@ myManageHook = composeAll
     , title     =? "Simple Demo with Shaders" --> doFloat
     ]
 
-myLayout = smartBorders Full ||| (mouseResizableTile) ||| (mouseResizableTile { isMirrored = True })
+myLayout = smartBorders Full ||| Mirror tiled ||| tiled
+  where
+    tiled = Tall nmaster delta ratio
+    nmaster = 1
+    ratio = 1/2
+    delta = 5/100
 
 myLayoutHook =
   xkbLayout $
@@ -155,6 +160,8 @@ xmobarPrettyPrinter xmobarPipe = def
                           "Full" -> "FL"
                           "MouseResizableTile" -> "M_"
                           "Mirror MouseResizableTile" -> "MM"
+                          "Tall" -> "TL"
+                          "Mirror Tall" -> "TM"
                           "Grid" -> "GR"
                           "IM Grid" -> "IG"
                           _ -> x
