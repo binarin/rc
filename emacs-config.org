@@ -981,7 +981,8 @@ As Sacha Chua put it, "Disk space is cheap. Save lots".
   (defun irc ()
     (interactive)
     (circe "Freenode")
-    (circe "Bitlbee"))
+    ;; (circe "Bitlbee")
+    )
 
 #+end_src
 
