@@ -1939,7 +1939,9 @@ cabal install ghci-ng/
    :ID:       5992e86f-6a93-494d-b413-fdaf1ad4e5fe
    :END:
 #+begin_src emacs-lisp
-  (req-package magit
+
+  (use-package magit
+    :ensure t
     :bind ("<f12>" . magit-status)
     :init
     (progn
@@ -1948,6 +1950,7 @@ cabal install ghci-ng/
     (progn
       (setf magit-revert-item-confirm t)
       (setf magit-diff-refine-hunk t)))
+
 #+end_src
 
 ** Paredit
