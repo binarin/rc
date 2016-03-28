@@ -713,7 +713,6 @@ As Sacha Chua put it, "Disk space is cheap. Save lots".
        :ensure t)
    #+end_src
 
-
 * External programs
 ** edit-in-chrome
    :PROPERTIES:
@@ -843,6 +842,7 @@ As Sacha Chua put it, "Disk space is cheap. Save lots".
 
   (defun binarin/mu4e-view-mode-hook ()
     (yas-minor-mode nil)
+    (setf fill-column 80)
     (visual-line-mode t)
     (visual-fill-column-mode t))
 
