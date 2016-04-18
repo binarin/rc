@@ -729,12 +729,13 @@ As Sacha Chua put it, "Disk space is cheap. Save lots".
 ** Email
 *** Load custom-built mu4e
     #+begin_src emacs-lisp
+      (add-to-list 'load-path "/run/current-system/sw/share/emacs/site-lisp/mu4e")
       (add-to-list 'load-path "~/apps/mu/share/emacs/site-lisp/mu4e")
-      (eval-after-load "info"
-        '(add-to-list 'Info-directory-list "~/apps/mu/share/info"))
-      (setf mu4e-mu-binary "~/apps/mu/bin/mu")
-
       (autoload 'mu4e "mu4e" nil t)
+
+      (setf mu4e-mu-binary "/run/current-system/sw/bin/mu")
+
+
     #+end_src
 
 *** Unread count extension
@@ -1626,47 +1627,46 @@ Every file in org-agenda-files should be present in every perspective:
     :config
     (persp-mode t)
     (persp-turn-off-modestring)
-    (require 'perspective)
+    (require 'perspective))
 
-    (defun binarin/perspective-preserve-shared-buffer (orig-fun persp)
-      "Preserve current buffer after perspective switch if it's a
+  (defun binarin/perspective-preserve-shared-buffer (orig-fun persp)
+    "Preserve current buffer after perspective switch if it's a
   member of both perspectives - so there will be no random buffer
   switching. Also preserve tracking information in IM buffers (by
   forbidding pers-activate to use switch-to-buffer on them)."
-      (let* ((original-switch-to-buffer (symbol-function 'switch-to-buffer))
-             (current-buffer-pre-switch (current-buffer))
-             (res (cl-letf (((symbol-function 'switch-to-buffer) (lambda (buffer &rest args)
-                                                                   (unless (member (buffer-local-value 'major-mode buffer)
-                                                                                   '(jabber-chat-mode erc-mode circe-channel-mode circe-query-mode))
-                                                                     (apply original-switch-to-buffer buffer args)))))
-                    (funcall orig-fun persp))))
-        (when (member current-buffer-pre-switch (persp-buffers persp))
-          (switch-to-buffer current-buffer-pre-switch))
-        res))
+    (let* ((original-switch-to-buffer (symbol-function 'switch-to-buffer))
+           (current-buffer-pre-switch (current-buffer))
+           (res (cl-letf (((symbol-function 'switch-to-buffer) (lambda (buffer &rest args)
+                                                                 (unless (member (buffer-local-value 'major-mode buffer)
+                                                                                 '(jabber-chat-mode erc-mode circe-channel-mode circe-query-mode))
+                                                                   (apply original-switch-to-buffer buffer args)))))
+                  (funcall orig-fun persp))))
+      (when (member current-buffer-pre-switch (persp-buffers persp))
+        (switch-to-buffer current-buffer-pre-switch))
+      res))
 
-    (defun binarin/add-all-perspective-buffers-to-new-perspective ()
-      (dolist (buf (-filter (lambda (buf)
-                              (or
-                               (-contains? org-agenda-files (buffer-file-name buf))
-                               (member (buffer-local-value 'major-mode buf)
-                                       '(jabber-chat-mode erc-mode circe-channel-mode circe-query-mode))))
-                            (buffer-list)))
-        (persp-add-buffer buf)))
+  (defun binarin/add-all-perspective-buffers-to-new-perspective ()
+    (dolist (buf (-filter (lambda (buf)
+                            (or
+                             (-contains? org-agenda-files (buffer-file-name buf))
+                             (member (buffer-local-value 'major-mode buf)
+                                     '(jabber-chat-mode erc-mode circe-channel-mode circe-query-mode))))
+                          (buffer-list)))
+      (persp-add-buffer buf)))
 
-    (defun binarin/add-current-buffer-to-all-perspectives ()
-      (when persp-mode
-        (dolist (frame (frame-list))
-          (loop for persp being the hash-values of (with-selected-frame frame perspectives-hash)
-                do (unless (memq (current-buffer) (persp-buffers persp))
-                     (push (current-buffer) (persp-buffers persp)))))))
+  (defun binarin/add-current-buffer-to-all-perspectives ()
+    (when persp-mode
+      (dolist (frame (frame-list))
+        (loop for persp being the hash-values of (with-selected-frame frame perspectives-hash)
+              do (unless (memq (current-buffer) (persp-buffers persp))
+                   (push (current-buffer) (persp-buffers persp)))))))
 
-    (add-hook 'persp-created-hook #'binarin/add-all-perspective-buffers-to-new-perspective)
-    (add-hook 'org-mode-hook #'binarin/add-current-buffer-to-all-perspectives)
-    (add-hook 'jabber-chat-mode-hook #'binarin/add-current-buffer-to-all-perspectives)
-    (add-hook 'circe-channel-mode-hook #'binarin/add-current-buffer-to-all-perspectives)
-    (add-hook 'circe-query-mode-hook #'binarin/add-current-buffer-to-all-perspectives)
-    (advice-add 'persp-activate :around #'binarin/perspective-preserve-shared-buffer)
-    )
+  (add-hook 'persp-created-hook #'binarin/add-all-perspective-buffers-to-new-perspective)
+  (add-hook 'org-mode-hook #'binarin/add-current-buffer-to-all-perspectives)
+  (add-hook 'jabber-chat-mode-hook #'binarin/add-current-buffer-to-all-perspectives)
+  (add-hook 'circe-channel-mode-hook #'binarin/add-current-buffer-to-all-perspectives)
+  (add-hook 'circe-query-mode-hook #'binarin/add-current-buffer-to-all-perspectives)
+  (advice-add 'persp-activate :around #'binarin/perspective-preserve-shared-buffer)
 
 
 #+end_src
@@ -1953,6 +1953,11 @@ cabal install ghci-ng/
 
 #+end_src
 
+** Nix
+   #+begin_src emacs-lisp
+     (use-package nix-mode
+       :ensure t)
+   #+end_src
 ** Paredit
    :PROPERTIES:
    :ID:       13fbc9ee-bd2c-441b-8b36-ab2d8e153aa7
@@ -2141,6 +2146,13 @@ cabal install ghci-ng/
 #+end_src
 
 * Things to try/to do
+** TODO___ [[https://github.com/alphapapa/helm-org-rifle][alphapapa/helm-org-rifle: Rifle through your Org buffers and acquire your target]]
+   :PROPERTIES:
+   :ID:       7a598815-9d9c-4ae0-af9a-fbf58a7067cf
+   :END:
+   [2016-04-13 Ср 13:00]
+
+
 ** [[https://github.com/bbatsov/crux/blob/master/crux.el][GitHub · Where software is built]]
    :PROPERTIES:
    :ID:       1a6641f0-ec33-43f9-aed4-32844b49be77

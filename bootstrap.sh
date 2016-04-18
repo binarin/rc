@@ -1,4 +1,4 @@
-#!/bin/zsh
+#!/usr/bin/env zsh
 set -e
 cd ~/.rc
 git submodule update --init
@@ -58,4 +58,12 @@ if [[ ! -L ~/.ssh/config ]]; then
         mkdir -p ~/.ssh
     fi
     ln -sf ~/.rc/ssh_config ~/.ssh/config
+fi
+
+if [[ ! -d ~/.nixpkgs ]]; then
+    mkdir ~/.nixpkgs
+fi
+
+if [[ ! -e ~/.nixpkgs/config.nix ]]; then
+    ln -sf ~/.rc/config.nix ~/.nixpkgs/config.nix
 fi

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 if [[ $(emacsclient --e '(org-clocking-p)') == 't' ]] ; then
     echo "<fc=grey,#000000>"
 else

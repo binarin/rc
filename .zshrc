@@ -51,7 +51,7 @@ BIN_DIRS=(
 $HOME/bin
 $HOME/.local/bin
 $HOME/.cabal/bin
-$HOME/apps/*/bin
+$HOME/apps/*/bin(N)
 )
 
 # Remove dupes from 'path', which is array tied to 'PATH'

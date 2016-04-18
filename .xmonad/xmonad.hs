@@ -192,7 +192,7 @@ myConfig logHandle = ewmh def {
   , logHook = currentWorkspaceOnTop <+> dynamicLogWithPP (prettyPrinter logHandle)
   }
         `additionalKeysP`
-        ([ ("M-y", spawn "rxvt-unicode")
+        ([ ("M-y", spawn "urxvt")
         -- , ("M-p", withFocused (\windowId -> do { floats <- gets (W.floating . windowset); if windowId `M.member` floats then withFocused $ windows . W.sink else float windowId }))
         , ("M-j", windowPromptGoto def)
         , ("M-l", spawn "exe=$(yeganesh -x) && exec $exe")

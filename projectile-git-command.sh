@@ -1,4 +1,5 @@
-#!/bin/bash -eu
+#!/usr/bin/env bash
+set -eu
 set -o pipefail
 
 # Files should be \0 separated
