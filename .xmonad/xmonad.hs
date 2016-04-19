@@ -90,6 +90,7 @@ myManageHook = composeAll
     , className =? "Icedove"        --> doF (W.shift "misc2")
     , className =? "Skype"          --> doF (W.shift "msg")
     , className =? "Viber"          --> doF (W.shift "msg")
+    , className =? "quassel"        --> doF (W.shift "secondary4")
     , className =? "Workrave"       --> doFloat <+> doF (W.shift "secondary4")
     , fmap (isSuffixOf "KeePass") title --> doF (W.shift "passwd")
     , title     =? "Simple Demo with Shaders" --> doFloat
