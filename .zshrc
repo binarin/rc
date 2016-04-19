@@ -125,6 +125,10 @@ export DEBFULLNAME="Alexey Lebedeff"
 export DEBEMAIL="binarin@binarin.ru"
 alias dch='dch --vendor=debian'
 
+rr() {
+    readlink -f $(which $1)
+}
+
 function sudoedit() {
     /usr/bin/emacsclient -nw /sudo:root@localhost:$1
 }
