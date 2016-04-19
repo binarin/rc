@@ -124,10 +124,13 @@ done
 export DEBFULLNAME="Alexey Lebedeff"
 export DEBEMAIL="binarin@binarin.ru"
 alias dch='dch --vendor=debian'
+alias di='docker run --rm -i -t'
+alias rgrep='grep -R'
 
 rr() {
     readlink -f $(which $1)
 }
+
 
 function sudoedit() {
     /usr/bin/emacsclient -nw /sudo:root@localhost:$1
