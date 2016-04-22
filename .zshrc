@@ -131,6 +131,9 @@ rr() {
     readlink -f $(which $1)
 }
 
+qap() {
+    nix-env -qaP ".*${1}.*"
+}
 
 function sudoedit() {
     /usr/bin/emacsclient -nw /sudo:root@localhost:$1
