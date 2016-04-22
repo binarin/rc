@@ -67,3 +67,10 @@ fi
 if [[ ! -e ~/.nixpkgs/config.nix ]]; then
     ln -sf ~/.rc/config.nix ~/.nixpkgs/config.nix
 fi
+
+if [[ ! -e ~/.config/twmn/twmn.conf ]]; then
+    mkdir -p ~/.config/twmn/
+    ln -s ~/.rc/twmn.conf ~/.config/twmn/twmn.conf
+fi
+
+# vagrant plugin install vagrant-libvirt

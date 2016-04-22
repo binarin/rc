@@ -993,8 +993,6 @@ org-mode is already loaded because we needed to tangle
 emacs-config.org, so no need to use use-package.
 ** Notes about setting up org-capture
 
-update-desktop-database
-
 URL:
 javascript:location.href='org-protocol://capture://l/'+encodeURIComponent(location.href)+'/'+encodeURIComponent(document.title)+'/'+encodeURIComponent(window.getSelection())
 
@@ -1019,16 +1017,15 @@ MimeType=x-scheme-handler/org-protocol;
 #+begin_src emacs-lisp
   (defadvice org-protocol-do-capture (around display-notify-after-capture)
     (let ((result ad-do-it))
-      (if (and result
-               (file-executable-p "/usr/bin/notify-send"))
-          (call-process "/usr/bin/notify-send" nil 0 nil
-                        "--expire-time" "3000" "-u" "low"
-                        "-i" (expand-file-name "~/.emacs.d/org.svg")
-                        "Link captured"
-                        (concat (caar org-stored-links)
-                                "\n"
-                                (cadar org-stored-links))))
-      result))
+      (awhen (executable-find "notify-send")
+        (call-process it nil 0 nil
+                      "--expire-time" "3000" "-u" "low"
+                      "-i" (expand-file-name "~/.rc/org.svg")
+                      "Link captured"
+                      (concat (caar org-stored-links)
+                              "\n"
+                              (cadar org-stored-links)))))
+    result)
 
   (defun agenda-sorter-tag-first (tag)
     #'(lambda (a b)
