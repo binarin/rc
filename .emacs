@@ -32,6 +32,7 @@
 
 (if (file-exists-p "~/personal-workspace/org-mode/lisp/org.elc")
     (progn
+      (add-to-list 'Info-directory-list "~/personal-workspace/org-mode/doc")
       (add-to-list 'load-path "~/personal-workspace/org-mode/lisp")
       (require 'org))
   (binarin/package-add-archive "org" "http://orgmode.org/elpa/")
