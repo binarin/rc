@@ -126,6 +126,8 @@ export DEBEMAIL="binarin@binarin.ru"
 alias dch='dch --vendor=debian'
 alias di='docker run --rm -i -t'
 alias rgrep='grep -R'
+alias e='emacsclient -nw'
+alias o='xdg-open'
 
 rr() {
     readlink -f $(which $1)
