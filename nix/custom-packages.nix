@@ -10,4 +10,5 @@ in rec {
     javacSupport = true;
     enableHipe = true;
   };
+  myR = pkgs.rWrapper.override { packages = with pkgs.rPackages; [ plyr getopt proto ggplot2 ]; };
 }
