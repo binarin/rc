@@ -1,5 +1,5 @@
-{ stdenv, fetchurl, perl, gnum4, ncurses, openssl
-, gnused, gawk, makeWrapper
+{ stdenv, fetchFromGitHub, fetchurl, perl, gnum4, ncurses, openssl
+, gnused, gawk, makeWrapper, autoconf, libxml2, libxslt, fop
 , Carbon, Cocoa
 , odbcSupport ? false, unixODBC ? null
 , wxSupport ? true, mesa ? null, wxGTK ? null, xorg ? null, wxmac ? null
@@ -21,23 +21,27 @@ stdenv.mkDerivation rec {
   + "${optionalString javacSupport "-javac"}";
   version = "18.3";
 
-  src = fetchurl {
-    url = "http://www.erlang.org/download/otp_src_${version}.tar.gz";
-    sha256 = "1hy9slq9gjvwdb504dmvp6rax90isnky6chqkyq5v4ybl4lq3azx";
+  src = fetchFromGitHub {
+    owner = "erlang";
+    repo = "otp";
+    rev = "OTP-18.3.3";
+    sha256 = "1y8iarld0jjkhcy9dl6yv9gxh4kryyr52kxw3zi3w2sd6g8cbhsw";
   };
 
   buildInputs =
-    [ perl gnum4 ncurses openssl makeWrapper
+    [ perl gnum4 ncurses openssl makeWrapper autoconf libxml2 libxslt fop
     ] ++ optionals wxSupport (if stdenv.isDarwin then [ wxmac ] else [ mesa wxGTK xorg.libX11 ])
       ++ optional odbcSupport unixODBC
       ++ optional javacSupport openjdk
       ++ stdenv.lib.optionals stdenv.isDarwin [ Carbon Cocoa ];
 
-  patchPhase = '' sed -i "s@/bin/rm@rm@" lib/odbc/configure erts/configure '';
+  patchPhase = ''  '';
 
   preConfigure = ''
     export HOME=$PWD/../
     sed -e s@/bin/pwd@pwd@g -i otp_build
+    ./otp_build autoconf
+    sed -i "s@/bin/rm@rm@" lib/odbc/configure erts/configure
   '';
 
   configureFlags= [
