@@ -42,7 +42,6 @@
  '(package-selected-packages
    (quote
     (nix-mode markdown-mode jammer zeal-at-point yaml-mode paredit evil-nerd-commenter elisp-slime-nav puppet-mode multiple-cursors expand-region helm-projectile persp-projectile god-mode edit-server smart-tab zenburn-theme flx-ido yasnippet web-mode vimish-fold magit js2-mode shm hindent haskell-mode auto-highlight-symbol eproject auto-complete erlang electric-operator corral projectile perspective helm pt bookmark+ mu4e-maildirs-extension htmlize ws-butler ace-jump-mode key-chord undo-tree hydra zoom-frm visual-fill-column smart-mode-line-powerline-theme rich-minority highlight-parentheses request req-package f anaphora)))
- '(pt-executable "~/bin/pt")
  '(safe-local-variable-values
    (quote
     ((nxml-child-indent . 2)
@@ -83,7 +82,7 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(diff-refine-added ((t (:inherit diff-added :background "green4" :weight bold))))
- '(diff-refine-change ((t (:inherit diff-changed :background "yellow" :weight bold))) t)
+ '(diff-refine-changed ((t (:inherit diff-changed :background "yellow" :weight bold))))
  '(diff-refine-removed ((t (:inherit diff-removed :background "pink4" :foreground "grey" :weight bold))))
  '(hydra-face-blue ((t (:foreground "plum" :weight bold))))
  '(mode-line ((t (:background "#212931" :foreground "#eeeeec" :box (:line-width -1 :style released-button) :height 0.7))))
