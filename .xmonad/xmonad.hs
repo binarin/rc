@@ -48,6 +48,8 @@ import XMonad.Util.WorkspaceCompare
 import Graphics.X11.ExtraTypes.XF86
 import Xkb
 
+xF86XK_TouchpadToggle = 269025193
+
 primaryWorkspaces :: [(String, String)]
 primaryWorkspaces =
   [ ("term", "[")
@@ -196,6 +198,7 @@ myConfig logHandle = ewmh def {
         ([ ("M-y", spawn "urxvt")
         -- , ("M-p", withFocused (\windowId -> do { floats <- gets (W.floating . windowset); if windowId `M.member` floats then withFocused $ windows . W.sink else float windowId }))
         , ("M-j", windowPromptGoto def)
+        , ("M-;", spawn "sshmenu")
         , ("M-l", spawn "exe=$(yeganesh -x) && exec $exe")
         , ("M-S-l", spawn "gmrun")
         , ("M-<Print>", spawn "shutter -w")
@@ -234,6 +237,11 @@ myConfig logHandle = ewmh def {
             | (name, key) <- secondaryWorkspaces ]
         )
         `additionalKeys`
-        [
-          ((0, xF86XK_Mail), return ())
+        [ ((0, xF86XK_Mail), return ())
+        , ((0, xF86XK_MonBrightnessUp), spawn "xbacklight +10")
+        , ((0, xF86XK_MonBrightnessDown), spawn "xbacklight -10")
+        , ((0, xF86XK_TouchpadToggle), spawn "toggle-touchpad")
+        , ((0, xF86XK_AudioPlay), spawn "playerctl play-pause")
+        , ((0, xF86XK_AudioNext), spawn "playerctl next")
+        , ((0, xF86XK_AudioPrev), spawn "playerctl previous")
         ]

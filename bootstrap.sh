@@ -34,7 +34,7 @@ fi
 
 mkdir -p ~/bin
 cd ~/bin
-cp -sn ~/.rc/{workrave-break.sh,xmobar-clock-monitor.sh,xmobar-workrave-monitor.sh,zsh-remote-setup,conkeror} .
+cp -sn ~/.rc/{workrave-break.sh,xmobar-clock-monitor.sh,xmobar-workrave-monitor.sh,zsh-remote-setup,conkeror,toggle-touchpad} .
 
 mkdir -p ~/.xmonad
 cd ~/.xmonad
@@ -73,4 +73,6 @@ if [[ ! -e ~/.config/twmn/twmn.conf ]]; then
     ln -s ~/.rc/twmn.conf ~/.config/twmn/twmn.conf
 fi
 
+mkdir -p ~/.workrave
+touch ~/.workrave/workrave.ini
 # vagrant plugin install vagrant-libvirt
