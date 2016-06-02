@@ -713,6 +713,17 @@ As Sacha Chua put it, "Disk space is cheap. Save lots".
        :ensure t)
    #+end_src
 
+** version control
+
+   #+begin_src emacs-lisp
+     (setq vc-ignore-dir-regexp
+           (format "\\(%s\\)\\|\\(%s\\)"
+                   vc-ignore-dir-regexp
+                   tramp-file-name-regexp))
+
+   #+end_src
+
+
 * External programs
 ** edit-in-chrome
    :PROPERTIES:
