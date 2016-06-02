@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: stderr
+# key: err
+# --
+io:format(standard_error, "", [$0]),
