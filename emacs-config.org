@@ -780,7 +780,11 @@ As Sacha Chua put it, "Disk space is cheap. Save lots".
         :commands mu4e-maildirs-extension
 
         :init
-        (eval-after-load "mu4e" '(mu4e-maildirs-extension))
+        (eval-after-load "mu4e"
+          #'(lambda ()
+              (mu4e-maildirs-extension)
+              (define-key mu4e-main-mode-map "n" #'next-line)
+              (define-key mu4e-main-mode-map "p" #'previous-line)))
         :config
         (setf mu4e-maildirs-extension-count-command-format
               (replace-regexp-in-string "^mu" mu4e-mu-binary mu4e-maildirs-extension-count-command-format))
