@@ -12,6 +12,8 @@ rsync -avz ~/.oh-my-zsh "$hostname":
 rsync -avz ~/.tmux/plugins/tpm "$hostname":.tmux/plugins
 scp ~/.rc/.zshrc "$hostname":
 rsync -avz ~/.rc/ssh_rc "$hostname":.ssh/rc
+rsync -avz ~/.rc/.gitconfig "$hostname":.gitconfig
+rsync -avz ~/.rc/.dircolors "$hostname":.dircolors
 
 remote_path=`ssh "$hostname" pwd`
 
