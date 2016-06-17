@@ -17,6 +17,7 @@ import XMonad.Actions.CycleWS
 -- import XMonad.Actions.DynamicWorkspaces
 import XMonad.Actions.GridSelect
 import XMonad.Actions.OnScreen
+import XMonad.Actions.Volume
 
 -- import XMonad.Config.Gnome
 
@@ -241,6 +242,9 @@ myConfig logHandle = ewmh def {
         , ((0, xF86XK_MonBrightnessUp), spawn "xbacklight +10")
         , ((0, xF86XK_MonBrightnessDown), spawn "xbacklight -10")
         , ((0, xF86XK_TouchpadToggle), spawn "toggle-touchpad")
+        , ((0, xF86XK_AudioLowerVolume), spawn "volume.sh down")
+        , ((0, xF86XK_AudioRaiseVolume), spawn "volume.sh up")
+        , ((0, xF86XK_AudioMute), spawn "volume.sh mute")
         , ((0, xF86XK_AudioPlay), spawn "playerctl play-pause")
         , ((0, xF86XK_AudioNext), spawn "playerctl next")
         , ((0, xF86XK_AudioPrev), spawn "playerctl previous")
