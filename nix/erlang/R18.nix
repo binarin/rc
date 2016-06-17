@@ -24,8 +24,8 @@ stdenv.mkDerivation rec {
   src = fetchFromGitHub {
     owner = "erlang";
     repo = "otp";
-    rev = "OTP-18.3.3";
-    sha256 = "1y8iarld0jjkhcy9dl6yv9gxh4kryyr52kxw3zi3w2sd6g8cbhsw";
+    rev = "OTP-18.3.4";
+    sha256 = "1f8nhybzsdmjvkmkzpjj3wj9jzx8mihlvi6gfp47fxkalansz39h";
   };
 
   buildInputs =

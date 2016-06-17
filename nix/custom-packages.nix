@@ -16,6 +16,5 @@ in rec {
     sha_32 = "06fwi3cyqvkgglwb58kx7l66h0v4bjp9hxy8rg6pz7rvwi1bb1gd";
     sha_64 = "1yya4yr6p9m6cjcak54hs2ldxnp9vsfmx4wpjlf3wxanjm1qs19p";
   };
-  sshmenu = pkgs.callPackage ./sshmenu {};
   the_platinum_searcher = pkgs.callPackage ./the_platinum_searcher {};
 }
