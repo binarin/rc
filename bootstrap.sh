@@ -22,7 +22,7 @@ fi
 
 cd ~
 
-cp -sn ~/.rc/{.emacs,.xmobarrc,.zshrc,.vimrc,.Xresources,.xsession,.sbclrc,.tmux.conf,.gitconfig,.quiltrc,.mbsyncrc,.conkerorrc} .
+cp -sn ~/.rc/{.emacs,.xmobarrc,.zshrc,.vimrc,.Xresources,.xsession,.sbclrc,.tmux.conf,.gitconfig,.quiltrc,.mbsyncrc,.conkerorrc,.dircolors} .
 if [ ! -e ~/.urxvt ]; then
     ln -s ~/.rc/.urxvt .
 fi
@@ -34,7 +34,7 @@ fi
 
 mkdir -p ~/bin
 cd ~/bin
-cp -sn ~/.rc/{workrave-break.sh,xmobar-clock-monitor.sh,xmobar-workrave-monitor.sh,zsh-remote-setup,conkeror,toggle-touchpad} .
+cp -sn ~/.rc/{workrave-break.sh,xmobar-clock-monitor.sh,xmobar-workrave-monitor.sh,zsh-remote-setup,conkeror,toggle-touchpad,volume.sh,sshmenu,diff-highlight} .
 
 mkdir -p ~/.xmonad
 cd ~/.xmonad
