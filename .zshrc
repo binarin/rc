@@ -121,6 +121,8 @@ for candidate in emacsclient vim vi; do
     fi
 done
 
+eval $(dircolors --sh ~/.dircolors)
+
 export DEBFULLNAME="Alexey Lebedeff"
 export DEBEMAIL="binarin@binarin.ru"
 alias dch='dch --vendor=debian'
