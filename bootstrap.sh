@@ -73,6 +73,11 @@ if [[ ! -e ~/.config/twmn/twmn.conf ]]; then
     ln -s ~/.rc/twmn.conf ~/.config/twmn/twmn.conf
 fi
 
+if [[ ! -e ~/.gnupg/gpg-agent.conf ]]; then
+    mkdir -p ~/.gnupg
+    cp -sn ~/.rc/gpg-agent.conf ~/.gnupg/
+fi
+
 mkdir -p ~/.workrave
 touch ~/.workrave/workrave.ini
 # vagrant plugin install vagrant-libvirt
