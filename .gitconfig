@@ -9,21 +9,25 @@
      insteadOf = gh:
      pushInsteadOf = gh:
 
-[url "ssh://binarin@gerrit.a1a:29418/"]
-     insteadOf = a1:
-     pushInsteadOf = a1:
-
-
-[url "ssh://binarin@gerrit.dev.mainpay.ru:29418/"]
-     insteadOf = spg:
-     pushInsteadOf = spg:
-
 [core]
 	autocrlf = false
 
 [alias]
 	gfetch = fetch origin '+refs/changes/*:refs/remotes/origin/changes/*'
+
 [push]
 	default = simple
+
 [commit]
 	template = /home/binarin/.rc/.git-commit-template.txt
+
+[diff]
+        compactionHeuristic = true
+
+[pager]
+	log = diff-so-fancy | less
+	show = diff-so-fancy | less
+	diff = diff-so-fancy | less
+
+[interactive]
+        diffFilter = diff-so-fancy
