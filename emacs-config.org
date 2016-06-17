@@ -701,7 +701,9 @@ As Sacha Chua put it, "Disk space is cheap. Save lots".
 #+begin_src emacs-lisp
   (use-package ws-butler
     :commands ws-buttler-mode
-    :ensure t)
+    :ensure t
+    :config
+    (setf ws-butler-keep-whitespace-before-point nil))
   (defun binarin/make-buffer-whitespace-aware ()
     (ws-butler-mode))
 #+end_src
