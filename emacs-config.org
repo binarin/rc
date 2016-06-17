@@ -1956,12 +1956,10 @@ cabal install ghci-ng/
     :ensure t
     :bind ("<f12>" . magit-status)
     :init
-    (progn
-      (setf magit-last-seen-setup-instructions "1.4.0"))
+    (setf magit-last-seen-setup-instructions "1.4.0")
     :config
-    (progn
-      (setf magit-revert-item-confirm t)
-      (setf magit-diff-refine-hunk t)))
+    (setf magit-revert-item-confirm t)
+    (setf magit-diff-refine-hunk t))
 
 #+end_src
 
