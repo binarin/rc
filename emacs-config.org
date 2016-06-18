@@ -9,9 +9,6 @@
     (require 'cl-lib)
     (eval-when (compile load)
       (setf byte-compile-warnings '(not make-local)))
-
-    ;; (setf req-package-log-level 'trace)
-
   #+end_src
 
 * Personal information
@@ -24,7 +21,6 @@
     (setf password-cache-expiry nil)
     (setf password-cache t)
   #+end_src
-
 * External packages
 ** MELPA
    :PROPERTIES:
@@ -63,7 +59,6 @@ same as the maintainers of the original code. Some packages are outdated.
         (package-read-archive-contents (car archive)))))
 #+end_src
 
-
 ** use-package
    :PROPERTIES:
    :ID:       e99e5fb5-0664-454b-8a88-b6193dbcdbba
@@ -83,38 +78,29 @@ package.el.
 
 So there will be no more package-installed-p/package-install dance in this file.
 
-** req-package
-   :PROPERTIES:
-   :ID:       fefb252e-c8af-4eaf-ac8c-e7b27c0fc266
-   :END:
-#+begin_src emacs-lisp
-  (use-package req-package
-    :ensure t)
-#+end_src
-
 * Helpers
   :PROPERTIES:
   :ID:       da993d91-9500-4ace-9e93-6a29bf8a1b52
   :END:
 
-#+begin_src emacs-lisp
-  (imagemagick-register-types)
+  #+begin_src emacs-lisp
+    (imagemagick-register-types)
 
-  (use-package f
-    :ensure t)
+    (use-package f
+      :ensure t)
 
-  (use-package s
-    :ensure t)
+    (use-package s
+      :ensure t)
 
-  (use-package dash
-    :ensure t)
+    (use-package dash
+      :ensure t)
 
-  (use-package anaphora
-    :ensure t)
+    (use-package anaphora
+      :ensure t)
 
-  (use-package request
-    :ensure t)
-#+end_src
+    (use-package request
+      :ensure t)
+  #+end_src
 
 * Configuration pieces from other places
 ** Finding configuration pieces from optional directories
@@ -129,7 +115,7 @@ So there will be no more package-installed-p/package-install dance in this file.
              collect fullname))
    #+end_src
 
-** Use separate lisp file for customizations made through UI.
+** Use separate lisp file for customizations made through UI
   :PROPERTIES:
   :ID:       c21650a3-4e44-4713-b3cc-6a4121e7075a
   :END:
@@ -143,137 +129,139 @@ So there will be no more package-installed-p/package-install dance in this file.
    #+begin_src emacs-lisp
      (setf auth-sources (binarin/optional-repo-files ".authinfo.gpg"))
    #+end_src
+* I18n
+** Russian layout over Programmers Dvorak
+   :PROPERTIES:
+   :ID:       b04b5557-e261-4073-ac6b-93e62e587ed6
+   :END:
+   #+begin_src emacs-lisp
+     ;; -*- coding: iso-2022-7bit-unix -*-
+     (quail-define-package
+      "russian-computer-d" "Russian" "RU" nil
+      "ЙЦУКЕН Russian computer layout over Programmers Dvorak"
+      nil t t t t nil nil nil nil nil t)
+
+     ;;  №% "7 ?5 /3 (1 =9 *0 )2 +4 -6 !8 ;:
+     ;;   Й  Ц  У  К  Е  Н  Г  Ш  Щ  З  Х  Ъ
+     ;;    Ф  Ы  В  А  П  Р  О  Л  Д  Ж  Э
+     ;;     Я  Ч  С  М  И  Т  Ь  Б  Ю  .,
+
+     (quail-define-rules
+      ("&" ?№)
+      ("[" ?\")
+      ("{" ??)
+      ("}" ?/)
+      ("(" ?()
+      ("=" ?=)
+      ("*" ?*)
+      (")" ?))
+      ("+" ?+)
+      ("]" ?-)
+      ("!" ?!)
+      ("#" ?\;)
+      ("%" ?%)
+      ("7" ?7)
+      ("5" ?5)
+      ("3" ?3)
+      ("1" ?1)
+      ("9" ?9)
+      ("0" ?0)
+      ("2" ?2)
+      ("4" ?4)
+      ("6" ?6)
+      ("8" ?8)
+      ("`" ?:)
+
+      ("$" ?ё)
+      (";" ?й)
+      ("," ?ц)
+      ("." ?у)
+      ("p" ?к)
+      ("y" ?е)
+      ("f" ?н)
+      ("g" ?г)
+      ("c" ?ш)
+      ("r" ?щ)
+      ("l" ?з)
+      ("/" ?х)
+      ("@" ?ъ)
+      ("a" ?ф)
+      ("o" ?ы)
+      ("e" ?в)
+      ("u" ?а)
+      ("i" ?п)
+      ("d" ?р)
+      ("h" ?о)
+      ("t" ?л)
+      ("n" ?д)
+      ("s" ?ж)
+      ("-" ?э)
+      ("\\" ?\\)
+      ("'" ?я)
+      ("q" ?ч)
+      ("j" ?с)
+      ("k" ?м)
+      ("x" ?и)
+      ("b" ?т)
+      ("m" ?ь)
+      ("w" ?б)
+      ("v" ?ю)
+      ("z" ?.)
+      ("~" ?Ё)
+      (":" ?Й)
+      ("<" ?Ц)
+      (">" ?У)
+      ("P" ?К)
+      ("Y" ?Е)
+      ("F" ?Н)
+      ("G" ?Г)
+      ("C" ?Ш)
+      ("R" ?Щ)
+      ("L" ?З)
+      ("?" ?Х)
+      ("^" ?Ъ)
+      ("A" ?Ф)
+      ("O" ?Ы)
+      ("E" ?В)
+      ("U" ?А)
+      ("I" ?П)
+      ("D" ?Р)
+      ("H" ?О)
+      ("T" ?Л)
+      ("N" ?Д)
+      ("S" ?Ж)
+      ("_" ?Э)
+      ("|" ?|)
+      ("\"" ?Я)
+      ("Q" ?Ч)
+      ("J" ?С)
+      ("K" ?М)
+      ("X" ?И)
+      ("B" ?Т)
+      ("M" ?Ь)
+      ("W" ?Б)
+      ("V" ?Ю)
+      ("Z" ?,))
+   #+end_src
+
+
+** Prefer Russian and UTF-8
+#+begin_src emacs-lisp
+  (set-language-environment "Russian")
+  (setq default-input-method "russian-computer-d")
+  (prefer-coding-system 'utf-8-unix)
+#+end_src
+
 * TODO___ (get rid of) load all elisp files from dedicated directory
   :PROPERTIES:
   :ID:       3f54ce25-9fb5-44f8-9386-81d06e832a37
   :END:
-
-Soon to be removed.
-
-** cf-keymaps.el
-   :PROPERTIES:
-   :ID:       b04b5557-e261-4073-ac6b-93e62e587ed6
-   :END:
-#+begin_src emacs-lisp
-  ;; -*- coding: iso-2022-7bit-unix -*-
-  (quail-define-package
-   "russian-computer-d" "Russian" "RU" nil
-   "ЙЦУКЕН Russian computer layout over Programmers Dvorak"
-   nil t t t t nil nil nil nil nil t)
-
-  ;;  №% "7 ?5 /3 (1 =9 *0 )2 +4 -6 !8 ;:
-  ;;   Й  Ц  У  К  Е  Н  Г  Ш  Щ  З  Х  Ъ
-  ;;    Ф  Ы  В  А  П  Р  О  Л  Д  Ж  Э
-  ;;     Я  Ч  С  М  И  Т  Ь  Б  Ю  .,
-
-  (quail-define-rules
-   ("&" ?№)
-   ("[" ?\")
-   ("{" ??)
-   ("}" ?/)
-   ("(" ?()
-   ("=" ?=)
-   ("*" ?*)
-   (")" ?))
-   ("+" ?+)
-   ("]" ?-)
-   ("!" ?!)
-   ("#" ?\;)
-   ("%" ?%)
-   ("7" ?7)
-   ("5" ?5)
-   ("3" ?3)
-   ("1" ?1)
-   ("9" ?9)
-   ("0" ?0)
-   ("2" ?2)
-   ("4" ?4)
-   ("6" ?6)
-   ("8" ?8)
-   ("`" ?:)
-
-   ("$" ?ё)
-   (";" ?й)
-   ("," ?ц)
-   ("." ?у)
-   ("p" ?к)
-   ("y" ?е)
-   ("f" ?н)
-   ("g" ?г)
-   ("c" ?ш)
-   ("r" ?щ)
-   ("l" ?з)
-   ("/" ?х)
-   ("@" ?ъ)
-   ("a" ?ф)
-   ("o" ?ы)
-   ("e" ?в)
-   ("u" ?а)
-   ("i" ?п)
-   ("d" ?р)
-   ("h" ?о)
-   ("t" ?л)
-   ("n" ?д)
-   ("s" ?ж)
-   ("-" ?э)
-   ("\\" ?\\)
-   ("'" ?я)
-   ("q" ?ч)
-   ("j" ?с)
-   ("k" ?м)
-   ("x" ?и)
-   ("b" ?т)
-   ("m" ?ь)
-   ("w" ?б)
-   ("v" ?ю)
-   ("z" ?.)
-   ("~" ?Ё)
-   (":" ?Й)
-   ("<" ?Ц)
-   (">" ?У)
-   ("P" ?К)
-   ("Y" ?Е)
-   ("F" ?Н)
-   ("G" ?Г)
-   ("C" ?Ш)
-   ("R" ?Щ)
-   ("L" ?З)
-   ("?" ?Х)
-   ("^" ?Ъ)
-   ("A" ?Ф)
-   ("O" ?Ы)
-   ("E" ?В)
-   ("U" ?А)
-   ("I" ?П)
-   ("D" ?Р)
-   ("H" ?О)
-   ("T" ?Л)
-   ("N" ?Д)
-   ("S" ?Ж)
-   ("_" ?Э)
-   ("|" ?|)
-   ("\"" ?Я)
-   ("Q" ?Ч)
-   ("J" ?С)
-   ("K" ?М)
-   ("X" ?И)
-   ("B" ?Т)
-   ("M" ?Ь)
-   ("W" ?Б)
-   ("V" ?Ю)
-   ("Z" ?,))
-
-
-#+end_src
 ** settings
    :PROPERTIES:
    :ID:       99e66c58-7d63-4fa1-96f8-2db46881de63
    :END:
-#+begin_src emacs-lisp
 
-  (setf x-select-enable-primary t)
-  (setf browse-url-browser-function 'browse-url-generic
-        browse-url-generic-program "xdg-open")
+#+begin_src emacs-lisp
 
   (auto-insert-mode t)
   (transient-mark-mode t)
@@ -286,8 +274,6 @@ Soon to be removed.
                    "%b"))
           " - "
           invocation-name))
-
-  ;; (mouse-avoidance-mode 'none)
 
   (blink-cursor-mode -1)
   (setq inhibit-startup-screen t)
@@ -304,31 +290,19 @@ Soon to be removed.
   (setq uniquify-after-kill-buffer-p t)
   (setq uniquify-ignore-buffers-re "^\\*")
 
-  (setf prelude-savefile-dir (expand-file-name "~/.emacs.d/save"))
-
   (add-hook 'after-save-hook
             'executable-make-buffer-file-executable-if-script-p)
 
   (setf whitespace-style '(tabs trailing tab-mark face lines-tail))
+  (setq-default indent-tabs-mode nil)
+  (put 'narrow-to-region 'disabled nil)
+#+end_src
 
+  (setf prelude-savefile-dir (expand-file-name "~/.emacs.d/save"))
   (winner-mode t)
   (require 'windmove)
 
-  (setq-default indent-tabs-mode nil)
-  (put 'narrow-to-region 'disabled nil)
 
-#+end_src
-** lang
-   :PROPERTIES:
-   :ID:       a580dee1-0e63-4969-94a2-096fab405108
-   :END:
-#+begin_src emacs-lisp
-  (set-language-environment "Russian")
-  (setq default-input-method "russian-computer-d")
-
-  (prefer-coding-system 'utf-8-unix)
-
-#+end_src
 ** highlight parentheses
    :PROPERTIES:
    :ID:       239f7033-5510-42f0-aef9-98d6b35b7647
@@ -344,11 +318,12 @@ Soon to be removed.
       turn-on-highlight-parentheses-mode)
     (global-highlight-parentheses-mode t))
 #+end_src
+
 ** ido
    :PROPERTIES:
    :ID:       f5d56831-5741-4efb-8609-77f4412be4a0
    :END:
-#+begin_src emacs-lisp
++begin_src emacs-lisp
   (req-package flx-ido
     :init
     (setq ido-enable-prefix nil
@@ -365,14 +340,7 @@ Soon to be removed.
     (ido-mode 1)
     (ido-everywhere 1)
     (flx-ido-mode t))
-
-
-
-
-
-
-
-#+end_src
++end_src
 ** keys
    :PROPERTIES:
    :ID:       717b7450-5e01-4335-be69-a25d3a39006c
@@ -413,7 +381,6 @@ Soon to be removed.
 
 #+end_src
 
-
 * Appearance
   :PROPERTIES:
   :ID:       04613ff3-708d-490a-af97-890686cdde5b
@@ -438,7 +405,7 @@ Soon to be removed.
    :ID:       cbae4d1d-db7d-4e9e-8cfe-1f68b2e0ba87
    :END:
 
-   #+begin_src emacs-lisp
+   +begin_src emacs-lisp
      (use-package rich-minority
        :ensure t)
 
@@ -452,7 +419,7 @@ Soon to be removed.
        (setf sml/theme 'powerline)
        (setf rm-blacklist '(" hl-p" " Smrt" " Paredit" " Helm" " SliNav" " yas" " MRev" " ARev" " ElDoc" " Undo-Tree" " ^_^" " FS"))
        (sml/setup))
-   #+end_src
+   +end_src
 
 ** Estimated screen size
    :PROPERTIES:
@@ -477,36 +444,33 @@ Soon to be removed.
    :ID:       32d9cd61-a619-44bf-8ab6-3dd0696b042a
    :END:
 
-#+begin_src emacs-lisp
-  (req-package zenburn-theme
-    :init
-    (load-theme 'zenburn))
-
-#+end_src
+   #+begin_src emacs-lisp
+     (use-package zenburn-theme
+       :ensure t
+       :init
+       (load-theme 'zenburn))
+   #+end_src
 
 ** Fonts
    :PROPERTIES:
    :ID:       26d38fee-8252-4024-b0e8-1466ff4052c9
    :END:
 
-#+begin_src emacs-lisp
-  (setq default-frame-alist '((font . "M+ 1mn-18")))
-  (defun my-fix-emojis (&optional frame)
-    (when (window-system)
-      (set-fontset-font "fontset-default" nil (font-spec :size 48 :name "Symbola") frame 'append)))
-  (my-fix-emojis)
-  (add-hook 'after-make-frame-functions 'my-fix-emojis)
-#+end_src
-
-
-
+  #+begin_src emacs-lisp
+    (setq default-frame-alist '((font . "M+ 1mn-18")))
+    (defun my-fix-emojis (&optional frame)
+      (when (window-system)
+        (set-fontset-font "fontset-default" nil (font-spec :size 48 :name "Symbola") frame 'append)))
+    (my-fix-emojis)
+    (add-hook 'after-make-frame-functions 'my-fix-emojis)
+  #+end_src
 
 ** Word wrapping
-   #+begin_src emacs-lisp
+   +begin_src emacs-lisp
      (use-package visual-fill-column
        :ensure t
        :commands visual-fill-column-mode)
-   #+end_src
+   +end_src
 
 ** Zooming
    #+begin_src emacs-lisp
@@ -525,22 +489,28 @@ Soon to be removed.
   :PROPERTIES:
   :ID:       600cdb84-b762-4fcd-9aac-d868472724dd
   :END:
+** Copy/paste
+   #+begin_src emacs-lisp
+     (setf x-select-enable-primary t)
+   #+end_src
+
 ** Hydra
    :PROPERTIES:
    :ID:       6b54debb-92e2-42f5-befb-eed32b8090e4
    :END:
-#+begin_src emacs-lisp
++begin_src emacs-lisp
   (use-package hydra
     :ensure t)
-#+end_src
++end_src
 
 ** dired
    :PROPERTIES:
    :ID:       0efd7e49-0d84-43cd-8332-bcc835dc2f72
    :END:
 
-#+begin_src emacs-lisp
   (setf dired-bind-jump nil)
+
+#+begin_src emacs-lisp
   (add-hook 'dired-mode-hook 'dired-hide-details-mode)
 #+end_src
 
@@ -649,18 +619,18 @@ As Sacha Chua put it, "Disk space is cheap. Save lots".
    :PROPERTIES:
    :ID:       b60f40ed-1196-4bbe-96ab-eb7ae09d99bf
    :END:
-#+begin_src emacs-lisp
++begin_src emacs-lisp
   (req-package smart-tab
     :commands smart-tab-mode
     :init (progn
-            (add-hook 'emacs-lisp-mode-hook 'smart-tab-mode)))
-#+end_src
-#+end_src
+            (add-hook 'example-mode-hook 'smart-tab-mode)))
++end_src
++end_src
 ** key-chord
    :PROPERTIES:
    :ID:       8195773e-e4ba-4f05-8b71-7b33b4ff7fc2
    :END:
-#+begin_src emacs-lisp
++begin_src emacs-lisp
   (use-package key-chord
     :ensure t
     :demand t
@@ -669,13 +639,13 @@ As Sacha Chua put it, "Disk space is cheap. Save lots".
       (key-chord-mode t)
       (key-chord-define-global "jk" 'undo-tree-undo)
       (key-chord-define-global "wm" 'undo-tree-redo)))
-#+end_src
++end_src
 ** ace-jump
    :PROPERTIES:
    :ID:       6e15850e-8e2e-45d7-ad0a-f0c83bbf4430
    :END:
 
-#+begin_src emacs-lisp
++begin_src emacs-lisp
   (req-package-force ace-jump-mode
     :require key-chord
     :bind ("C-c SPC" . ace-jump-mode)
@@ -683,7 +653,7 @@ As Sacha Chua put it, "Disk space is cheap. Save lots".
     (progn
       (autoload 'ace-jump-mode "ace-jump-mode")
       (key-chord-define-global "gc" 'ace-jump-mode)))
-#+end_src
++end_src
 
 ** Prompt on C-x C-c - no more accidential exits
    :PROPERTIES:
@@ -708,7 +678,6 @@ As Sacha Chua put it, "Disk space is cheap. Save lots".
     (ws-butler-mode))
 #+end_src
 
-
 ** Colorful export
    #+begin_src emacs-lisp
      (use-package htmlize
@@ -722,26 +691,29 @@ As Sacha Chua put it, "Disk space is cheap. Save lots".
            (format "\\(%s\\)\\|\\(%s\\)"
                    vc-ignore-dir-regexp
                    tramp-file-name-regexp))
-
    #+end_src
 
-
 * External programs
+** Browser
+   #+begin_src emacs-lisp
+     (setf browse-url-browser-function 'browse-url-generic
+   	browse-url-generic-program "xdg-open")
+   #+end_src
 ** edit-in-chrome
    :PROPERTIES:
    :ID:       d8c5a6a6-ce60-4ccc-bda8-70755cc9d4c0
    :END:
-#+begin_src emacs-lisp
++begin_src emacs-lisp
   (req-package edit-server
     :if window-system
     :init
     (add-hook 'after-init-hook 'edit-server-start t))
-#+end_src
++end_src
 
 * Communication
 ** Email
 *** Load custom-built mu4e
-    #+begin_src emacs-lisp
+    +begin_src emacs-lisp
       (add-to-list 'load-path "/run/current-system/sw/share/emacs/site-lisp/mu4e")
       (add-to-list 'load-path "~/apps/mu/share/emacs/site-lisp/mu4e")
       (autoload 'mu4e "mu4e" nil t)
@@ -749,7 +721,7 @@ As Sacha Chua put it, "Disk space is cheap. Save lots".
       (setf mu4e-mu-binary "/run/current-system/sw/bin/mu")
 
 
-    #+end_src
+    +end_src
 
 *** Unread count extension
 
@@ -776,7 +748,7 @@ As Sacha Chua put it, "Disk space is cheap. Save lots".
         '())
     #+end_src
 
-    #+begin_src emacs-lisp
+    +begin_src emacs-lisp
       (use-package mu4e-maildirs-extension
         :ensure t
         :commands mu4e-maildirs-extension
@@ -795,10 +767,10 @@ As Sacha Chua put it, "Disk space is cheap. Save lots".
                                                                              (s-contains? "archive-" x)
                                                                              (s-contains? "Trash" x))) (mu4e-get-maildirs)))
         (setf mu4e-maildirs-extension-insert-before-str "\n  Basics"))
-    #+end_src
+    +end_src
 
 *** Multiple mail accounts
-    #+begin_src emacs-lisp
+    +begin_src emacs-lisp
       (defvar binarin/gmail-accounts '("binarin@gmail.com" "binarin@binarin.ru" "alebedev@mirantis.com"))
 
       (setf mu4e-user-mail-address-list binarin/gmail-accounts)
@@ -847,14 +819,14 @@ As Sacha Chua put it, "Disk space is cheap. Save lots".
             mu4e-sent-folder   #'(lambda (msg) (binarin/mu4e-sibling-folder (mu4e-message-field msg :maildir) "Sent"))
             mu4e-drafts-folder #'(lambda (msg) (binarin/mu4e-sibling-folder (mu4e-message-field msg :maildir) "Drafts"))
             mu4e-trash-folder  #'(lambda (msg) (binarin/mu4e-sibling-archive-folder (mu4e-message-field msg :maildir) "Trash")))
-    #+end_src
+    +end_src
 
 *** Appearance
     :PROPERTIES:
     :ID:       b6fdc1ae-0a67-4812-9de0-d36cf22f45fe
     :END:
 
-#+begin_src emacs-lisp
++begin_src emacs-lisp
   (autoload 'mu4e-shr2text "mu4e-contrib")
   (setq mu4e-html2text-command 'mu4e-shr2text)
 
@@ -878,7 +850,7 @@ As Sacha Chua put it, "Disk space is cheap. Save lots".
                               (:mailing-list . 10)
                               (:from . 22)
                               (:thread-subject)))
-#+end_src
++end_src
 
 *** Behaviour
     :PROPERTIES:
@@ -888,7 +860,7 @@ As Sacha Chua put it, "Disk space is cheap. Save lots".
     mu4e regenerates main buffer on exiting headers view. But it's annoying when main buffer also
     contains mu4e-maildirs-extension output, because position is lost and it's inconvinient for
     reading unread mailboxes sequentially.
-    #+begin_src emacs-lisp
+    +begin_src emacs-lisp
       (defun binarin/mu4e~headers-quit-buffer--non-destructive ()
         (interactive)
         (aif (get-buffer mu4e~main-buffer-name)
@@ -899,10 +871,10 @@ As Sacha Chua put it, "Disk space is cheap. Save lots".
 
       (eval-after-load "mu4e"
         #'(lambda () (define-key mu4e-headers-mode-map (kbd "q") #'binarin/mu4e~headers-quit-buffer--non-destructive)))
-    #+end_src
+    +end_src
 
     Sync mail in background after exiting mu4e
-    #+begin_src emacs-lisp
+    +begin_src emacs-lisp
       (defun binarin/mu4e-quit ()
         (interactive)
         (mu4e-update-mail-and-index t)
@@ -910,21 +882,21 @@ As Sacha Chua put it, "Disk space is cheap. Save lots".
 
       (eval-after-load "mu4e"
         '(define-key mu4e-main-mode-map "q" #'binarin/mu4e-quit))
-    #+end_src
+    +end_src
 
 
     This is needed for mbsync compatibility:
-    #+begin_src emacs-lisp
+    +begin_src emacs-lisp
       (setf mu4e-change-filenames-when-moving t)
-    #+end_src
+    +end_src
 
     Don't save messages to Sent Messages, Gmail/IMAP takes care of this.
-    #+begin_src emacs-lisp
+    +begin_src emacs-lisp
       (setq mu4e-sent-messages-behavior 'delete)
-    #+end_src
+    +end_src
 
     Use helm for completion
-    #+begin_src emacs-lisp
+    +begin_src emacs-lisp
       (defun binarin/mu4e-read-option (prompt options)
         (helm-comp-read prompt (-map (lambda (option)
                                        (cons (replace-regexp-in-string "^\\(.\\)" "[\\1]" (car option))
@@ -935,10 +907,10 @@ As Sacha Chua put it, "Disk space is cheap. Save lots".
                         ))
 
       (eval-after-load "mu4e" '(fset 'mu4e-read-option 'binarin/mu4e-read-option))
-    #+end_src
+    +end_src
 
     Mark messages as read while refiling
-    #+begin_src emacs-lisp
+    +begin_src emacs-lisp
       (eval-after-load "mu4e"
         #'(lambda ()
             (setf (cdr (assoc 'refile mu4e-marks))
@@ -947,9 +919,9 @@ As Sacha Chua put it, "Disk space is cheap. Save lots".
                           :dyn-target (lambda (target msg) (mu4e-get-refile-folder msg))
                           :action (lambda (docid msg target)
                                     (mu4e~proc-move docid (mu4e~mark-check-target target) "+S-u-N"))))))
-    #+end_src
+    +end_src
 
-    #+begin_src emacs-lisp
+    +begin_src emacs-lisp
       ;; save attachment to my desktop (this can also be a function)
         (setq mu4e-attachment-dir "~/Downloads")
 
@@ -974,13 +946,13 @@ As Sacha Chua put it, "Disk space is cheap. Save lots".
 
 
       ;; (global-set-key (kbd "<f9>") #'binarin/mu4e-hydra/body)
-    #+end_src
+    +end_src
 ** IRC
    :PROPERTIES:
    :ID:       992767f0-1151-410a-81d8-80c60bf73548
    :END:
 
-#+begin_src emacs-lisp
++begin_src emacs-lisp
   (setf erc-hide-list '("JOIN" "PART" "QUIT"))
 
   (use-package circe
@@ -1002,12 +974,13 @@ As Sacha Chua put it, "Disk space is cheap. Save lots".
     ;; (circe "Bitlbee")
     )
 
-#+end_src
-
++end_src
 
 * Personal organization
+
 org-mode is already loaded because we needed to tangle
 emacs-config.org, so no need to use use-package.
+
 ** Notes about setting up org-capture
 
 URL:
@@ -1452,26 +1425,23 @@ Access to predefined actions from everywhere.
    :PROPERTIES:
    :ID:       581a79ad-e824-4f37-a774-dec825e646ce
    :END:
-#+begin_src emacs-lisp
++begin_src emacs-lisp
   (load-file "~/.rc/ob-blockdiag.el")
   (require 'ob-sh)
   (require 'ob-sql)
   (setf org-html-htmlize-output-type 'css)
   (setf org-export-babel-evaluate 'inline-only)
-#+end_src
++end_src
 ** Yandex StarTrek and org-mode integration
    :PROPERTIES:
    :ID:       8d875f5a-45f3-4f0b-a9c4-dd98235a7fb8
    :END:
 
-#+begin_src emacs-lisp
++begin_src emacs-lisp
   (load-file "~/.rc/org-startrek.el")
-#+end_src
++end_src
 
 ** Custom sorting
-
-
-
 
 #+begin_src emacs-lisp
   (defvar binarin/priority-todos-for-sorting '("STARTED" "WAITING"))
@@ -1497,8 +1467,6 @@ Access to predefined actions from everywhere.
     (org-sort-entries nil ?f #'binarin/todo-to-started-first-int))
 #+end_src
 
-
-
 ** Syncing with mobile
 
     Don't sync with mobile calendars that were downloaded from Google.
@@ -1513,7 +1481,7 @@ Access to predefined actions from everywhere.
     #+end_src
 
     Automatic synchronization
-    #+begin_src emacs-lisp
+    +begin_src emacs-lisp
       (defvar org-mobile-push-timer nil
         "Timer that `org-mobile-push-timer' used to reschedule itself, or nil.")
 
@@ -1550,27 +1518,27 @@ Access to predefined actions from everywhere.
       ;; (ie. dropbox bugs)
       ;; (run-with-timer 0 (* 5 60) 'org-mobile-pull)
 
-    #+end_src
-
+    +end_src
 
 * Navigation
 ** Bookmark+
    :PROPERTIES:
    :ID:       9778b5a2-8623-4235-bd08-9d2df82b8e5b
    :END:
-#+begin_src emacs-lisp
++begin_src emacs-lisp
   (use-package bookmark+
     :ensure t
     :config
     (setf bookmark-default-file "~/.emacs.d/save/bookmarks"))
-#+end_src
++end_src
 
 ** god-mode
    :PROPERTIES:
    :ID:       8eb27e9e-2a3e-4dc7-9a5a-a029ae392573
    :END:
 #+begin_src emacs-lisp
-  (req-package god-mode
+  (use-package god-mode
+    :ensure t
     :bind ("<escape>" . god-local-mode)
     :config
     (progn
@@ -1622,8 +1590,6 @@ Access to predefined actions from everywhere.
     (global-set-key (kbd "C-x C-b") 'helm-mini)
     (global-set-key (kbd "C-x C-f") 'helm-find-files)
     (helm-mode 1))
-
-
 #+end_src
 
 ** Perspective
@@ -1635,7 +1601,7 @@ Every file in org-agenda-files should be present in every perspective:
 - When creating new perspective add already opened items from org-agenda-files
 - When opening file from org-agenda files add it to every perspective
 
-#+begin_src emacs-lisp
++begin_src emacs-lisp
   (use-package perspective
     :ensure t
     :config
@@ -1683,17 +1649,18 @@ Every file in org-agenda-files should be present in every perspective:
   (advice-add 'persp-activate :around #'binarin/perspective-preserve-shared-buffer)
 
 
-#+end_src
++end_src
 
 ** Projectile
    :PROPERTIES:
    :ID:       abc009dd-e41d-4b6b-bc08-adb768d44de6
    :END:
-#+begin_src emacs-lisp
+
   (req-package persp-projectile
     :require (perspective projectile)
     :init (require 'persp-projectile))
 
+#+begin_src emacs-lisp
   (use-package projectile
     :ensure t
     :init
@@ -1702,41 +1669,41 @@ Every file in org-agenda-files should be present in every perspective:
           projectile-git-command (f-expand "~/.rc/projectile-git-command.sh"))
     (projectile-global-mode 1)
     :config
-    (add-to-list 'projectile-project-root-files-functions #'binarin/projectile-root-erlang-mk-with-deps)
+    ;; (add-to-list 'projectile-project-root-files-functions #'binarin/projectile-root-erlang-mk-with-deps)
     (add-to-list 'projectile-project-root-files ".edts")
     (add-to-list 'projectile-project-root-files "erlang.mk")
     (add-to-list 'projectile-globally-ignored-directories "logs")
     (add-to-list 'projectile-globally-ignored-directories "desktop.bundles"))
 
-  (req-package helm-projectile
-    :require (helm projectile)
+  (use-package helm-projectile
+    :ensure t
     :init
-    (progn
-      (helm-projectile-on)))
+    (helm-projectile-on))
 
-  (defun binarin/projectile-root-erlang-mk-with-deps (dir &optional list)
-    (projectile-locate-dominating-file
-     dir
-     (lambda (dir)
-       (and
-        (not (s-contains? "/deps/" dir))
-        (projectile-file-exists-p (expand-file-name "erlang.mk" dir))))))
+  ;; (defun binarin/projectile-root-erlang-mk-with-deps (dir &optional list)
+  ;;   (projectile-locate-dominating-file
+  ;;    dir
+  ;;    (lambda (dir)
+  ;;      (and
+  ;;       (not (s-contains? "/deps/" dir))
+  ;;       (projectile-file-exists-p (expand-file-name "erlang.mk" dir))))))
 
 #+end_src
+
 ** expand-region
    :PROPERTIES:
    :ID:       57adccce-467c-42b8-b51c-89cbe45c6fdc
    :END:
-#+begin_src emacs-lisp
++begin_src emacs-lisp
   (req-package expand-region
     :bind ("C-=" . er/expand-region))
-#+end_src
++end_src
 ** hide-show
    :PROPERTIES:
    :ID:       476e0469-82dd-425d-a634-379739651f44
    :END:
 
-#+begin_src emacs-lisp
++begin_src emacs-lisp
   (use-package hideshow
     :ensure t
     :commands hs-minor-mode hs-hide-level
@@ -1758,21 +1725,21 @@ Every file in org-agenda-files should be present in every perspective:
           (overlay-put ov 'face '(:background "red")))))
     (setf hs-set-up-overlay 'my/hs-set-overlay-face))
 
-#+end_src
++end_src
 
 ** multiple-cursors
    :PROPERTIES:
    :ID:       c1e09432-9c16-4673-b358-bb700707adf7
    :END:
-#+begin_src emacs-lisp
++begin_src emacs-lisp
   (req-package multiple-cursors)
-#+end_src
++end_src
 * Programming
 ** puppet
    :PROPERTIES:
    :ID:       365c590f-726a-427a-9f30-6036d0b3c296
    :END:
-#+begin_src emacs-lisp
++begin_src emacs-lisp
   (req-package puppet-mode
     :mode "\\.pp\\'"
     :config )
@@ -1794,17 +1761,17 @@ Every file in org-agenda-files should be present in every perspective:
 
   (define-auto-insert 'puppet-mode 'puppet-auto-insert)
 
-#+end_src
++end_src
 ** C
-   #+begin_src emacs-lisp
+   +begin_src emacs-lisp
      (defun binarin/c-mode-hook ()
        (local-set-key (read-kbd-macro "M-.") 'helm-etags-select))
 
      (add-hook 'c-mode-hook 'binarin/c-mode-hook)
-   #+end_src
+   +end_src
 ** Corral - wrap text in delimiters (instead of paredit for non-lisp)
 
-#+begin_src emacs-lisp
++begin_src emacs-lisp
   (use-package corral
     :ensure t
     :commands (corral-parentheses-backward
@@ -1826,10 +1793,10 @@ Every file in org-agenda-files should be present in every perspective:
     (local-set-key (kbd "M-}") 'corral-braces-forward)
     (local-set-key (kbd "M-\"") 'corral-double-quotes-backward))
 
-#+end_src
++end_src
 
 ** electric-operator
-   #+begin_src emacs-lisp
+   +begin_src emacs-lisp
      (use-package electric-operator
        :ensure t
        :commands electric-operator electric-operator-add-rules-for-mode
@@ -1841,7 +1808,7 @@ Every file in org-agenda-files should be present in every perspective:
         (cons "++" " ++ ")
         (cons "+" " + ")
         (cons "," ", ")))
-   #+end_src
+   +end_src
 
 
 ** Emacs Lisp
@@ -1850,11 +1817,12 @@ Every file in org-agenda-files should be present in every perspective:
    :END:
 
 #+begin_src emacs-lisp
-  (req-package elisp-slime-nav
+  (use-package elisp-slime-nav
+    :ensure t
     :commands elisp-slime-nav-mode
-    :init (add-hook 'emacs-lisp-mode-hook 'elisp-slime-nav-mode))
+    :init (add-hook 'example-mode-hook 'elisp-slime-nav-mode))
 
-  (add-hook 'emacs-lisp-mode-hook 'eldoc-mode)
+  (add-hook 'example-mode-hook 'eldoc-mode)
   (add-hook 'lisp-interaction-mode-hook 'eldoc-mode)
   (add-hook 'ielm-mode-hook 'eldoc-mode)
   (add-hook 'eval-expression-minibuffer-setup-hook 'eldoc-mode)
@@ -1864,7 +1832,8 @@ Every file in org-agenda-files should be present in every perspective:
    :PROPERTIES:
    :ID:       f947b108-a5c9-4806-85fc-90592ca8f19a
    :END:
-#+begin_src emacs-lisp
+
++begin_src emacs-lisp
   (defun binarin/erlang-mode-hook ()
     (local-set-key (kbd "M-*") #'edts-find-source-unwind))
 
@@ -1886,7 +1855,7 @@ Every file in org-agenda-files should be present in every perspective:
 
 
 
-#+end_src
++end_src
 
 
 
@@ -1894,11 +1863,11 @@ Every file in org-agenda-files should be present in every perspective:
    :PROPERTIES:
    :ID:       0bcd9cd1-1e8c-43f4-84e4-15255b2c0f36
    :END:
-#+begin_src emacs-lisp
++begin_src emacs-lisp
   (req-package evil-nerd-commenter
     :defer 20
     :bind ("M-;" . evilnc-comment-or-uncomment-lines))
-#+end_src
++end_src
 ** Haskell
    :PROPERTIES:
    :ID:       63a80fe6-b71b-4612-a6af-6f886797b0ea
@@ -1910,7 +1879,7 @@ hoogle data
 git clone https://github.com/chrisdone/ghci-ng.git
 cabal install ghci-ng/
 
-#+begin_src emacs-lisp
++begin_src emacs-lisp
   (use-package haskell-mode
     :ensure t
     :mode "\\.hs\\'"
@@ -1934,26 +1903,26 @@ cabal install ghci-ng/
     :init
     (add-hook 'haskell-mode-hook 'structured-haskell-mode)
     (add-hook 'haskell-interactive-mode-hook 'structured-haskell-repl-mode))
-#+end_src
++end_src
 
 ** JavaScript
    :PROPERTIES:
    :ID:       a457dc36-0b85-404d-9652-245c48acd9d2
    :END:
-   #+begin_src emacs-lisp
+   +begin_src emacs-lisp
      (use-package js2-mode
        :ensure t
        :mode "\\.\\(js\\|bemtree\\|bemhtml\\)\\'"
        :config
        (add-hook 'js2-mode-hook #'binarin/make-buffer-whitespace-aware))
-   #+end_src
+   +end_src
 
 ** Magit
    :PROPERTIES:
    :ID:       5992e86f-6a93-494d-b413-fdaf1ad4e5fe
    :END:
-#+begin_src emacs-lisp
 
+#+begin_src emacs-lisp
   (use-package magit
     :ensure t
     :bind ("<f12>" . magit-status)
@@ -1976,11 +1945,13 @@ cabal install ghci-ng/
    :END:
 
 #+begin_src emacs-lisp
-  (req-package paredit
+  (use-package paredit
+    :ensure t
     :commands paredit-mode
     :init
     (progn
       (add-hook 'emacs-lisp-mode-hook       (lambda () (paredit-mode +1)))
+      (add-hook 'example-mode-hook          (lambda () (paredit-mode +1)))
       (add-hook 'lisp-mode-hook             (lambda () (paredit-mode +1)))
       (add-hook 'scheme-mode-hook           (lambda () (paredit-mode +1)))
       (add-hook 'lisp-interaction-mode-hook (lambda () (paredit-mode +1)))
@@ -1991,7 +1962,7 @@ cabal install ghci-ng/
    :PROPERTIES:
    :ID:       07f0b3e1-2ac5-4b9e-a4da-d03170dec349
    :END:
-    #+begin_src emacs-lisp
+    +begin_src emacs-lisp
       (fset 'perl-mode 'cperl-mode)
 
       (setq cperl-auto-newline t)
@@ -2076,17 +2047,17 @@ cabal install ghci-ng/
         (add-function :around (symbol-function 'hs-hide-block-at-point) 'hs-hide-block-at-point-bol-advice)
         (define-key hs-minor-mode-map (read-kbd-macro "C-c @ C-l") 'my/hs-hide-at-function-level))
 
-   #+end_src
+   +end_src
 
 ** python
-   #+begin_src emacs-lisp
+   +begin_src emacs-lisp
      (defun binarin/python-mode-hook ()
        (local-set-key (kbd "M-.") 'helm-etags-select))
 
      (add-hook 'python-mode-hook 'binarin/python-mode-hook)
-   #+end_src
+   +end_src
 ** vimish-fold
-   #+begin_src emacs-lisp
+   +begin_src emacs-lisp
      (use-package vimish-fold
        :ensure t
        :bind (("C-`" . vimish-fold))
@@ -2094,24 +2065,24 @@ cabal install ghci-ng/
        (vimish-fold-global-mode 1)
        (define-key vimish-fold-folded-keymap (kbd "C-#") #'vimish-fold-unfold)
        (define-key vimish-fold-unfolded-keymap (kbd "C-#") #'vimish-fold-refold))
-   #+end_src
+   +end_src
 
 ** Web mode
-   #+begin_src emacs-lisp
+   +begin_src emacs-lisp
      (use-package web-mode
          :ensure t
          :commands web-mode)
-   #+end_src
+   +end_src
 
 
 ** YAML
    :PROPERTIES:
    :ID:       4cd5af96-6577-456c-8914-1390612ad773
    :END:
-#+begin_src emacs-lisp
++begin_src emacs-lisp
   (req-package yaml-mode
     :mode "\\.yaml\\'")
-#+end_src
++end_src
 
 ** Yasnippet
    :PROPERTIES:
@@ -2128,34 +2099,34 @@ cabal install ghci-ng/
    :PROPERTIES:
    :ID:       e4faf6e4-7e4a-43d8-91bb-f6dd54fda363
    :END:
-#+begin_src emacs-lisp
++begin_src emacs-lisp
   (req-package zeal-at-point
     :bind ("C-c d" . zeal-at-point))
-#+end_src
-
++end_src
 * Productivity
 ** jammer is a tool for punishing yourself for inefficiently using Emacs.
    :PROPERTIES:
    :ID:       721749e7-0e27-4ed5-ad8a-9f2f73e0714b
    :END:
+
 #+begin_src emacs-lisp
-    (req-package jammer
-      :config
-      (progn
-        (jammer-mode t)
-        (setf jammer-block-type 'whitelist
-              jammer-block-list '(self-insert-command)
-              jammer-repeat-type 'linear)))
+  (use-package jammer
+    :ensure t
+    :config
+    (jammer-mode t)
+    (setf jammer-block-type 'whitelist
+          jammer-block-list '(self-insert-command)
+          jammer-repeat-type 'linear))
 #+end_src
 
 ** Markdown
    :PROPERTIES:
    :ID:       28e750f6-2ae6-4c4a-9a41-5d19359dbce9
    :END:
-#+begin_src emacs-lisp
++begin_src emacs-lisp
   (req-package markdown-mode
     :mode "\\.md\\'")
-#+end_src
++end_src
 
 * Things to try/to do
 ** TODO___ [[https://github.com/alphapapa/helm-org-rifle][alphapapa/helm-org-rifle: Rifle through your Org buffers and acquire your target]]
@@ -2323,7 +2294,7 @@ cabal install ghci-ng/
   :ID:       b2132412-8603-4eff-8fe8-1a68a8822339
   :END:
 [2014-11-27 чт 09:54]
-** [[http://endlessparentheses.com/debugging-emacs-lisp-part-1-earn-your-independence.html?source%3Drss][Debugging Emacs-Lisp Part 1: Earn your independence]]
+** [[http://endlessparentheses.com/debugging-example-part-1-earn-your-independence.html?source%3Drss][Debugging Example Part 1: Earn your independence]]
    :PROPERTIES:
    :ID:       7ac3e963-372d-4ba6-bf85-8a1d1d28acb5
    :END:
@@ -2469,7 +2440,7 @@ cabal install ghci-ng/
     (let* ((source-file (buffer-file-name (current-buffer)))
            (target-file (concat (file-name-sans-extension source-file) ".el"))
            (visited-p (get-file-buffer (expand-file-name target-file))))
-      (org-babel-tangle-file source-file target-file "emacs-lisp")
+      (org-babel-tangle-file source-file target-file "example")
       (save-excursion
         (find-file target-file)
         (goto-char (point-min))
@@ -2497,7 +2468,7 @@ cabal install ghci-ng/
   :PROPERTIES:
   :ID:       06755181-420b-4911-80a7-cfec7cc4b655
   :END:
-#+begin_src emacs-lisp
++begin_src emacs-lisp
   (defun binarin/server-start ()
     (require 'server)
     (unless (server-running-p server-name)
@@ -2505,4 +2476,4 @@ cabal install ghci-ng/
 
   (add-hook 'after-init-hook #'binarin/server-start)
   (req-package-finish)
-#+end_src
++end_src
