@@ -28,3 +28,9 @@ EOF
 # rsync -avz ~/.emacs.d/vim/zenburn/colors/ "$hostname":.vim/colors/
 # rsync -avz ~/.emacs.d/.vimrc "$hostname":.vimrc
 # rsync -avz ~/.emacs.d/repl.rc "$hostname":.re.pl/repl.rc
+
+if ! ssh "$hostname" "command diff-so-fancy" > /dev/null 2>&1 ; then
+    ssh "$hostname" "mkdir -p ~/apps ~/bin"
+    ssh "$hostname" "git clone https://github.com/so-fancy/diff-so-fancy ~/apps/diff-so-fancy"
+    ssh "$hostname" "cp -sn ~/apps/diff-so-fancy/diff-so-fancy ~/bin"
+fi
