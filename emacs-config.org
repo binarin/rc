@@ -268,13 +268,6 @@ So there will be no more package-installed-p/package-install dance in this file.
   (display-time-mode -1)
   (setq display-time-24hr-format t)
 
-  (setq frame-title-format
-        '((:eval (if (buffer-file-name)
-                     (abbreviate-file-name (buffer-file-name))
-                   "%b"))
-          " - "
-          invocation-name))
-
   (blink-cursor-mode -1)
   (setq inhibit-startup-screen t)
 
@@ -348,7 +341,6 @@ So there will be no more package-installed-p/package-install dance in this file.
 #+begin_src emacs-lisp
   (global-set-key [f2]  'save-buffer)
 
-  (global-set-key [f3]  'find-file)
   (global-set-key [C-f3]
                                   (lambda ()
                                     (interactive)
@@ -385,6 +377,23 @@ So there will be no more package-installed-p/package-install dance in this file.
   :PROPERTIES:
   :ID:       04613ff3-708d-490a-af97-890686cdde5b
   :END:
+
+** Set window title
+   Full name in window title, will be shown in xmobar.
+
+   #+begin_src emacs-lisp
+       (setq frame-title-format
+             '((:eval (if (buffer-file-name)
+                          (abbreviate-file-name (buffer-file-name))
+                        "%b"))
+               " - "
+               invocation-name))
+   #+end_src
+
+
+
+
+** truncate lines by default
 #+begin_src emacs-lisp
   (setq-default truncate-lines t)
 #+end_src
@@ -466,11 +475,11 @@ So there will be no more package-installed-p/package-install dance in this file.
   #+end_src
 
 ** Word wrapping
-   +begin_src emacs-lisp
+   #+begin_src emacs-lisp
      (use-package visual-fill-column
        :ensure t
        :commands visual-fill-column-mode)
-   +end_src
+   #+end_src
 
 ** Zooming
    #+begin_src emacs-lisp
@@ -713,15 +722,13 @@ As Sacha Chua put it, "Disk space is cheap. Save lots".
 * Communication
 ** Email
 *** Load custom-built mu4e
-    +begin_src emacs-lisp
+    #+begin_src emacs-lisp
       (add-to-list 'load-path "/run/current-system/sw/share/emacs/site-lisp/mu4e")
       (add-to-list 'load-path "~/apps/mu/share/emacs/site-lisp/mu4e")
       (autoload 'mu4e "mu4e" nil t)
 
       (setf mu4e-mu-binary "/run/current-system/sw/bin/mu")
-
-
-    +end_src
+    #+end_src
 
 *** Unread count extension
 
@@ -748,7 +755,7 @@ As Sacha Chua put it, "Disk space is cheap. Save lots".
         '())
     #+end_src
 
-    +begin_src emacs-lisp
+    #+begin_src emacs-lisp
       (use-package mu4e-maildirs-extension
         :ensure t
         :commands mu4e-maildirs-extension
@@ -767,13 +774,14 @@ As Sacha Chua put it, "Disk space is cheap. Save lots".
                                                                              (s-contains? "archive-" x)
                                                                              (s-contains? "Trash" x))) (mu4e-get-maildirs)))
         (setf mu4e-maildirs-extension-insert-before-str "\n  Basics"))
-    +end_src
+    #+end_src
 
 *** Multiple mail accounts
-    +begin_src emacs-lisp
+    #+begin_src emacs-lisp
       (defvar binarin/gmail-accounts '("binarin@gmail.com" "binarin@binarin.ru" "alebedev@mirantis.com"))
 
-      (setf mu4e-user-mail-address-list binarin/gmail-accounts)
+      (setf mu4e-user-mail-address-list binarin/gmail-accounts
+            mu4e-context-policy 'pick-first)
 
       (defun binarin/gmail-maildir (email dir)
         (concat "/" email "/" dir))
@@ -819,14 +827,14 @@ As Sacha Chua put it, "Disk space is cheap. Save lots".
             mu4e-sent-folder   #'(lambda (msg) (binarin/mu4e-sibling-folder (mu4e-message-field msg :maildir) "Sent"))
             mu4e-drafts-folder #'(lambda (msg) (binarin/mu4e-sibling-folder (mu4e-message-field msg :maildir) "Drafts"))
             mu4e-trash-folder  #'(lambda (msg) (binarin/mu4e-sibling-archive-folder (mu4e-message-field msg :maildir) "Trash")))
-    +end_src
+    #+end_src
 
 *** Appearance
     :PROPERTIES:
     :ID:       b6fdc1ae-0a67-4812-9de0-d36cf22f45fe
     :END:
 
-+begin_src emacs-lisp
+#+begin_src emacs-lisp
   (autoload 'mu4e-shr2text "mu4e-contrib")
   (setq mu4e-html2text-command 'mu4e-shr2text)
 
@@ -850,7 +858,7 @@ As Sacha Chua put it, "Disk space is cheap. Save lots".
                               (:mailing-list . 10)
                               (:from . 22)
                               (:thread-subject)))
-+end_src
+#+end_src
 
 *** Behaviour
     :PROPERTIES:
@@ -860,7 +868,7 @@ As Sacha Chua put it, "Disk space is cheap. Save lots".
     mu4e regenerates main buffer on exiting headers view. But it's annoying when main buffer also
     contains mu4e-maildirs-extension output, because position is lost and it's inconvinient for
     reading unread mailboxes sequentially.
-    +begin_src emacs-lisp
+    #+begin_src emacs-lisp
       (defun binarin/mu4e~headers-quit-buffer--non-destructive ()
         (interactive)
         (aif (get-buffer mu4e~main-buffer-name)
@@ -871,10 +879,10 @@ As Sacha Chua put it, "Disk space is cheap. Save lots".
 
       (eval-after-load "mu4e"
         #'(lambda () (define-key mu4e-headers-mode-map (kbd "q") #'binarin/mu4e~headers-quit-buffer--non-destructive)))
-    +end_src
+    #+end_src
 
     Sync mail in background after exiting mu4e
-    +begin_src emacs-lisp
+    #+begin_src emacs-lisp
       (defun binarin/mu4e-quit ()
         (interactive)
         (mu4e-update-mail-and-index t)
@@ -882,21 +890,21 @@ As Sacha Chua put it, "Disk space is cheap. Save lots".
 
       (eval-after-load "mu4e"
         '(define-key mu4e-main-mode-map "q" #'binarin/mu4e-quit))
-    +end_src
+    #+end_src
 
 
     This is needed for mbsync compatibility:
-    +begin_src emacs-lisp
+    #+begin_src emacs-lisp
       (setf mu4e-change-filenames-when-moving t)
-    +end_src
+    #+end_src
 
     Don't save messages to Sent Messages, Gmail/IMAP takes care of this.
-    +begin_src emacs-lisp
+    #+begin_src emacs-lisp
       (setq mu4e-sent-messages-behavior 'delete)
-    +end_src
+    #+end_src
 
     Use helm for completion
-    +begin_src emacs-lisp
+    #+begin_src emacs-lisp
       (defun binarin/mu4e-read-option (prompt options)
         (helm-comp-read prompt (-map (lambda (option)
                                        (cons (replace-regexp-in-string "^\\(.\\)" "[\\1]" (car option))
@@ -907,10 +915,10 @@ As Sacha Chua put it, "Disk space is cheap. Save lots".
                         ))
 
       (eval-after-load "mu4e" '(fset 'mu4e-read-option 'binarin/mu4e-read-option))
-    +end_src
+    #+end_src
 
     Mark messages as read while refiling
-    +begin_src emacs-lisp
+    #+begin_src emacs-lisp
       (eval-after-load "mu4e"
         #'(lambda ()
             (setf (cdr (assoc 'refile mu4e-marks))
@@ -919,9 +927,9 @@ As Sacha Chua put it, "Disk space is cheap. Save lots".
                           :dyn-target (lambda (target msg) (mu4e-get-refile-folder msg))
                           :action (lambda (docid msg target)
                                     (mu4e~proc-move docid (mu4e~mark-check-target target) "+S-u-N"))))))
-    +end_src
+    #+end_src
 
-    +begin_src emacs-lisp
+    #+begin_src emacs-lisp
       ;; save attachment to my desktop (this can also be a function)
         (setq mu4e-attachment-dir "~/Downloads")
 
@@ -938,15 +946,15 @@ As Sacha Chua put it, "Disk space is cheap. Save lots".
 
       (eval-after-load "org" '(when (fboundp 'mu4e) (binarin/lazy-load-org-mu4e)))
 
-      (defhydra binarin/mu4e-hydra (:exit t :color red)
-        "Some useful mu4e bookmarks"
-        ("i" (progn (mu4e-update-mail-and-index nil) (mu4e-headers-search "maildir:/INBOX")) "INBOX")
-        ("u" (progn (mu4e-update-mail-and-index nil) (mu4e-headers-search "flag:unread AND NOT maildir:/Trash and NOT maildir:/Lists.Yandex.bbs and NOT maildir:/Yandex.bike")) "Unread work messages")
-        ("f" (progn (mu4e-update-mail-and-index nil) (mu4e-headers-search "flag:unread AND NOT maildir:/Trash and NOT maildir:/Yandex.direct-dev and NOT maildir:/Yandex.direct-review and NOT maildir:/Yandex.perl-dev and NOT maildir:/Yandex.redrose-announces and NOT maildir:/Yandex.staff and NOT maildir:/INBOX")) "Unread fun messages"))
+      ;; (defhydra binarin/mu4e-hydra (:exit t :color red)
+      ;;   "Some useful mu4e bookmarks"
+      ;;   ("i" (progn (mu4e-update-mail-and-index nil) (mu4e-headers-search "maildir:/INBOX")) "INBOX")
+      ;;   ("u" (progn (mu4e-update-mail-and-index nil) (mu4e-headers-search "flag:unread AND NOT maildir:/Trash and NOT maildir:/Lists.Yandex.bbs and NOT maildir:/Yandex.bike")) "Unread work messages")
+      ;;   ("f" (progn (mu4e-update-mail-and-index nil) (mu4e-headers-search "flag:unread AND NOT maildir:/Trash and NOT maildir:/Yandex.direct-dev and NOT maildir:/Yandex.direct-review and NOT maildir:/Yandex.perl-dev and NOT maildir:/Yandex.redrose-announces and NOT maildir:/Yandex.staff and NOT maildir:/INBOX")) "Unread fun messages"))
 
 
       ;; (global-set-key (kbd "<f9>") #'binarin/mu4e-hydra/body)
-    +end_src
+    #+end_src
 ** IRC
    :PROPERTIES:
    :ID:       992767f0-1151-410a-81d8-80c60bf73548
@@ -1389,10 +1397,6 @@ available screen space.
 Switch to perspective (if working directory is specified).
 
 #+begin_src emacs-lisp
-  (defun binarin/org-clocked-item-properties ()
-    (when (org-clocking-p)
-      ))
-
   (defun binarin/maybe-change-perspective-on-clockin ()
     (awhen (org-entry-get org-clock-marker "WORKING_DIR" t)
       (let ((persp (or (org-entry-get org-clock-marker "PERSPECTIVE_NAME" t)
@@ -1540,11 +1544,16 @@ Access to predefined actions from everywhere.
   (use-package god-mode
     :ensure t
     :bind ("<escape>" . god-local-mode)
-    :config
-    (progn
-      (global-set-key (kbd "C-x C-1") 'delete-other-windows)
-      (global-set-key (kbd "C-x C-2") 'split-window-below)
-      (global-set-key (kbd "C-x C-3") 'split-window-right)))
+    :init
+    (god-mode)
+    (require 'god-mode-isearch)
+    (define-key isearch-mode-map (kbd "<escape>") 'god-mode-isearch-activate)
+    (define-key god-mode-isearch-map (kbd "<escape>") 'god-mode-isearch-disable)
+    (global-set-key (kbd "C-x C-1") 'delete-other-windows)
+    (global-set-key (kbd "C-x C-2") 'split-window-below)
+    (global-set-key (kbd "C-x C-3") 'split-window-right)
+    (define-key god-local-mode-map (kbd ".") 'repeat)
+    (define-key god-local-mode-map (kbd "i") 'god-local-mode))
 #+end_src
 
 ** Platinum searcher
@@ -1567,7 +1576,6 @@ Access to predefined actions from everywhere.
   (use-package helm
     :ensure t
     :config
-    (global-set-key (kbd "C-c C-h") 'helm-command-prefix)
     (global-unset-key (kbd "C-x c"))
     (require 'helm-org)
     (define-key helm-map (kbd "<tab>") 'helm-execute-persistent-action) ; rebind tab to run persistent action
@@ -1580,7 +1588,7 @@ Access to predefined actions from everywhere.
     (setq helm-quick-update                     t ; do not display invisible candidates
           helm-split-window-in-side-p           t ; open helm buffer inside current window, not occupy whole other window
           helm-buffers-fuzzy-matching           t ; fuzzy matching buffer names when non--nil
-          helm-move-to-line-cycle-in-source     t ; move to end or beginning of source when reaching top or bottom of source.
+          ;; helm-move-to-line-cycle-in-source     nil ; don't move to end or beginning of source when reaching top or bottom of source.
           helm-ff-search-library-in-sexp        t ; search for library in `require' and `declare-function' sexp.
           helm-scroll-amount                    8 ; scroll 8 lines other window using M-<next>/M-<prior>
           helm-ff-file-name-history-use-recentf t)
@@ -1589,6 +1597,8 @@ Access to predefined actions from everywhere.
     (global-set-key (kbd "M-y") 'helm-show-kill-ring)
     (global-set-key (kbd "C-x C-b") 'helm-mini)
     (global-set-key (kbd "C-x C-f") 'helm-find-files)
+    (global-set-key [f3] 'helm-find-files)
+
     (helm-mode 1))
 #+end_src
 
@@ -1735,6 +1745,41 @@ Every file in org-agenda-files should be present in every perspective:
   (req-package multiple-cursors)
 +end_src
 * Programming
+** Erlang
+   :PROPERTIES:
+   :ID:       f947b108-a5c9-4806-85fc-90592ca8f19a
+   :ARCHIVE_TIME: 2016-06-18 Сб 22:49
+   :ARCHIVE_FILE: ~/.rc/emacs-config.org
+   :ARCHIVE_OLPATH: Programming
+   :ARCHIVE_CATEGORY: emacs-config
+   :END:
+
+ +begin_src emacs-lisp
+   (defun binarin/erlang-mode-hook ()
+     (local-set-key (kbd "M-*") #'edts-find-source-unwind))
+
+   (use-package erlang
+     :ensure t
+     :mode ("\\.erl\\'" . erlang-mode)
+     :config
+     (add-hook 'erlang-mode-hook #'binarin/make-buffer-whitespace-aware)
+     (add-hook 'erlang-mode-hook #'binarin/erlang-mode-hook))
+
+   (use-package auto-complete :ensure t)
+   (use-package eproject :ensure t)
+   (use-package popup :ensure t)
+   (use-package auto-highlight-symbol :ensure t)
+
+   (when (f-dir? "~/personal-workspace/edts")
+     (add-to-list 'load-path "~/personal-workspace/edts")
+     (require 'edts-start))
+
+
+
+ +end_src
+
+
+
 ** puppet
    :PROPERTIES:
    :ID:       365c590f-726a-427a-9f30-6036d0b3c296
@@ -1833,29 +1878,28 @@ Every file in org-agenda-files should be present in every perspective:
    :ID:       f947b108-a5c9-4806-85fc-90592ca8f19a
    :END:
 
-+begin_src emacs-lisp
-  (defun binarin/erlang-mode-hook ()
-    (local-set-key (kbd "M-*") #'edts-find-source-unwind))
+#+begin_src emacs-lisp
+  ;; (defun binarin/erlang-mode-hook ()
+  ;;   (local-set-key (kbd "M-*") #'edts-find-source-unwind))
 
   (use-package erlang
     :ensure t
     :mode ("\\.erl\\'" . erlang-mode)
     :config
     (add-hook 'erlang-mode-hook #'binarin/make-buffer-whitespace-aware)
-    (add-hook 'erlang-mode-hook #'binarin/erlang-mode-hook))
+    ;;(add-hook 'erlang-mode-hook #'binarin/erlang-mode-hook)
+    )
 
-  (use-package auto-complete :ensure t)
-  (use-package eproject :ensure t)
-  (use-package popup :ensure t)
-  (use-package auto-highlight-symbol :ensure t)
+  ;; (use-package auto-complete :ensure t)
+  ;; (use-package eproject :ensure t)
+  ;; (use-package popup :ensure t)
+  ;; (use-package auto-highlight-symbol :ensure t)
 
-  (when (f-dir? "~/personal-workspace/edts")
-    (add-to-list 'load-path "~/personal-workspace/edts")
-    (require 'edts-start))
+  ;; (when (f-dir? "~/personal-workspace/edts")
+  ;;   (add-to-list 'load-path "~/personal-workspace/edts")
+  ;;   (require 'edts-start))
 
-
-
-+end_src
+#+end_src
 
 
 
@@ -1872,6 +1916,16 @@ Every file in org-agenda-files should be present in every perspective:
    :PROPERTIES:
    :ID:       63a80fe6-b71b-4612-a6af-6f886797b0ea
    :END:
+
+   #+begin_src emacs-lisp
+     (use-package intero
+       :ensure t
+       :commands intero-mode
+       :init
+       (add-hook 'haskell-mode-hook 'binarin/make-buffer-whitespace-aware)
+       (add-hook 'haskell-mode-hook 'subword-mode)
+       (add-hook 'haskell-mode-hook 'intero-mode))
+   #+end_src
 
 cabal install -j4 yeganesh hoogle hindent hlint ghc-mod hdevtools haskell-docs xmonad xmonad-contrib
 
@@ -2079,10 +2133,11 @@ cabal install ghci-ng/
    :PROPERTIES:
    :ID:       4cd5af96-6577-456c-8914-1390612ad773
    :END:
-+begin_src emacs-lisp
-  (req-package yaml-mode
+#+begin_src emacs-lisp
+  (use-package yaml-mode
+    :ensure t
     :mode "\\.yaml\\'")
-+end_src
+#+end_src
 
 ** Yasnippet
    :PROPERTIES:
@@ -2103,6 +2158,14 @@ cabal install ghci-ng/
   (req-package zeal-at-point
     :bind ("C-c d" . zeal-at-point))
 +end_src
+** compilation
+   #+begin_src emacs-lisp
+     (defun binarin/projectile-recompile (query-command?)
+       (interactive "P")
+       (let ((projectile-project-compilation-cmd "make case C=blocking_node_completely_disables_resolving S=test/cli_SUITE"))
+         (projectile-compile-project "make case C=blocking_node_completely_disables_resolving S=test/cli_SUITE")))
+     (global-set-key [f9] #'binarin/projectile-recompile)
+   #+end_src
 * Productivity
 ** jammer is a tool for punishing yourself for inefficiently using Emacs.
    :PROPERTIES:
@@ -2129,7 +2192,7 @@ cabal install ghci-ng/
 +end_src
 
 * Things to try/to do
-** TODO___ [[https://github.com/alphapapa/helm-org-rifle][alphapapa/helm-org-rifle: Rifle through your Org buffers and acquire your target]]
+** [[https://github.com/alphapapa/helm-org-rifle][alphapapa/helm-org-rifle: Rifle through your Org buffers and acquire your target]]
    :PROPERTIES:
    :ID:       7a598815-9d9c-4ae0-af9a-fbf58a7067cf
    :END:
@@ -2152,7 +2215,7 @@ cabal install ghci-ng/
 
 
 
-** TODO___ [[https://www.reddit.com/r/emacs/comments/36cq0k/corral_a_fast_intuitive_way_to_wrap_parentheses/][Corral - a fast, intuitive way to wrap parentheses and other delimiters around text]]
+** [[https://www.reddit.com/r/emacs/comments/36cq0k/corral_a_fast_intuitive_way_to_wrap_parentheses/][Corral - a fast, intuitive way to wrap parentheses and other delimiters around text]]
    :PROPERTIES:
    :ID:       90a5e876-1a4f-47dd-9acd-6b1e87e559f9
    :END:
@@ -2174,31 +2237,31 @@ cabal install ghci-ng/
    :ID:       c0ca77b7-65d2-4948-97e0-e83db65f2092
    :END:
 
-** TODO___ [[https://github.com/thierryvolpiatto/zop-to-char/][Thierry Volpiatto's wonderful zop-to-char, a better, visual replacement of zap-to-char]]
+** [[https://github.com/thierryvolpiatto/zop-to-char/][Thierry Volpiatto's wonderful zop-to-char, a better, visual replacement of zap-to-char]]
   :PROPERTIES:
   :ID:       4af1a65d-1d7f-4356-915d-d04b9bdc08e7
   :END:
 [2015-02-07 сб 14:01]
-** TODO___ [[https://github.com/bburns/clipmon][Emacs as a clipboard manager with Clipmon]]
+** [[https://github.com/bburns/clipmon][Emacs as a clipboard manager with Clipmon]]
   :PROPERTIES:
   :ID:       4065a90d-624c-4eef-8759-d21c627f1631
   :END:
 [2015-02-05 чт 09:32]
 
 
-** TODO___ [[https://www.reddit.com/r/emacs/comments/2up0h3/hydra_for_normal_state_in_helm/][Hydra for "Normal" State in Helm]]
+** [[https://www.reddit.com/r/emacs/comments/2up0h3/hydra_for_normal_state_in_helm/][Hydra for "Normal" State in Helm]]
   :PROPERTIES:
   :ID:       c3f6fde1-d263-4b5c-91b2-3a64b9b8a420
   :END:
 [2015-02-04 ср 08:16]
 
 
-** TODO___ [[http://oremacs.com/2015/01/20/introducing-hydra/][Behold The Mighty Hydra! · (or emacs]]
+** [[http://oremacs.com/2015/01/20/introducing-hydra/][Behold The Mighty Hydra! · (or emacs]]
   :PROPERTIES:
   :ID:       abff0037-77b4-4fee-a78b-184c9c02124e
   :END:
 [2015-01-21 ср 00:18]
-** TODO___ [[https://github.com/boyw165/history][History.el - History Utility For Code Navigation (similar to pop-global-mark but more powerful)]]
+** [[https://github.com/boyw165/history][History.el - History Utility For Code Navigation (similar to pop-global-mark but more powerful)]]
   :PROPERTIES:
   :ID:       f4a0d202-aaf2-451c-ab7f-022a00bf235d
   :END:
@@ -2206,26 +2269,26 @@ cabal install ghci-ng/
 
 
 
-** TODO___ [[https://github.com/josteink/wsd-mode][Create sequence-diagrams on all platforms using Emacs and the new wsd-mode package]]
+** [[https://github.com/josteink/wsd-mode][Create sequence-diagrams on all platforms using Emacs and the new wsd-mode package]]
   :PROPERTIES:
   :ID:       0cb5dc3c-3135-4e07-9751-7e123515e4bb
   :END:
 [2014-12-15 пн 20:35]
 
 
-** TODO___ [[http://definitelyaplug.b0.cx/post/dlist-a-major-mode-tutorial-5/][dlist: A Major Mode Tutorial | Definitely a plug.]]
+** [[http://definitelyaplug.b0.cx/post/dlist-a-major-mode-tutorial-5/][dlist: A Major Mode Tutorial | Definitely a plug.]]
   :PROPERTIES:
   :ID:       1adeead4-27ff-486b-a2ad-c2e0dac287ae
   :END:
 [2014-12-14 вс 18:34]
 
 
-** TODO___ [[http://blog.binchen.org/posts/advanced-tip-on-using-mozrepl-to-automatically-refresh-browser.html][Advanced tip on using mozrepl to automatically refresh browser]]
+** [[http://blog.binchen.org/posts/advanced-tip-on-using-mozrepl-to-automatically-refresh-browser.html][Advanced tip on using mozrepl to automatically refresh browser]]
   :PROPERTIES:
   :ID:       32cec936-f428-4686-9948-41710bfaaa7d
   :END:
 [2014-12-03 ср 23:30]
-** TODO___ [[https://github.com/zk-phi/phi-grep][yet another recursive editable grep implementation in Elisp (beta)]]
+** [[https://github.com/zk-phi/phi-grep][yet another recursive editable grep implementation in Elisp (beta)]]
   :PROPERTIES:
   :ID:       6d86b0c2-3468-4573-910f-921b3b66963e
   :END:
@@ -2234,7 +2297,7 @@ cabal install ghci-ng/
 
 
 
-** TODO___ [[http://www.emacswiki.org/emacs/wgrep.el][EmacsWiki: wgrep.el]]
+** [[http://www.emacswiki.org/emacs/wgrep.el][EmacsWiki: wgrep.el]]
   :PROPERTIES:
   :ID:       0f959938-51e1-4c7d-b39c-f758ec086cf1
   :END:
@@ -2399,60 +2462,9 @@ cabal install ghci-ng/
 ** https://github.com/rejeep/f.el
 ** https://github.com/jwiegley/emacs-async
 ** https://github.com/ShingoFukuyama/ov.el
-* Discarded experiments
-** ack-grep
-   :PROPERTIES:
-   :ID:       731a908d-9d07-4c31-ad24-0108ee86f74e
-   :END:
-
-#+begin_example
-  ;; (req-package ack-and-a-half
-  ;;   :commands (ack-and-a-half ack)
-  ;;   :config (defalias 'ack 'ack-and-a-half))
-  (req-package helm-ack
-    :commands (helm-ack)
-    :config (progn
-              (setf helm-ack-base-command "ack-grep -H --nocolor --nogroup")))
-#+end_example
-
-** firestarter - running commands on save
-   :PROPERTIES:
-   :ID:       f79d0e04-bfd5-4259-aefa-9158ac5cdeeb
-   :END:
-
-#+begin_example
-  (use-package firestarter
-    :ensure t
-    :init
-    (setf firestarter-lighter " FS")
-    (firestarter-mode))
-#+end_example
-
-
-*** Byte-compiling this file itself
-  :PROPERTIES:
-  :ID:       3541fa88-152f-4a5c-8591-03c506a258b0
-  :END:
-
-#+begin_example
-  (defun binarin/tangle-and-bytecompile-current-buffer ()
-    (interactive)
-    (let* ((source-file (buffer-file-name (current-buffer)))
-           (target-file (concat (file-name-sans-extension source-file) ".el"))
-           (visited-p (get-file-buffer (expand-file-name target-file))))
-      (org-babel-tangle-file source-file target-file "example")
-      (save-excursion
-        (find-file target-file)
-        (goto-char (point-min))
-        (awhen (re-search-forward "\\`\\(\n\\|\\s-+\\)+" nil t)
-          (replace-match ""))
-        (save-buffer)
-        (unless visited-p
-          (kill-buffer)))
-      (byte-compile-file target-file)))
-#+end_example
+* COMMENT Discarded experiments
 * Reference information
-** [[http://tuhdo.github.io/helm-projectile.html#sec-7][Exploring large projects with Projectile and Helm Projectile]]                                        :COMP:
+** [[http://tuhdo.github.io/helm-projectile.html#sec-7][Exploring large projects with Projectile and Helm Projectile]] :COMP:
    :PROPERTIES:
    :ID:       6d9eb8e7-8b4c-4271-b7b7-0d350edce565
    :END:
@@ -2468,12 +2480,12 @@ cabal install ghci-ng/
   :PROPERTIES:
   :ID:       06755181-420b-4911-80a7-cfec7cc4b655
   :END:
-+begin_src emacs-lisp
-  (defun binarin/server-start ()
-    (require 'server)
-    (unless (server-running-p server-name)
-      (server-start)))
 
-  (add-hook 'after-init-hook #'binarin/server-start)
-  (req-package-finish)
-+end_src
+   #+begin_src emacs-lisp
+     (defun binarin/server-start ()
+       (require 'server)
+       (unless (server-running-p server-name)
+         (server-start)))
+
+     (add-hook 'after-init-hook #'binarin/server-start)
+   #+end_src
