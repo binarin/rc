@@ -130,6 +130,7 @@ alias di='docker run --rm -i -t'
 alias rgrep='grep -R'
 alias e='emacsclient -nw'
 alias o='xdg-open'
+alias pst='pstree -ap | less'
 
 rr() {
     readlink -f $(which $1)
