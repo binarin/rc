@@ -17,4 +17,5 @@ in rec {
     sha_64 = "1yya4yr6p9m6cjcak54hs2ldxnp9vsfmx4wpjlf3wxanjm1qs19p";
   };
   the_platinum_searcher = pkgs.callPackage ./the_platinum_searcher {};
+  myEmacs = pkgs.callPackage ./my-emacs.nix {};
 }
