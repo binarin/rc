@@ -42,6 +42,33 @@
    #+end_src
 
 * Behaviour
+** Keybindings
+   #+begin_src emacs-lisp
+     (global-set-key "\e\eb" (lambda () (interactive) (switch-to-buffer (other-buffer))))
+     (global-set-key "\e\ec" 'comment-region)
+     (global-set-key "\e\ei" 'indent-region)
+     (global-set-key "\e\el" 'goto-line)
+     (global-set-key "\e\et" 'toggle-truncate-lines)
+
+     (global-set-key [f2]  'save-buffer)
+
+     (global-set-key [C-f3]
+                     (lambda ()
+                       (interactive)
+                       (kill-buffer (current-buffer))))
+
+     (global-set-key [f4]  'replace-string)
+     (global-set-key [C-f4] 'replace-regexp)
+
+   #+end_src
+** Whitespace handling
+*** ws-butler
+    Trims trailing whitespace, but only on lines that were edited.
+    #+begin_src emacs-lisp
+      (add-hook 'prog-mode-hook 'ws-butler-mode)
+      (add-hook 'text-mode-hook 'ws-butler-mode)
+    #+end_src
+
 ** I18n
 *** Russian layout over Programmers Dvorak
     :PROPERTIES:
@@ -191,6 +218,7 @@
 
        (global-set-key (kbd "M-x") 'helm-M-x)
        (global-set-key (kbd "M-y") 'helm-show-kill-ring)
+       (global-set-key (kbd "C-x b") 'helm-mini)
        (global-set-key (kbd "C-x C-b") 'helm-mini)
        (global-set-key (kbd "C-x C-f") 'helm-find-files)
        (global-set-key [f3] 'helm-find-files)
@@ -268,8 +296,250 @@
      (global-set-key [f12] #'magit-status)
    #+end_src
 
-* Personal organization
-** Org-mode
+** Autosaving
+
+   Save backups to one place and don't clutter filesystem with files ending in ~.
+   #+begin_src emacs-lisp
+     (setq backup-directory-alist '(("." . "~/.emacs.d/backups")))
+   #+end_src
+
+   As Sacha Chua put it, "Disk space is cheap. Save lots".
+   #+begin_src emacs-lisp
+     (setq delete-old-versions -1)
+     (setq version-control t)
+     (setq vc-make-backup-files t)
+     (setq auto-save-file-name-transforms '((".*" "~/.emacs.d/auto-save-list/" t)))
+   #+end_src
+
+** File locking
+
+   I don't care about preventing simultaneous edits, it still will be
+   detected when saving is made. But disabling it prevents our working
+   dirs from being clobbered with lock-files.
+   #+begin_src emacs-lisp
+     (setf create-lockfiles nil)
+   #+end_src
+
+** Saving history
+    :PROPERTIES:
+    :ID:       9dea8cec-794d-4757-84de-2c166ce10567
+    :END:
+    #+begin_src emacs-lisp
+      (setf savehist-additional-variables '(search-ring kill-ring regexp-search-ring)
+            savehist-autosave-interval 60 ;; from default 300
+            history-length t
+            history-delete-duplicates t)
+      (savehist-mode t)
+    #+end_src
+
+    #+begin_src emacs-lisp
+      (setf recentf-max-saved-items 200)
+    #+end_src
+
+    #+begin_src emacs-lisp
+      (save-place-mode t)
+    #+end_src
+
+* Org
+** Todo states
+   #+begin_src emacs-lisp
+     (setq org-todo-keywords
+           '((sequence "TODO___(t)" "STARTED(s)" "|" "DONE___(d!)")
+             (sequence "BUY____(b)" "BUYING_(y)" "|" "BOUGHT_(g)")
+             (type "|" "CANCELD(c)")
+             (type "WAITING(w)" "|")))
+
+     (setq org-todo-keyword-faces
+           '(("TODO___" :foreground "red" :weight bold)
+             ("STARTED" :foreground "#93e0e3" :weight bold)
+             ("DONE___" :foreground "forest green" :weight bold)
+
+             ("BUY____" :foreground "red" :weight bold)
+             ("BUYING_" :foreground "#93e0e3" :weight bold)
+             ("BOUGHT_" :foreground "forest green" :weight bold)
+
+             ("WAITING" :foreground "orange3" :weight bold)
+             ("CANCELD" :foreground "forest green" :weight bold)))
+
+     (setq org-todo-state-tags-triggers
+           '(("STARTED" ("NEXT" . t))
+             (done ("NEXT"))
+             ("WAITING" ("NEXT"))
+             ("CANCELD" ("NEXT"))))
+
+     (setq org-clock-in-switch-to-state
+           (lambda (state)
+             (cond
+              ((or (string= state "BUY____")
+                   (string= state "BOUGHT_"))
+               "BUYING_")
+              (t "STARTED"))))
+
+   #+end_src
+** Contexts
+   #+begin_src emacs-lisp
+     (setq context-tags
+           '(("HOME" . ?h)  ;; nagornaya
+             ("DOBR" . ?d)  ;; dobrynka
+             ("WORK" . ?w)  ;; office
+             ("AUTO" . ?r)  ;; in or around the car
+             ("CITY" . ?y)  ;; on the go
+             ("COMP" . ?c)  ;; some place that has trusted computer
+             ("PHON" . ?o)  ;; anywhere where I can make phone call
+             ))
+
+     (setq context-tag-includes
+           '(("HOME" "COMP" "PHON")
+             ("DOBR" "COMP" "PHON")
+             ("WORK" "COMP" "PHON")
+             ("AUTO" "CITY" "PHON")
+             ("CITY" "PHON")))
+
+     (setq org-tag-alist `((:startgroup . nil) ;; contexts
+                           ,@context-tags
+                           (:endgroup . nil)
+                           ("AGND" . ?a)
+                           ("PROJ" . ?p)
+                           ("NEXT" . ?n)
+                           ("HABT" . ?b)))
+   #+end_src
+** Agenda files
+   Expand filenames so we can later directly compare them with (buffer-file-name)
+   #+begin_src emacs-lisp
+     (setf org-agenda-files
+           (-map #'f-expand
+                 (-filter #'f-exists?
+                          '("~/org/personal.org"
+                            "~/org/refile.org"
+                            "~/org/subscriptions.org"
+                            "~/org/mirantis.org"
+                            "~/org/mira-cal.org"
+                            "~/.rc/emacs-config.org"
+                            "~/org/ference.org"))))
+   #+end_src
+** Agendas
+   #+begin_src emacs-lisp
+     (define-key global-map "\C-ca" 'org-agenda)
+   #+end_src
+
+   #+begin_src emacs-lisp
+     (defun binarin/agenda-sorter-tag-first (tag)
+       #'(lambda (a b)
+           (let ((ta (member (downcase tag) (get-text-property 1 'tags a)))
+                 (tb (member (downcase tag) (get-text-property 1 'tags b))))
+             (cond
+              ((and ta tb) nil)
+              ((not ta) -1)
+              (t +1)))))
+
+
+     (defvar binarin/org-include-scheduled-todos
+       "Items with scheduling information are usually hidden from
+     agendas, but sometimes we want to include everything. This list
+     will spliced into org-agenda-custom-commands on such occasions.
+     "
+       '((org-agenda-todo-ignore-scheduled nil)
+         (org-agenda-todo-ignore-deadlines nil)
+         (org-agenda-todo-ignore-with-date nil)))
+
+     (defvar binarin/project-matcher
+       "+PROJ/-DONE___-BOUGHT_-WAITING-SOMEDAY-CANCELD")
+
+     (defun binarin/todo-filter-for-context (context)
+       "Generates tags-todo filter string for a given context"
+       (mapconcat 'identity
+                  (list* "+NEXT"
+                         (cl-remove-if (lambda (elt)
+                                         (member elt (or (assoc context context-tag-includes)
+                                                         context)))
+                                       (mapcar 'car context-tags)))
+                  "-"))
+
+
+     (setq org-agenda-custom-commands
+           `(("s" "Started Tasks" todo "STARTED" ,binarin/org-include-scheduled-todos)
+             ("w" "Tasks waiting on something" todo "WAITING" ((org-use-tag-inheritance nil)))
+             ("r" "Refile New Notes and Tasks" tags "LEVEL=1+REFILE" ,binarin/org-include-scheduled-todos)
+             ("p" "Projects" tags-todo ,binarin/project-matcher nil)
+             ("l" . "Context-based agenda")
+             ("la" "Agenda and people agenda"
+              ((agenda "")
+               (tags-todo "+NEXT+AGND"
+                          ((org-agenda-todo-ignore-scheduled t)
+                           (org-agenda-dim-blocked-tasks 'invisible)
+                           (org-agenda-todo-ignore-deadlines t)
+                           (org-agenda-sorting-strategy '(priority-down user-defined-down category-up))
+                           (org-agenda-cmp-user-defined 'agenda-sort-home-tags-first)))))
+             ,@(loop for (tag . char) in context-tags
+                     collect (list (concat "l" (char-to-string char))
+                                   (concat "Agenda and context " tag)
+                                   `((agenda "")
+                                     (tags-todo ,(binarin/todo-filter-for-context tag)
+                                                ((org-agenda-todo-ignore-scheduled t)
+                                                 (org-agenda-todo-ignore-deadlines t)
+                                                 (org-agenda-sorting-strategy '(priority-down user-defined-down category-up))
+                                                 (org-agenda-cmp-user-defined ',(binarin/agenda-sorter-tag-first tag)))))
+                                   `((org-agenda-dim-blocked-tasks 'invisible))))))
+
+     (setq org-agenda-tags-todo-honor-ignore-options t)
+   #+end_src
+** Projects
+   #+begin_src emacs-lisp
+     (setf org-stuck-projects
+           `(,binarin/project-matcher ("WAITING") ("NEXT") ""))
+   #+end_src
+** Capture
+   #+begin_src emacs-lisp
+     (setq org-default-notes-file "~/org/refile.org")
+     (define-key global-map "\C-cr" 'org-capture)
+
+     (setq org-capture-templates
+           '(("t" "todo" entry
+              (file "~/org/refile.org")
+              "* TODO___ %?\n  :PROPERTIES:\n  :ID: %(org-id-new)\n  :END:\n  %u\n  %a" :prepend t :kill-buffer nil)
+             ("w" "org-protocol" entry
+              "* TODO___ %c\n\n  :PROPERTIES:\n  :ID: %(org-id-new)\n  :END:  %U" :prepend t :immediate-finish t :kill-buffer nil)
+             ("l" "Link" entry
+              (file "~/org/refile.org")
+              "* TODO___ %a\n  :PROPERTIES:\n  :ID: %(org-id-new)\n  :END:\n  %U\n\n  %i" :prepend t :immediate-finish t :kill-buffer nil)))
+
+     (defvar binarin/org-protocol-mundane-link-descriptions
+       '(" - alebedev@mirantis.com - Mirantis, Inc. Mail"
+         " - binarin@gmail.com - Gmail"
+         " : Bugs : Mirantis OpenStack"
+         " : Bugs : Fuel for OpenStack"))
+
+     (defun binarin/org-protocol-capture-postprocess ()
+       (awhen (re-search-forward (concat (regexp-opt binarin/org-protocol-mundane-link-descriptions t) "]]") nil t)
+         (replace-match "]]")))
+
+     (add-hook 'org-capture-prepare-finalize-hook #'binarin/org-protocol-capture-postprocess)
+   #+end_src
+** Clocking
+   #+begin_src emacs-lisp
+     ;; Yes it's long... but more is better ;)
+     (setf org-clock-history-length 35)
+
+     ;; Resume clocking task on clock-in if the clock is open
+     (setf org-clock-in-resume t)
+
+     ;; Sometimes I change tasks I'm clocking quickly - this removes clocked tasks with 0:00 duration
+     (setf org-clock-out-remove-zero-time-clocks t)
+
+     ;; Don't clock out when moving task to a done state
+     (setf org-clock-out-when-done nil)
+
+     ;; Save the running clock and all clock history when exiting Emacs, load it on startup
+     (setf org-clock-persist t)
+
+     ;; Keep clocks running
+     (setf org-remember-clock-out-on-exit nil)
+
+     (org-clock-persistence-insinuate)
+
+     (require 'org-clock)
+     (add-hook 'emacs-startup-hook #'org-clock-load)
+   #+end_src
 * File footer
   :PROPERTIES:
   :ID:       06755181-420b-4911-80a7-cfec7cc4b655
@@ -279,7 +549,7 @@
     (defun binarin/server-start ()
       (require 'server)
       (unless (server-running-p server-name)
-	(server-start)))
+        (server-start)))
 
     (add-hook 'after-init-hook #'binarin/server-start)
   #+end_src
