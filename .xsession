@@ -36,24 +36,9 @@ start-programs() {
 }
 
 setup-agents() {
-    which ssh-agent > /dev/null && has_ssh_agent_binary=1
-    which gpg-agent > /dev/null && has_gpg_agent_binary=1
-    which keychain > /dev/null && has_keychain_binary=1
-
-    if [[ $has_keychain_binary -gt 0 ]]; then
-        keychain_agents=ssh
-        if [[ $has_gpg_agent_binary -gt 0 ]]; then
-            keychain_agents="$keychain_agents,gpg"
-        fi
-        eval $(keychain --eval --agents "$keychain_agents" --quiet)
-    else
-        if [[ $has_ssh_agent_binary -gt 0 ]]; then
-            eval $(ssh-agent)
-        fi
-        if [[ $has_gpg_agent_binary -gt 0 ]]; then
-            eval $(gpg-agent --daemon)
-        fi
-    fi
+    # gpg agent from 2.1 works fine without any keychain magic
+    which gpg-agent > /dev/null && gpg-agent --daemon
+    which keychain > /dev/null && eval $(keychain --eval --quiet) || eval $(ssh-agent)
 }
 
 xmonad-loop() {

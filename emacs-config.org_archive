@@ -1,0 +1,19 @@
+#    -*- mode: org -*-
+
+
+Archived entries from file /home/binarin/.rc/emacs-config.org
+
+
+* Persistence
+  :PROPERTIES:
+  :ARCHIVE_TIME: 2016-06-29 Ср 19:12
+  :ARCHIVE_FILE: ~/.rc/emacs-config.org
+  :ARCHIVE_OLPATH: Org
+  :ARCHIVE_CATEGORY: emacs-config
+  :END:
+  Synchronization is performed by external process, so try to be in
+  sync with disk.
+  #+BEGIN_SRC emacs-lisp
+    (run-at-time nil 60 'org-save-all-org-buffers)
+    (add-hook 'org-mode-hook (lambda () (auto-revert-mode 1)))
+  #+END_SRC

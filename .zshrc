@@ -41,10 +41,9 @@ if [[ $TERM == "dumb" ]]; then	# in emacs
 else
     source $ZSH/oh-my-zsh.sh
     PROMPT="$HOST_PROMPT_$GIT_PROMPT"
-
-    if [ -x /usr/bin/keychain ] ; then
-       eval `keychain --eval -q`
-    fi
+    # if [ -x /usr/bin/keychain ] ; then
+    #    eval `keychain --eval -q`
+    # fi
 fi
 
 BIN_DIRS=(

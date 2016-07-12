@@ -1,72 +1,5 @@
 #+TITLE: binarin's emacs configuration
 #+OPTIONS: toc:4 h:4
-* Personal information
-  :PROPERTIES:
-  :ID:       04b545bf-52b7-412d-9ce5-80ee4bbe10cf
-  :END:
-  #+begin_src emacs-lisp
-    (setf user-full-name "Alexey Lebedeff"
-          user-mail-address "binarin@binarin.ru")
-    (setf password-cache-expiry nil)
-    (setf password-cache t)
-  #+end_src
-* External packages
-** MELPA
-   :PROPERTIES:
-   :ID:       fbea2e34-f728-49ab-9f99-80f7a53d8052
-   :END:
-
-MELPA is an ELPA-compatible package repository built automatically on
-our server from the upstream source code using simple
-recipes. Bleeding edge code.
-
-#+begin_src emacs-lisp
-  (eval-when (compile load eval)
-      (let ((archive '("melpa" . "http://melpa.milkbox.net/packages/")))
-        (add-to-list 'package-archives archive t)
-        (package-read-archive-contents (car archive))
-        (unless (member (car archive) (mapcar (lambda (archive) (package-desc-archive (cadr archive))) package-archive-contents))
-          (package--download-one-archive archive "archive-contents")
-          (package-read-archive-contents (car archive)))))
-#+end_src
-
-** Marmalade
-   :PROPERTIES:
-   :ID:       241a3497-d56b-4838-ae53-9dce29683e92
-   :END:
-Marmalade is an ELPA compatible package repository that allows users
-to upload their own packages. Package maintainers don’t have to be the
-same as the maintainers of the original code. Some packages are outdated.
-
-#+begin_src emacs-lisp
-  (eval-when (compile load eval)
-    (let ((archive '("marmalade" . "http://melpa.milkbox.net/packages/")))
-      (add-to-list 'package-archives archive t)
-      (package-read-archive-contents (car archive))
-      (unless (member (car archive) (mapcar (lambda (archive) (package-desc-archive (cadr archive))) package-archive-contents))
-        (package--download-one-archive archive "archive-contents")
-        (package-read-archive-contents (car archive)))))
-#+end_src
-
-** use-package
-   :PROPERTIES:
-   :ID:       e99e5fb5-0664-454b-8a88-b6193dbcdbba
-   :END:
-
-The use-package declaration macro allows you to isolate package
-configuration in your ".emacs" in a way that is performance-oriented.
-You can use use-package to automatically load packages from ELPA with
-package.el.
-
-#+begin_src emacs-lisp
-  (eval-when (compile load eval)
-    (unless (package-installed-p 'use-package)
-      (package-install 'use-package)))
-  (require 'use-package)
-#+end_src
-
-So there will be no more package-installed-p/package-install dance in this file.
-
 * Configuration pieces from other places
 ** Finding configuration pieces from optional directories
    #+begin_src emacs-lisp
@@ -79,16 +12,6 @@ So there will be no more package-installed-p/package-install dance in this file.
              when (file-exists-p fullname)
              collect fullname))
    #+end_src
-
-** Use separate lisp file for customizations made through UI
-  :PROPERTIES:
-  :ID:       c21650a3-4e44-4713-b3cc-6a4121e7075a
-  :END:
-
-  #+begin_src emacs-lisp
-    (setf custom-file (concat (file-name-directory binarin/primary-emacs-config) "custom.el"))
-    (load-file custom-file)
-  #+end_src
 
 ** Search for authinfo files
    #+begin_src emacs-lisp
@@ -104,67 +27,14 @@ So there will be no more package-installed-p/package-install dance in this file.
    :END:
 
 #+begin_src emacs-lisp
-
   (auto-insert-mode t)
-  (transient-mark-mode t)
-  (display-time-mode -1)
-  (setq display-time-24hr-format t)
-
-  (blink-cursor-mode -1)
-
-  (setf indent-tabs-mode nil)
-  (setf tab-width 8)
-  (setq-default indent-tabs-mode nil)
   (put 'narrow-to-region 'disabled nil)
-
-  (add-hook 'after-save-hook
-            'executable-make-buffer-file-executable-if-script-p)
-
   (setf whitespace-style '(tabs trailing tab-mark face lines-tail))
-#+end_src
-
-  (setf prelude-savefile-dir (expand-file-name "~/.emacs.d/save"))
   (winner-mode t)
   (require 'windmove)
-
-** highlight parentheses
-   :PROPERTIES:
-   :ID:       239f7033-5510-42f0-aef9-98d6b35b7647
-   :END:
-#+begin_src emacs-lisp
-  (use-package highlight-parentheses
-    :ensure t
-    :config
-    (defun turn-on-highlight-parentheses-mode ()
-      (highlight-parentheses-mode t))
-    (define-global-minor-mode global-highlight-parentheses-mode
-      highlight-parentheses-mode
-      turn-on-highlight-parentheses-mode)
-    (global-highlight-parentheses-mode t))
 #+end_src
 
-** ido
-   :PROPERTIES:
-   :ID:       f5d56831-5741-4efb-8609-77f4412be4a0
-   :END:
-+begin_src emacs-lisp
-  (req-package flx-ido
-    :init
-    (setq ido-enable-prefix nil
-          ido-enable-flex-matching t
-          ido-use-faces nil
-          ido-create-new-buffer 'always
-          ido-use-filename-at-point 'guess
-          ido-max-prospects 10
-          ido-save-directory-list-file (expand-file-name "ido.hist" prelude-savefile-dir)
-          ido-default-file-method 'selected-window
-          ido-default-buffer-method 'selected-window
-          ido-confirm-unique-completion t)
-    (require 'flx-ido)
-    (ido-mode 1)
-    (ido-everywhere 1)
-    (flx-ido-mode t))
-+end_src
+
 ** keys
    :PROPERTIES:
    :ID:       717b7450-5e01-4335-be69-a25d3a39006c
@@ -177,52 +47,12 @@ So there will be no more package-installed-p/package-install dance in this file.
                   (lambda ()
                     (interactive)
                     (exchange-point-and-mark t)))
-
-  (defvar ctrl-z-map (make-sparse-keymap))
-  (let ((orig-ctrl-z-binding (lookup-key (current-global-map) [(control ?z)])))
-    (global-set-key [(control ?z)] ctrl-z-map)
-    (global-set-key [(control ?z) (control ?z)] orig-ctrl-z-binding))
-
-  (global-set-key [(control ?z) (control ?g)] 'keyboard-quit)
-
 #+end_src
 
 * Appearance
   :PROPERTIES:
   :ID:       04613ff3-708d-490a-af97-890686cdde5b
   :END:
-
-** Set window title
-   Full name in window title, will be shown in xmobar.
-
-   #+begin_src emacs-lisp
-       (setq frame-title-format
-             '((:eval (if (buffer-file-name)
-                          (abbreviate-file-name (buffer-file-name))
-                        "%b"))
-               " - "
-               invocation-name))
-   #+end_src
-
-
-
-
-** truncate lines by default
-#+begin_src emacs-lisp
-  (setq-default truncate-lines t)
-#+end_src
-
-** Remove visual clutter
-   :PROPERTIES:
-   :ID:       8ee1f692-db6b-4fac-bb48-edb5910c779b
-   :END:
-
-   #+begin_src emacs-lisp
-     (awhen (window-system)
-       (toggle-scroll-bar -1)
-       (tool-bar-mode -1))
-   #+end_src
-
 ** TODO___ smart-mode-line (move rm-blacklist to corresponding place)
    :PROPERTIES:
    :ID:       cbae4d1d-db7d-4e9e-8cfe-1f68b2e0ba87
@@ -244,66 +74,10 @@ So there will be no more package-installed-p/package-install dance in this file.
        (sml/setup))
    +end_src
 
-** Estimated screen size
-   :PROPERTIES:
-   :ID:       5ee383df-5065-4f42-87ac-21975acebc72
-   :END:
-
-   #+begin_src emacs-lisp
-     (defvar binarin/minimal-screen-width 111
-       "'M+ 1mn' font at 18pt and 1366px screen gives us 111 characters.")
-     (defvar binarin/screen-width-at-startup binarin/minimal-screen-width
-       "As the emacs window is forced to be fullscreen by xmonad, we
-     can be pretty sure this value is maximum viable screen width.
-
-     For batch mode we are forcing minimal width")
-
-     ;; (set-default 'fill-column (- binarin/minimal-screen-width 10))
-
-   #+end_src
-
-** Theme
-   :PROPERTIES:
-   :ID:       32d9cd61-a619-44bf-8ab6-3dd0696b042a
-   :END:
-
-   #+begin_src emacs-lisp
-     (use-package zenburn-theme
-       :ensure t
-       :init
-       (load-theme 'zenburn))
-   #+end_src
-
-
-** Word wrapping
-   #+begin_src emacs-lisp
-     (use-package visual-fill-column
-       :ensure t
-       :commands visual-fill-column-mode)
-   #+end_src
-
-** Zooming
-   #+begin_src emacs-lisp
-     (use-package zoom-frm
-       :ensure t
-       :bind
-       ("C-x C-+" . zoom-in/out)
-       ("C-x C--" . zoom-in/out)
-       ("C-x C-=" . zoom-in/out)
-       ("C-x C-0" . zoom-in/out)
-       :config
-       (setf frame-zoom-font-difference 2))
-   #+end_src
-
 * Behaviour
   :PROPERTIES:
   :ID:       600cdb84-b762-4fcd-9aac-d868472724dd
   :END:
-** Copy/paste
-   #+begin_src emacs-lisp
-     (setf x-select-enable-primary t)
-   #+end_src
-
 ** Hydra
    :PROPERTIES:
    :ID:       6b54debb-92e2-42f5-befb-eed32b8090e4
@@ -320,44 +94,6 @@ So there will be no more package-installed-p/package-install dance in this file.
 
   (setf dired-bind-jump nil)
 
-#+begin_src emacs-lisp
-  (add-hook 'dired-mode-hook 'dired-hide-details-mode)
-#+end_src
-
-** undo-tree
-   :PROPERTIES:
-   :ID:       b1950a05-fae3-4fb3-aaa8-d7e2885a3139
-   :END:
-#+begin_src emacs-lisp
-  (use-package undo-tree
-    :ensure t
-    :commands global-undo-tree-mode
-    :init
-    (add-hook 'after-init-hook 'global-undo-tree-mode))
-#+end_src
-
-** Scrolling
-   :PROPERTIES:
-   :ID:       6ea7fb69-4f49-4fc6-b8cf-38fe4926b19e
-   :END:
-
-   Don't recenter point on redisplay, scroll just enough text to bring
-   point into view, even if you move far away.
-
-   #+begin_src emacs-lisp
-   (setq scroll-conservatively 101)
-   #+end_src
-
-** Persistence
-** Change "yes or no" to "y or n"
-   :PROPERTIES:
-   :ID:       28aa80f7-9512-43ac-ba91-c45510d86f2c
-   :END:
-
-   #+begin_src emacs-lisp
-     (fset 'yes-or-no-p 'y-or-n-p)
-   #+end_src
-
 ** smart-tab
    :PROPERTIES:
    :ID:       b60f40ed-1196-4bbe-96ab-eb7ae09d99bf
@@ -368,20 +104,6 @@ So there will be no more package-installed-p/package-install dance in this file.
     :init (progn
             (add-hook 'example-mode-hook 'smart-tab-mode)))
 +end_src
-+end_src
-** key-chord
-   :PROPERTIES:
-   :ID:       8195773e-e4ba-4f05-8b71-7b33b4ff7fc2
-   :END:
-+begin_src emacs-lisp
-  (use-package key-chord
-    :ensure t
-    :demand t
-    :config
-    (progn
-      (key-chord-mode t)
-      (key-chord-define-global "jk" 'undo-tree-undo)
-      (key-chord-define-global "wm" 'undo-tree-redo)))
 +end_src
 ** ace-jump
    :PROPERTIES:
@@ -397,21 +119,6 @@ So there will be no more package-installed-p/package-install dance in this file.
       (autoload 'ace-jump-mode "ace-jump-mode")
       (key-chord-define-global "gc" 'ace-jump-mode)))
 +end_src
-
-** Prompt on C-x C-c - no more accidential exits
-   :PROPERTIES:
-   :ID:       4c9e3061-cfc7-420d-b82c-b8956b8fe95a
-   :END:
-
-#+begin_src emacs-lisp
-  (setf confirm-kill-emacs #'y-or-n-p)
-#+end_src
-
-** Colorful export
-   #+begin_src emacs-lisp
-     (use-package htmlize
-       :ensure t)
-   #+end_src
 
 ** version control
 
@@ -440,241 +147,6 @@ So there will be no more package-installed-p/package-install dance in this file.
 +end_src
 
 * Communication
-** Email
-*** Load custom-built mu4e
-    #+begin_src emacs-lisp
-      (add-to-list 'load-path "/run/current-system/sw/share/emacs/site-lisp/mu4e")
-      (add-to-list 'load-path "~/apps/mu/share/emacs/site-lisp/mu4e")
-      (autoload 'mu4e "mu4e" nil t)
-
-      (setf mu4e-mu-binary "/run/current-system/sw/bin/mu")
-    #+end_src
-
-*** Unread count extension
-
-    #+begin_src scheme
-      (use-modules (mu) (mu stats) (mu plot))
-      (mu:initialize)
-      (let ((total-count (make-hash-table))
-            (unread-count (make-hash-table)))
-        (mu:for-each-message
-         (lambda (msg)
-           (let ((maildir (mu:maildir msg)))
-             (hash-set! total-count maildir (1+ (hash-ref total-count maildir 0)))
-             (hash-set! unread-count maildir (+ (if (member 'mu:flag:seen (mu:flags msg)) 0 1)
-                                                (hash-ref unread-count maildir 0))))))
-        (hash-for-each
-         (lambda (maildir total-num)
-           (display maildir)
-           (display "\t")
-           (display (hash-ref unread-count maildir 0))
-           (display "\t")
-           (display total-num)
-           (display "\n"))
-         total-count)
-        '())
-    #+end_src
-
-    #+begin_src emacs-lisp
-      (use-package mu4e-maildirs-extension
-        :ensure t
-        :commands mu4e-maildirs-extension
-
-        :init
-        (eval-after-load "mu4e"
-          #'(lambda ()
-              (mu4e-maildirs-extension)
-              (define-key mu4e-main-mode-map "n" #'next-line)
-              (define-key mu4e-main-mode-map "p" #'previous-line)))
-        :config
-        (setf mu4e-maildirs-extension-count-command-format
-              (replace-regexp-in-string "^mu" mu4e-mu-binary mu4e-maildirs-extension-count-command-format))
-
-        (setf mu4e-maildirs-extension-custom-list (-remove #'(lambda (x) (or (s-contains? "[Gmail]" x)
-                                                                             (s-contains? "archive-" x)
-                                                                             (s-contains? "Trash" x))) (mu4e-get-maildirs)))
-        (setf mu4e-maildirs-extension-insert-before-str "\n  Basics"))
-    #+end_src
-
-*** Multiple mail accounts
-    #+begin_src emacs-lisp
-      (defvar binarin/gmail-accounts '("binarin@gmail.com" "binarin@binarin.ru" "alebedev@mirantis.com"))
-
-      (setf mu4e-user-mail-address-list binarin/gmail-accounts
-            mu4e-context-policy 'pick-first)
-
-      (defun binarin/gmail-maildir (email dir)
-        (concat "/" email "/" dir))
-
-      (defun binarin/gmail-archive-dir (email folder)
-        "\"archive-\" is prefix because of way mu handles wildcards
-        like \"/dir/\*\", which is actually interpreted as \"/dir*\""
-        (concat "/archive-" email "/" folder))
-
-      (setf message-send-mail-function 'smtpmail-send-it
-            smtpmail-default-smtp-server "smtp.gmail.com"
-            smtpmail-smtp-server "smtp.gmail.com"
-            smtpmail-smtp-service 465
-            smtpmail-stream-type 'ssl)
-
-      (defun binarin/make-maildir-mu4e-context (account)
-        (make-mu4e-context
-         :name account
-         :match-func #'(lambda (msg)
-                         (when msg
-                           (s-equals? account (binarin/mu4e-maildir-to-account
-                                               (mu4e-message-field msg :maildir)))))
-         :vars `((mail-reply-to . ,account)
-                 (user-mail-address . ,account)
-                 (smtpmail-smtp-user . ,account))))
-
-      (defun binarin/make-mu4e-contexts ()
-        (-map 'binarin/make-maildir-mu4e-context binarin/gmail-accounts))
-
-      (eval-after-load "mu4e" '(setf mu4e-contexts (binarin/make-mu4e-contexts)))
-
-      (defun binarin/mu4e-maildir-to-account (maildir)
-        (caddr (s-match "^/\\(archive-\\)?\\([^/]+?\\)/" maildir)))
-
-      (defun binarin/mu4e-sibling-folder (maildir folder)
-        (binarin/gmail-maildir (binarin/mu4e-maildir-to-account maildir) folder))
-
-      (defun binarin/mu4e-sibling-archive-folder (maildir folder)
-        (binarin/gmail-archive-dir (binarin/mu4e-maildir-to-account maildir) folder))
-
-      (setf mu4e-maildir       "~/.mail/"
-            mu4e-refile-folder #'(lambda (msg) (binarin/mu4e-sibling-archive-folder (mu4e-message-field msg :maildir) "Archive"))
-            mu4e-sent-folder   #'(lambda (msg) (binarin/mu4e-sibling-folder (mu4e-message-field msg :maildir) "Sent"))
-            mu4e-drafts-folder #'(lambda (msg) (binarin/mu4e-sibling-folder (mu4e-message-field msg :maildir) "Drafts"))
-            mu4e-trash-folder  #'(lambda (msg) (binarin/mu4e-sibling-archive-folder (mu4e-message-field msg :maildir) "Trash")))
-    #+end_src
-
-*** Appearance
-    :PROPERTIES:
-    :ID:       b6fdc1ae-0a67-4812-9de0-d36cf22f45fe
-    :END:
-
-#+begin_src emacs-lisp
-  (autoload 'mu4e-shr2text "mu4e-contrib")
-  (setq mu4e-html2text-command 'mu4e-shr2text)
-
-  (defun binarin/mu4e-view-mode-hook ()
-    (yas-minor-mode nil)
-    (setf fill-column 80)
-    (visual-line-mode t)
-    (visual-fill-column-mode t))
-
-  (add-hook 'mu4e-view-mode-hook #'binarin/mu4e-view-mode-hook)
-
-  (setq mu4e-view-show-images t)
-
-  (setq mu4e-headers-show-threads t)
-
-  ;; use 'fancy' non-ascii characters in various places in mu4e
-  (setq mu4e-use-fancy-chars nil)
-
-  (setf mu4e-headers-fields '((:human-date . 12)
-                              (:flags . 6)
-                              (:mailing-list . 10)
-                              (:from . 22)
-                              (:thread-subject)))
-#+end_src
-
-*** Behaviour
-    :PROPERTIES:
-    :ID:       2721952e-54d4-423b-8b65-cbb580f4f2d4
-    :END:
-
-    mu4e regenerates main buffer on exiting headers view. But it's annoying when main buffer also
-    contains mu4e-maildirs-extension output, because position is lost and it's inconvinient for
-    reading unread mailboxes sequentially.
-    #+begin_src emacs-lisp
-      (defun binarin/mu4e~headers-quit-buffer--non-destructive ()
-        (interactive)
-        (aif (get-buffer mu4e~main-buffer-name)
-            (cl-letf (((symbol-function 'mu4e~main-view) (lambda () nil)))
-              (mu4e~headers-quit-buffer)
-              (switch-to-buffer it))
-            (mu4e~headers-quit-buffer)))
-
-      (eval-after-load "mu4e"
-        #'(lambda () (define-key mu4e-headers-mode-map (kbd "q") #'binarin/mu4e~headers-quit-buffer--non-destructive)))
-    #+end_src
-
-    Sync mail in background after exiting mu4e
-    #+begin_src emacs-lisp
-      (defun binarin/mu4e-quit ()
-        (interactive)
-        (mu4e-update-mail-and-index t)
-        (mu4e-quit))
-
-      (eval-after-load "mu4e"
-        '(define-key mu4e-main-mode-map "q" #'binarin/mu4e-quit))
-    #+end_src
-
-
-    This is needed for mbsync compatibility:
-    #+begin_src emacs-lisp
-      (setf mu4e-change-filenames-when-moving t)
-    #+end_src
-
-    Don't save messages to Sent Messages, Gmail/IMAP takes care of this.
-    #+begin_src emacs-lisp
-      (setq mu4e-sent-messages-behavior 'delete)
-    #+end_src
-
-    Use helm for completion
-    #+begin_src emacs-lisp
-      (defun binarin/mu4e-read-option (prompt options)
-        (helm-comp-read prompt (-map (lambda (option)
-                                       (cons (replace-regexp-in-string "^\\(.\\)" "[\\1]" (car option))
-                                             (cdr option)))
-                                     options)
-                        ;; :sort #'(lambda (a b)
-                        ;;           (string-lessp (car a) (car b)))
-                        ))
-
-      (eval-after-load "mu4e" '(fset 'mu4e-read-option 'binarin/mu4e-read-option))
-    #+end_src
-
-    Mark messages as read while refiling
-    #+begin_src emacs-lisp
-      (eval-after-load "mu4e"
-        #'(lambda ()
-            (setf (cdr (assoc 'refile mu4e-marks))
-                  '(:char ("r" . "▶")
-                          :prompt "refile"
-                          :dyn-target (lambda (target msg) (mu4e-get-refile-folder msg))
-                          :action (lambda (docid msg target)
-                                    (mu4e~proc-move docid (mu4e~mark-check-target target) "+S-u-N"))))))
-    #+end_src
-
-    #+begin_src emacs-lisp
-      ;; save attachment to my desktop (this can also be a function)
-        (setq mu4e-attachment-dir "~/Downloads")
-
-      (setf mu4e-hide-index-messages t)
-      (setf mu4e-get-mail-command (s-concat "parallel --no-notice mbsync ::: " (s-join " " binarin/gmail-accounts)))
-      (setf mu4e-confirm-quit nil
-            mu4e-headers-leave-behavior 'apply)
-
-      (defun binarin/lazy-load-org-mu4e ()
-        (autoload 'org-mu4e-open "org-mu4e")
-        (autoload 'org-mu4e-store-link "org-mu4e")
-        (org-add-link-type "mu4e" 'org-mu4e-open)
-        (add-hook 'org-store-link-functions 'org-mu4e-store-link))
-
-      (eval-after-load "org" '(when (fboundp 'mu4e) (binarin/lazy-load-org-mu4e)))
-
-      ;; (defhydra binarin/mu4e-hydra (:exit t :color red)
-      ;;   "Some useful mu4e bookmarks"
-      ;;   ("i" (progn (mu4e-update-mail-and-index nil) (mu4e-headers-search "maildir:/INBOX")) "INBOX")
-      ;;   ("u" (progn (mu4e-update-mail-and-index nil) (mu4e-headers-search "flag:unread AND NOT maildir:/Trash and NOT maildir:/Lists.Yandex.bbs and NOT maildir:/Yandex.bike")) "Unread work messages")
-      ;;   ("f" (progn (mu4e-update-mail-and-index nil) (mu4e-headers-search "flag:unread AND NOT maildir:/Trash and NOT maildir:/Yandex.direct-dev and NOT maildir:/Yandex.direct-review and NOT maildir:/Yandex.perl-dev and NOT maildir:/Yandex.redrose-announces and NOT maildir:/Yandex.staff and NOT maildir:/INBOX")) "Unread fun messages"))
-
-
-      ;; (global-set-key (kbd "<f9>") #'binarin/mu4e-hydra/body)
-    #+end_src
 ** IRC
    :PROPERTIES:
    :ID:       992767f0-1151-410a-81d8-80c60bf73548
@@ -705,9 +177,6 @@ So there will be no more package-installed-p/package-install dance in this file.
 +end_src
 
 * Personal organization
-
-org-mode is already loaded because we needed to tangle
-emacs-config.org, so no need to use use-package.
 ** Notes about setting up org-capture
 
 URL:
@@ -732,112 +201,24 @@ MimeType=x-scheme-handler/org-protocol;
    :END:
 
 #+begin_src emacs-lisp
-  (defadvice org-protocol-do-capture (around display-notify-after-capture)
-    (let ((result ad-do-it))
-      (awhen (executable-find "notify-send")
-        (call-process it nil 0 nil
-                      "--expire-time" "3000" "-u" "low"
-                      "-i" (expand-file-name "~/.rc/org.svg")
-                      "Link captured"
-                      (concat (caar org-stored-links)
-                              "\n"
-                              (cadar org-stored-links)))))
-    result)
-
-
-   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ;; Keybindings
-   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ;; (define-key global-map "\C-cb" 'org-iswitchb)
-
-  (global-set-key (kbd "<f11>") 'org-clock-goto)
-  (global-set-key (kbd "C-<f11>") 'org-clock-in)
-
 
    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ;; Refile
    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-                                          ; Use IDO for target completion
-  (setq org-completion-use-ido nil)
-
-                                          ; Targets complete in steps so we start with filename, TAB shows the next level of targets etc
-  (setq org-outline-path-complete-in-steps nil)
-
-                                          ; Targets include this file and any file contributing to the agenda - up to 5 levels deep
-  (setq org-refile-targets
-        '((org-agenda-files :maxlevel . 5)
-          (nil :maxlevel . 5)))
-
-                                          ; Targets start with the file name - allows creating level 1 tasks
-  (setq org-refile-use-outline-path 'file)
-
-  (setq org-treat-S-cursor-todo-selection-as-state-change nil)
-
-  ;;
-  ;; Resume clocking tasks when emacs is restarted
-
-  (run-at-time nil 60 'org-save-all-org-buffers)
 
   (setq org-time-stamp-rounding-minutes (quote (1 15)))
 
   (setq org-columns-default-format "%54ITEM(Task) %8Effort(Effort){:} %8CLOCKSUM")
   (setq org-global-properties (quote (("Effort_ALL" . "0:10 0:30 1:00 2:00 3:00 4:00 5:00 6:00 7:00 8:00"))))
 
-  (setq org-fast-tag-selection-single-key t)
-
-  (setq org-archive-mark-done nil)
-
-  (setq org-agenda-todo-ignore-with-date t)
-  (setq org-agenda-skip-deadline-if-done t)
-  (setq org-agenda-skip-scheduled-if-done t)
-  (setq org-agenda-skip-timestamp-if-done t)
-
-  (setq org-enforce-todo-dependencies t)
-
-  (setq org-cycle-separator-lines 0)
-  (setq org-insert-heading-respect-content nil)
-
-  (setq org-deadline-warning-days 30)
-
   (setq org-log-done 'time)
-  (setq org-log-into-drawer t)
-
-  (require 'org-protocol)
-
-  (setq org-return-follows-link t)
-
-  (setq org-tags-exclude-from-inheritance '("PROJ"))
-
-  (setq org-default-priority 68)
-
-  (setq org-agenda-window-frame-fractions '(1 . 1))
-  (setq org-agenda-restore-windows-after-quit t)
-
-  (add-hook 'org-mode-hook (lambda () (auto-revert-mode 1)))
-
-  (setf org-agenda-dim-blocked-tasks t)
-
-  (setf org-agenda-clockreport-parameter-plist '(:link t :maxlevel 2 :narrow 60))
-  (setf org-clock-report-include-clocking-task 't)
-
-  (add-to-list 'auto-mode-alist '("\\.org$" . org-mode))
-
-  (setq org-reverse-note-order t)
-  (setq org-agenda-include-diary t)
-  (setq org-agenda-span 'day)
-
-  (setq org-agenda-start-on-weekday 1)
-
-  (setq org-drawers '("PROPERTIES" "LOGBOOK" "CLOCK" "FILES"))
-  (setq org-clock-into-drawer "CLOCK")
-  (setq org-log-into-drawer t)
-  (setq org-export-with-drawers t)
-
   (setq org-log-repeat 'time)
-  (setq org-use-fast-todo-selection 'prefix)
+  (setq org-log-into-drawer t)
 
-  (setq org-agenda-window-setup 'current-window)
 
   (defun clockout-nagger ()
     (call-process "~/.rc/nagger.py" nil nil nil))
@@ -848,66 +229,7 @@ MimeType=x-scheme-handler/org-protocol;
   (add-hook 'org-clock-out-hook 'clockout-nagger)
   (add-hook 'org-clock-in-hook 'clockout-remove-nagger)
 
-  ;; (remove-hook 'org-clock-out-hook 'list-open-project-files-to-drawer)
-
-  (defun list-open-project-files-to-drawer ()
-    (org-with-point-at org-clock-marker
-      (org-back-to-heading t)
-      (let ((id (cdr (assoc "ID" (org-entry-properties)))))
-        id)))
-
-  ;; (list-open-project-files-to-drawer)
-  ;; (cdr (assoc "ISSUE_ID" (list-open-project-files-to-drawer)))
-  ;; (cdr (assoc "ID" (list-open-project-files-to-drawer)))
-
-
-  ;; clock-out - сохраняем список буфферов
-  ;; clock-in-prepare-hook - (опционально) закрываем буфферы старой задачи, открываем буферы текущей
-
-  (setf org-pretty-entities nil)
 #+end_src
-** org-mode appearance
-   :PROPERTIES:
-   :ID:       eb4be926-8769-4d55-801b-981f77f8fd5a
-   :END:
-
-    #+begin_src emacs-lisp
-      (setf org-ellipsis " ▾")
-    #+end_src
-
-** org-mode behaviour
-   :PROPERTIES:
-   :ID:       563b975a-c6c8-4cbf-bca6-6fe69ba8268a
-   :END:
-#+begin_src emacs-lisp
-  (setf org-catch-invisible-edits 'smart)
-  (setf org-id-link-to-org-use-id t)
-  (setf org-fast-tag-selection-include-todo nil)
-  (setf org-use-speed-commands t)
-#+end_src
-
-** Adjust org-mode to screen size                                                                      :NEXT:
-   :PROPERTIES:
-   :ID:       9cbbc46b-990c-435f-a224-ab8f219415a4
-   :END:
-
-When editining org-mode files align tags so they'll fit on the
-smallest display used by me. And for dynamic agenda use maximal
-available screen space.
-
-#+begin_src emacs-lisp
-  (setf org-tags-column (- (length org-ellipsis) binarin/minimal-screen-width)
-        org-agenda-tags-column (- (length org-ellipsis) binarin/screen-width-at-startup))
-#+end_src
-
-#+begin_src emacs-lisp
-  (setf org-habit-graph-column (- binarin/screen-width-at-startup
-                                  org-habit-preceding-days
-                                  org-habit-following-days
-                                  1))
-#+end_src
-
-
 ** Focusing on currently clocked-in item
    :PROPERTIES:
    :ID:       ca208a73-d192-49ee-a6d6-d088c6e661a0
@@ -942,8 +264,6 @@ Access to predefined actions from everywhere.
   (setf org-drill-question-tag "drill")
 #+end_src
 
-
-
 ** Export
    :PROPERTIES:
    :ID:       581a79ad-e824-4f37-a774-dec825e646ce
@@ -955,53 +275,7 @@ Access to predefined actions from everywhere.
   (setf org-html-htmlize-output-type 'css)
   (setf org-export-babel-evaluate 'inline-only)
 +end_src
-** Yandex StarTrek and org-mode integration
-   :PROPERTIES:
-   :ID:       8d875f5a-45f3-4f0b-a9c4-dd98235a7fb8
-   :END:
-
-+begin_src emacs-lisp
-  (load-file "~/.rc/org-startrek.el")
-+end_src
-
-** Custom sorting
-
-#+begin_src emacs-lisp
-  (defvar binarin/priority-todos-for-sorting '("STARTED" "WAITING"))
-  (defun binarin/todo-to-started-first-int ()
-    "Default todo order is modified by giving more priority to
-  todo's from binarin/priority-todos-for-sorting and entries
-  without any todo keywords at all."
-    (let* ((props (org-entry-properties))
-           (item-todo (cdr (assoc "TODO" props)))
-           (item-prio (- (aif (cdr (assoc "PRIORITY" props))
-                             (aref it 0)
-                           org-default-priority)
-                         org-highest-priority))
-           (modified-todo-order
-            (append binarin/priority-todos-for-sorting
-                    (-remove #'(lambda (todo) (member todo binarin/priority-todos-for-sorting)) org-todo-keywords-1)))
-           (todo-idx (if item-todo (1+ (-elem-index item-todo modified-todo-order)) 0))
-           (prio-range (1+ (- org-default-priority org-highest-priority))))
-      (+ (* prio-range todo-idx) item-prio)))
-
-  (defun binarin/org-sort-entries ()
-    (interactive)
-    (org-sort-entries nil ?f #'binarin/todo-to-started-first-int))
-#+end_src
-
 ** Syncing with mobile
-
-    Don't sync with mobile calendars that were downloaded from Google.
-
-    #+begin_src emacs-lisp
-      (setf org-mobile-files (-filter #'(lambda (file) (not (s-suffix? "-cal.org" file))) org-agenda-files))
-    #+end_src
-
-    #+begin_src emacs-lisp
-      (setf org-mobile-inbox-for-pull "~/org/refile.org")
-      (setq org-mobile-directory (expand-file-name "~/Dropbox/org/"))
-    #+end_src
 
     Automatic synchronization
     +begin_src emacs-lisp
@@ -1054,17 +328,6 @@ Access to predefined actions from everywhere.
     :config
     (setf bookmark-default-file "~/.emacs.d/save/bookmarks"))
 +end_src
-
-** Platinum searcher
-   :PROPERTIES:
-   :ID:       9bab7ca7-6619-4159-b594-a38b60cf6a4f
-   :END:
-
-#+begin_src emacs-lisp
-  (use-package pt
-    :ensure t
-    :commands projectile-pt)
-#+end_src
 
 ** Perspective
    :PROPERTIES:
@@ -1245,58 +508,6 @@ Every file in org-agenda-files should be present in every perspective:
         (cons "+" " + ")
         (cons "," ", ")))
    +end_src
-
-
-** Emacs Lisp
-   :PROPERTIES:
-   :ID:       7a30a988-2299-46e2-8799-e61a4e5e3f9d
-   :END:
-
-#+begin_src emacs-lisp
-  (use-package elisp-slime-nav
-    :ensure t
-    :commands elisp-slime-nav-mode
-    :init (add-hook 'example-mode-hook 'elisp-slime-nav-mode))
-
-  (add-hook 'example-mode-hook 'eldoc-mode)
-  (add-hook 'lisp-interaction-mode-hook 'eldoc-mode)
-  (add-hook 'ielm-mode-hook 'eldoc-mode)
-  (add-hook 'eval-expression-minibuffer-setup-hook 'eldoc-mode)
-#+end_src
-
-** Erlang
-   :PROPERTIES:
-   :ID:       f947b108-a5c9-4806-85fc-90592ca8f19a
-   :ARCHIVE_TIME: 2016-06-18 Сб 22:49
-   :ARCHIVE_FILE: ~/.rc/emacs-config.org
-   :ARCHIVE_OLPATH: Programming
-   :ARCHIVE_CATEGORY: emacs-config
-   :END:
-
- +begin_src emacs-lisp
-   (defun binarin/erlang-mode-hook ()
-     (local-set-key (kbd "M-*") #'edts-find-source-unwind))
-
-   (use-package erlang
-     :ensure t
-     :mode ("\\.erl\\'" . erlang-mode)
-     :config
-     (add-hook 'erlang-mode-hook #'binarin/make-buffer-whitespace-aware)
-     (add-hook 'erlang-mode-hook #'binarin/erlang-mode-hook))
-
-   (use-package auto-complete :ensure t)
-   (use-package eproject :ensure t)
-   (use-package popup :ensure t)
-   (use-package auto-highlight-symbol :ensure t)
-
-   (when (f-dir? "~/personal-workspace/edts")
-     (add-to-list 'load-path "~/personal-workspace/edts")
-     (require 'edts-start))
-
-
-
- +end_src
-
 
 
 ** Erlang
