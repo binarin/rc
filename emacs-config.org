@@ -501,6 +501,41 @@
      (add-hook 'after-save-hook
                'executable-make-buffer-file-executable-if-script-p)
    #+END_SRC
+** Embedded WebKit
+   #+BEGIN_SRC emacs-lisp
+     ;; make these keys behave like normal browser
+
+     (eval-after-load "xwidget"
+       (lambda ()
+         (define-key xwidget-webkit-mode-map [mouse-4] 'xwidget-webkit-scroll-down)
+         (define-key xwidget-webkit-mode-map [mouse-5] 'xwidget-webkit-scroll-up)
+         (define-key xwidget-webkit-mode-map (kbd "<up>") 'xwidget-webkit-scroll-down)
+         (define-key xwidget-webkit-mode-map (kbd "<down>") 'xwidget-webkit-scroll-up)
+         (define-key xwidget-webkit-mode-map (kbd "M-w") 'xwidget-webkit-copy-selection-as-kill)
+         (define-key xwidget-webkit-mode-map (kbd "C-c") 'xwidget-webkit-copy-selection-as-kill)))
+
+     ;; adapt webkit according to window configuration chagne automatically
+     ;; without this hook, every time you change your window configuration,
+     ;; you must press 'a' to adapt webkit content to new window size
+     (defun binarin/adjust-xwidget-size-hook ()
+       (when (equal major-mode 'xwidget-webkit-mode)
+         (xwidget-webkit-adjust-size-dispatch)))
+
+     (add-hook 'window-configuration-change-hook #'binarin/adjust-xwidget-size-hook)
+
+     ;; by default, xwidget reuses previous xwidget window,
+     ;; thus overriding your current website, unless a prefix argument
+     ;; is supplied
+     ;;
+     ;; This function always opens a new website in a new window
+     (defun xwidget-browse-url-no-reuse (url &optional session)
+       (interactive (progn
+                      (require 'browse-url)
+                      (browse-url-interactive-arg "xwidget-webkit URL: "
+                                                  )))
+       (xwidget-webkit-browse-url url t))
+
+   #+END_SRC
 * Org
 ** Custom sorting
 
@@ -1078,6 +1113,14 @@
     #+end_src
 
 * Programming
+** helm-dash for documentation
+   #+BEGIN_SRC emacs-lisp
+     (defun binarin/helm-dash-browse-url (url &optional session)
+       (other-window 1)
+       (xwidget-browse-url-no-reuse url))
+
+     (setf helm-dash-browser-func #'binarin/helm-dash-browse-url)
+   #+END_SRC
 ** Erlang
    :PROPERTIES:
    :ID:       f947b108-a5c9-4806-85fc-90592ca8f19a
