@@ -81,3 +81,7 @@ fi
 mkdir -p ~/.workrave
 touch ~/.workrave/workrave.ini
 # vagrant plugin install vagrant-libvirt
+
+if [[ ! -L ~/bin/Personal.kdbx ]]; then
+    ln -sf ~/.rc/open-Personal.kdbx ~/bin/Personal.kdbx
+fi
