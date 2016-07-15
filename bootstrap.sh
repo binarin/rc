@@ -34,7 +34,7 @@ fi
 
 mkdir -p ~/bin
 cd ~/bin
-cp -sn ~/.rc/{workrave-break.sh,xmobar-clock-monitor.sh,xmobar-workrave-monitor.sh,zsh-remote-setup,conkeror,toggle-touchpad,volume.sh,sshmenu,diff-highlight} .
+cp -sn ~/.rc/{workrave-break.sh,xmobar-clock-monitor.sh,xmobar-workrave-monitor.sh,zsh-remote-setup,conkeror,toggle-touchpad,volume.sh,sshmenu} .
 
 mkdir -p ~/.xmonad
 cd ~/.xmonad
