@@ -147,6 +147,22 @@
      (add-hook 'dired-mode-hook 'dired-hide-details-mode)
    #+END_SRC
 * Behaviour
+** Finding configuration pieces from optional directories
+   #+begin_src emacs-lisp
+     (defvar binarin/optional-config-repos-dir (expand-file-name "~/.rc.d/"))
+     (defvar binarin/optional-config-repos (-map #'file-name-as-directory (directory-files binarin/optional-config-repos-dir t "^[0-9a-zA-Z]")))
+
+     (defun binarin/optional-repo-files (filename)
+       (loop for dir in binarin/optional-config-repos
+             for fullname = (concat dir filename)
+             when (file-exists-p fullname)
+             collect fullname))
+   #+end_src
+
+** Search for authinfo files
+   #+begin_src emacs-lisp
+     (setf auth-sources (binarin/optional-repo-files ".authinfo.gpg"))
+   #+end_src
 ** Prompt on C-x C-c - no more accidential exits
    :PROPERTIES:
    :ID:       4c9e3061-cfc7-420d-b82c-b8956b8fe95a
@@ -911,17 +927,26 @@
       (defun binarin/mu4e-maildir-to-account (maildir)
         (caddr (s-match "^/\\(archive-\\)?\\([^/]+?\\)/" maildir)))
 
-      (defun binarin/mu4e-sibling-folder (maildir folder)
-        (binarin/gmail-maildir (binarin/mu4e-maildir-to-account maildir) folder))
+      (defun binarin/mu4e-sibling-folder (maybe-maildir folder)
+        (let ((account (if maybe-maildir
+                           (binarin/mu4e-maildir-to-account maybe-maildir)
+                         (mu4e-context-name mu4e~context-current))))
+          (binarin/gmail-maildir account folder)))
+
+      (defun binarin/mu4e-drafts-folder (maybe-maildir)
+        )
 
       (defun binarin/mu4e-sibling-archive-folder (maildir folder)
         (binarin/gmail-archive-dir (binarin/mu4e-maildir-to-account maildir) folder))
 
+
+
       (setf mu4e-maildir       "~/.mail/"
             mu4e-refile-folder #'(lambda (msg) (binarin/mu4e-sibling-archive-folder (mu4e-message-field msg :maildir) "Archive"))
             mu4e-sent-folder   #'(lambda (msg) (binarin/mu4e-sibling-folder (mu4e-message-field msg :maildir) "Sent"))
-            mu4e-drafts-folder #'(lambda (msg) (binarin/mu4e-sibling-folder (mu4e-message-field msg :maildir) "Drafts"))
+            mu4e-drafts-folder #'(lambda (msg) (binarin/mu4e-sibling-folder (and msg (mu4e-message-field msg :maildir)) "Drafts"))
             mu4e-trash-folder  #'(lambda (msg) (binarin/mu4e-sibling-archive-folder (mu4e-message-field msg :maildir) "Trash")))
+
     #+end_src
 
 *** Appearance
