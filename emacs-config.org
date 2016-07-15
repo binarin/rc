@@ -61,7 +61,7 @@
    :END:
 
   #+begin_src emacs-lisp
-    (setq default-frame-alist '((font . "M+ 1mn-18")))
+    (setq default-frame-alist '((font . "Iosevka-18")))
     ;; (defun my-fix-emojis (&optional frame)
     ;;   (when (window-system)
     ;;     (set-fontset-font "fontset-default" nil (font-spec :size 48 :name "Symbola") frame 'append)))
