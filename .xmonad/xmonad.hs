@@ -17,7 +17,6 @@ import XMonad.Actions.CycleWS
 -- import XMonad.Actions.DynamicWorkspaces
 import XMonad.Actions.GridSelect
 import XMonad.Actions.OnScreen
-import XMonad.Actions.Volume
 
 -- import XMonad.Config.Gnome
 
