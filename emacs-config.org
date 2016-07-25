@@ -536,6 +536,27 @@
        (xwidget-webkit-browse-url url t))
 
    #+END_SRC
+** Other window scrolling
+   Scroll PDF by page in other window.
+
+   #+BEGIN_SRC emacs-lisp
+     (defun binarin/scroll-other-window (&optional arg)
+       (interactive "P")
+       (awhen (ignore-errors (other-window-for-scrolling))
+         (let* ((buffer (window-buffer it))
+                (mode (with-current-buffer buffer major-mode)))
+           (cond
+            ((eq mode 'pdf-view-mode)
+             (save-selected-window
+               (select-window it)
+               (with-current-buffer buffer
+                 (pdf-view-next-page (cond ((eq arg '-) -1)
+                                           ((numberp arg) arg)
+                                           (t 1))))))
+            (t (scroll-other-window arg))))))
+
+     (global-set-key (kbd "C-M-v") #'binarin/scroll-other-window)
+   #+END_SRC
 * Org
 ** Custom sorting
 
