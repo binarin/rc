@@ -566,10 +566,6 @@
    #+BEGIN_SRC emacs-lisp
      (winner-mode 1)
    #+END_SRC
-** Viewing PDF
-   #+BEGIN_SRC emacs-lisp
-   (add-hook 'after-init-hook 'pdf-tools-install)
-   #+END_SRC
 * Org
 ** Custom sorting
 
