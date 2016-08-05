@@ -536,6 +536,10 @@
        (xwidget-webkit-browse-url url t))
 
    #+END_SRC
+** Viewing PDF inside emacs
+   #+BEGIN_SRC emacs-lisp
+     (add-hook 'after-init-hook 'pdf-tools-install)
+   #+END_SRC
 ** Other window scrolling
    Scroll PDF by page in other window.
 
