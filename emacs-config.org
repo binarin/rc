@@ -557,6 +557,11 @@
 
      (global-set-key (kbd "C-M-v") #'binarin/scroll-other-window)
    #+END_SRC
+
+** Window handling
+   #+BEGIN_SRC emacs-lisp
+     (winner-mode 1)
+   #+END_SRC
 * Org
 ** Custom sorting
 
