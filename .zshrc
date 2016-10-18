@@ -142,3 +142,18 @@ qap() {
 function sudoedit() {
     /usr/bin/emacsclient -nw /sudo:root@localhost:$1
 }
+
+
+kp() {
+    kubectl get pods --namespace=demo  | tail -n +2 | fzf | awk '{print $1}'
+}
+
+kl() {
+    kubectl logs $(kp) --namespace=demo "$@"
+}
+
+ke() {
+    local cmd="${1:-bash}"
+    shift
+    kubectl exec $(kp) --namespace=demo -i -t -- "$cmd" "$@"
+}
