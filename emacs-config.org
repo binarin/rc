@@ -147,6 +147,11 @@
      (add-hook 'dired-mode-hook 'dired-hide-details-mode)
    #+END_SRC
 * Behaviour
+** Dired
+   #+BEGIN_SRC emacs-lisp
+     (setf dired-dwim-target t)
+   #+END_SRC
+
 ** Finding configuration pieces from optional directories
    #+begin_src emacs-lisp
      (defvar binarin/optional-config-repos-dir (expand-file-name "~/.rc.d/"))
