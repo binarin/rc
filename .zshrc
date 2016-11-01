@@ -157,3 +157,6 @@ ke() {
     shift
     kubectl exec $(kp) --namespace=demo -i -t -- "$cmd" "$@"
 }
+
+# added by travis gem
+[ -f /home/binarin/.travis/travis.sh ] && source /home/binarin/.travis/travis.sh
