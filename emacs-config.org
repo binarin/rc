@@ -571,6 +571,11 @@
    #+BEGIN_SRC emacs-lisp
      (winner-mode 1)
    #+END_SRC
+** Using settings from .editorconfig
+   #+BEGIN_SRC emacs-lisp
+     (add-hook 'prog-mode-hook #'(lambda () (editorconfig-mode 1)))
+     (add-hook 'text-mode-hook #'(lambda () (editorconfig-mode 1)))
+   #+END_SRC
 * Org
 ** Custom sorting
 
