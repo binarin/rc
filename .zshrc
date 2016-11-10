@@ -143,7 +143,6 @@ function sudoedit() {
     /usr/bin/emacsclient -nw /sudo:root@localhost:$1
 }
 
-
 kp() {
     kubectl get pods --namespace=demo  | tail -n +2 | fzf | awk '{print $1}'
 }
@@ -160,3 +159,15 @@ ke() {
 
 # added by travis gem
 [ -f /home/binarin/.travis/travis.sh ] && source /home/binarin/.travis/travis.sh
+
+man() {
+    env \
+        LESS_TERMCAP_mb=$(printf "\e[1;31m") \
+        LESS_TERMCAP_md=$(printf "\e[1;31m") \
+        LESS_TERMCAP_me=$(printf "\e[0m") \
+        LESS_TERMCAP_se=$(printf "\e[0m") \
+        LESS_TERMCAP_so=$(printf "\e[1;44;33m") \
+        LESS_TERMCAP_ue=$(printf "\e[0m") \
+        LESS_TERMCAP_us=$(printf "\e[1;32m") \
+            man "$@"
+}
