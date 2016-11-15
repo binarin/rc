@@ -1194,6 +1194,14 @@
    #+BEGIN_SRC emacs-lisp
      (add-hook 'haskell-mode-hook 'intero-mode)
    #+END_SRC
+** Python
+   #+BEGIN_SRC emacs-lisp
+     (defun binarin/python-mode-hook ()
+       (setf whitespace-style '(tabs trailing tab-mark face lines-tail))
+       (whitespace-mode 1))
+
+     (add-hook 'python-mode-hook #'binarin/python-mode-hook)
+   #+END_SRC
 * Keybindings
 ** Default global keybindings (for reference)
    :PROPERTIES:
