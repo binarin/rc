@@ -408,6 +408,18 @@
 
      (require 'helm-projectile)
      (helm-projectile-on)
+
+     ;; Bad interaction happens between epg, tramp and projectile.
+     ;; Waiting for proper fix of https://github.com/bbatsov/projectile/issues/835
+     (defun binarin/disable-delete-file-advice (orig-fun &rest args)
+       (let ((was-active (and (ad-is-active 'delete-file)
+                              (ad-deactivate 'delete-file))))
+         (unwind-protect
+             (apply orig-fun args)
+           (when was-active (ad-activate 'delete-file)))))
+
+     (advice-add 'epg-delete-output-file :around #'binarin/disable-delete-file-advice)
+
    #+end_src
 ** Yasnippet
    :PROPERTIES:
