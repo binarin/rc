@@ -614,6 +614,78 @@
      (add-hook 'text-mode-hook #'(lambda () (editorconfig-mode 1)))
    #+END_SRC
 * Org
+** Blogging
+   #+BEGIN_SRC emacs-lisp
+     (defvar binarin/blog-dir "~/blog")
+     (defvar binarin/blog-source "~/org/blog.org")
+
+     (defun binarin/is-blog-entry-publishable (props)
+       (let ((todo (cdr (assoc "TODO" props))))
+         (or (string= todo "STARTED")
+             (string= todo "READY__")
+             (string= todo "PUBLISH"))))
+
+     (defun binarin/is-blog-draft (props)
+       (let ((todo (cdr (assoc "TODO" props))))
+         (or (string= todo "STARTED")
+             (string= todo "READY__"))))
+
+     (defun binarin/is-blog-post (tags)
+       (member "post" tags))
+
+     (defun binarin/blog-post-timestamp (props)
+       (or (cdr (assoc "TIMESTAMP_IA" props))
+           (format-time-string "%Y-%m-%d 00:00:00")))
+
+     (defun binarin/blog-publish ()
+       (save-mark-and-excursion
+         ;; map over all tasks entries
+         (let* ((blog-file binarin/blog-source)
+                (posts-dir (expand-file-name "_posts" binarin/blog-dir))
+                (yaml-front-matter '(("layout" . "post"))))
+           (find-file blog-file)
+           (push-mark (point-min))
+           (push-mark (point-max) nil t)
+           (goto-char (point-min))
+           (save-restriction
+             (widen)
+             (org-map-region
+              (lambda ()
+                (let* ((props (org-entry-properties))
+                       (todo (cdr (assoc "TODO" props)))
+                       (tags (org-get-tags)))
+                  (when (and (binarin/is-blog-post tags)
+                             (binarin/is-blog-entry-publishable props))
+                    (let* ((heading (org-get-heading t t))
+                           (is-draft (binarin/is-blog-draft props))
+                           (time (binarin/blog-post-timestamp props))
+                           (title (replace-regexp-in-string
+                                   "[:=\(\)\?]" ""
+                                   (replace-regexp-in-string
+                                    "[ \t]" "-" heading)))
+                           (str-time (and (string-match "\\([[:digit:]\-]+\\) " time)
+                                          (match-string 1 time)))
+                           (to-file (format "%s-%s.html" str-time title))
+                           (org-buffer (current-buffer))
+                           (id (org-id-get-create))
+                           (yaml-front-matter `(("title" . ,heading)
+                                                ("draft" . ,(if is-draft "true" "false"))
+                                                ("layout" . "post")))
+                           (html (save-excursion
+                                   (save-restriction
+                                     (org-narrow-to-subtree)
+                                     (let ((org-export-show-temporary-export-buffer nil))
+                                       (org-html-export-as-html nil nil nil t))))))
+                      (with-temp-file (expand-file-name to-file posts-dir)
+                        (when yaml-front-matter
+                          (insert "---\n")
+                          (mapc (lambda (pair) (insert (format "%s: %s\n" (car pair) (cdr pair))))
+                                yaml-front-matter)
+                          (insert "---\n\n"))
+                        (insert-buffer html))))))
+              0 (point-max))))))
+
+   #+END_SRC
 ** Custom sorting
 
 #+begin_src emacs-lisp
@@ -663,6 +735,7 @@
            '(("TODO___" :foreground "red" :weight bold)
              ("STARTED" :foreground "#93e0e3" :weight bold)
              ("DONE___" :foreground "forest green" :weight bold)
+             ("PUBLISH" :foreground "forest green" :weight bold)
 
              ("BUY____" :foreground "red" :weight bold)
              ("BUYING_" :foreground "#93e0e3" :weight bold)
