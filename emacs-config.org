@@ -147,6 +147,10 @@
      (add-hook 'dired-mode-hook 'dired-hide-details-mode)
    #+END_SRC
 * Behaviour
+** Narrowing
+   #+BEGIN_SRC emacs-lisp
+     (put 'narrow-to-region 'disabled nil)
+   #+END_SRC
 ** Dired
    #+BEGIN_SRC emacs-lisp
      (setf dired-dwim-target t)
