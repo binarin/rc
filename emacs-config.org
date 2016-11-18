@@ -151,6 +151,27 @@
    #+BEGIN_SRC emacs-lisp
      (put 'narrow-to-region 'disabled nil)
    #+END_SRC
+** Tramp
+   #+BEGIN_SRC emacs-lisp
+     (defun binarin/shell-command-to-string-remote-advice (orig-fun &rest args)
+       (let ((shell-file-name (if (tramp-tramp-file-p default-directory)
+                                  "/bin/sh"
+                                shell-file-name)))
+         (apply orig-fun args)))
+
+     (advice-add 'shell-command-to-string :around #'binarin/shell-command-to-string-remote-advice)
+   #+END_SRC
+** Eshell
+   #+BEGIN_SRC emacs-lisp
+     (eval-after-load "tramp"
+       (lambda ()
+         (add-hook 'eshell-mode-hook
+                   'tramp-eshell-directory-change)))
+
+     (eval-after-load "esh-module"
+       (lambda ()
+         (add-to-list 'eshell-modules-list 'eshell-tramp)))
+   #+END_SRC
 ** Dired
    #+BEGIN_SRC emacs-lisp
      (setf dired-dwim-target t)
