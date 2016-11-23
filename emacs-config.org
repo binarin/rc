@@ -162,6 +162,9 @@
      (advice-add 'shell-command-to-string :around #'binarin/shell-command-to-string-remote-advice)
    #+END_SRC
 ** Eshell
+   :PROPERTIES:
+   :ID:       712d9d5a-4541-43ba-b73a-963b86cd511c
+   :END:
    #+BEGIN_SRC emacs-lisp
      (eval-after-load "tramp"
        (lambda ()
@@ -175,8 +178,9 @@
 ** Dired
    #+BEGIN_SRC emacs-lisp
      (setf dired-dwim-target t)
+     (require 'dired-x)
+     (setf dired-listing-switches "-al --group-directories-first")
    #+END_SRC
-
 ** Finding configuration pieces from optional directories
    #+begin_src emacs-lisp
      (defvar binarin/optional-config-repos-dir (expand-file-name "~/.rc.d/"))
