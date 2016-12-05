@@ -955,8 +955,15 @@
 
      (org-clock-persistence-insinuate)
 
+     (setq org-time-stamp-rounding-minutes (quote (1 15)))
+
+     (setq org-columns-default-format "%85ITEM(Task) %8Effort(Effort){:} %8CLOCKSUM")
+     (setq org-global-properties (quote (("Effort_ALL" . "0:10 0:30 1:00 2:00 3:00 4:00 5:00 6:00 7:00 8:00"))))
+
+
      (require 'org-clock)
      (add-hook 'emacs-startup-hook #'org-clock-load)
+
    #+end_src
 ** Templates
    #+BEGIN_SRC emacs-lisp

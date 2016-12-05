@@ -1,6 +1,5 @@
 #+TITLE: binarin's emacs configuration
 #+OPTIONS: toc:4 h:4
-* Configuration pieces from other places
 * TODO___ (get rid of) load all elisp files from dedicated directory
   :PROPERTIES:
   :ID:       3f54ce25-9fb5-44f8-9386-81d06e832a37
@@ -12,26 +11,9 @@
 
 #+begin_src emacs-lisp
   (auto-insert-mode t)
-  (put 'narrow-to-region 'disabled nil)
-  (setf whitespace-style '(tabs trailing tab-mark face lines-tail))
-  (winner-mode t)
   (require 'windmove)
 #+end_src
 
-
-** keys
-   :PROPERTIES:
-   :ID:       717b7450-5e01-4335-be69-a25d3a39006c
-   :END:
-#+begin_src emacs-lisp
-  (global-set-key (read-kbd-macro "M-<down>") 'next-error)
-  (global-set-key (read-kbd-macro "M-<up>")   'previous-error)
-
-  (global-set-key (read-kbd-macro "C-x C-x")
-                  (lambda ()
-                    (interactive)
-                    (exchange-point-and-mark t)))
-#+end_src
 
 * Appearance
   :PROPERTIES:
@@ -62,22 +44,6 @@
   :PROPERTIES:
   :ID:       600cdb84-b762-4fcd-9aac-d868472724dd
   :END:
-** Hydra
-   :PROPERTIES:
-   :ID:       6b54debb-92e2-42f5-befb-eed32b8090e4
-   :END:
-+begin_src emacs-lisp
-  (use-package hydra
-    :ensure t)
-+end_src
-
-** dired
-   :PROPERTIES:
-   :ID:       0efd7e49-0d84-43cd-8332-bcc835dc2f72
-   :END:
-
-  (setf dired-bind-jump nil)
-
 ** smart-tab
    :PROPERTIES:
    :ID:       b60f40ed-1196-4bbe-96ab-eb7ae09d99bf
@@ -179,31 +145,15 @@ Terminal=false
 Categories=System;
 MimeType=x-scheme-handler/org-protocol;
 
-** TODO___ Split org-mode massive config into manageable chunks
+** DONE___ Split org-mode massive config into manageable chunks
    :PROPERTIES:
    :ID:       fae1c7a2-acd5-4414-9131-f0b89585e9ba
    :END:
+   :LOGBOOK:
+   - State "DONE___"    from "TODO___"    [2016-12-05 Пн 13:47]
+   :END:
 
 #+begin_src emacs-lisp
-  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-  ;; Keybindings
-  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-  ;; (define-key global-map "\C-cb" 'org-iswitchb)
-
-   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-  ;; Refile
-   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-  (setq org-time-stamp-rounding-minutes (quote (1 15)))
-
-  (setq org-columns-default-format "%54ITEM(Task) %8Effort(Effort){:} %8CLOCKSUM")
-  (setq org-global-properties (quote (("Effort_ALL" . "0:10 0:30 1:00 2:00 3:00 4:00 5:00 6:00 7:00 8:00"))))
-
-  (setq org-log-done 'time)
-  (setq org-log-repeat 'time)
-  (setq org-log-into-drawer t)
-
-
   (defun clockout-nagger ()
     (call-process "~/.rc/nagger.py" nil nil nil))
 
