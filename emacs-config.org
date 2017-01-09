@@ -618,6 +618,14 @@
      (add-hook 'text-mode-hook #'(lambda () (editorconfig-mode 1)))
    #+END_SRC
 * Org
+** Hacks
+   #BEGIN_SRC emacs-lisp
+     (defun binarin/org-reveal-tags ()
+       (outline-flag-region (point) (line-end-position) nil))
+
+     (add-hook 'org-after-tags-change-hook #'binarin/org-reveal-tags)
+   #END_SRC
+
 ** Blogging
    #+BEGIN_SRC emacs-lisp
      (defvar binarin/blog-dir "~/blog")
