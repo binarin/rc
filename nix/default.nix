@@ -9,4 +9,5 @@ in rec {
     sha_64 = "1yya4yr6p9m6cjcak54hs2ldxnp9vsfmx4wpjlf3wxanjm1qs19p";
   };
   docker-machine-driver-kvm = pkgs.callPackage ./docker-machine-driver-kvm {};
+  gp6 = pkgs.callPackage ./gp6 {};
 }
