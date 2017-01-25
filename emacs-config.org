@@ -745,7 +745,7 @@
 
      (setq org-todo-keyword-faces
            '(("TODO___" :foreground "red" :weight bold)
-             ("STARTED" :foreground "#93e0e3" :weight bold)
+             ("STARTED" :foreground "red" :weight bold)
              ("DONE___" :foreground "forest green" :weight bold)
              ("PUBLISH" :foreground "forest green" :weight bold)
 
