@@ -32,7 +32,7 @@ start-programs() {
     bg-run xscreensaver -nosplash
     bg-run quasselclient
     bg-run skype
-    bg-run twmnd
+    bg-run dunst
 }
 
 setup-agents() {

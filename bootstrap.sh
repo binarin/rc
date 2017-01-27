@@ -85,3 +85,8 @@ touch ~/.workrave/workrave.ini
 if [[ ! -L ~/bin/Personal.kdbx ]]; then
     ln -sf ~/.rc/open-Personal.kdbx ~/bin/Personal.kdbx
 fi
+
+if [[ ! -f ~/.config/dunst/dunstrc ]]; then
+    mkdir -p ~/.config/dunst/
+    ln -sf ~/.rc/dunstrc ~/.config/dunst/dunstrc
+fi
