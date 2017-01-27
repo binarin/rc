@@ -1043,16 +1043,21 @@
 ** Capture
    #+BEGIN_SRC emacs-lisp
      (require 'org-protocol)
+     (autoload 'notifications-notify "notifications")
+
 
      (defun binarin/display-notify-after-capture (&rest args)
-       (awhen (executable-find "notify-send")
-         (call-process it nil 0 nil
-                       "--expire-time" "3000" "-u" "low"
-                       "-i" (expand-file-name "~/.rc/org.svg")
-                       "Link captured"
-                       (concat (caar org-stored-links)
-                               "\n"
-                               (cadar org-stored-links)))))
+       (notifications-notify
+        :title "Link captured"
+        :body (concat (caar org-stored-links)
+                      "\n"
+                      (cadar org-stored-links))
+        :app-name "emacs"
+        :app-icon (expand-file-name "~/.rc/org.svg")
+        :timeout 3000
+        :urgency 'low))
+
+
      (advice-add 'org-protocol-do-capture :after #'binarin/display-notify-after-capture)
    #+END_SRC
 
