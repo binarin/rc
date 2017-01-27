@@ -10,6 +10,7 @@ with import <nixpkgs> {}; {
           vagrant plugin install $vagrantPluginToInstall
         fi
       done
+      set +e
     '';
   };
 }
