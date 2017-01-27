@@ -1049,9 +1049,7 @@
      (defun binarin/display-notify-after-capture (&rest args)
        (notifications-notify
         :title "Link captured"
-        :body (concat (caar org-stored-links)
-                      "\n"
-                      (cadar org-stored-links))
+        :body (cadar org-stored-links)
         :app-name "emacs"
         :app-icon (expand-file-name "~/.rc/org.svg")
         :timeout 3000
