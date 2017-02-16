@@ -1329,6 +1329,18 @@
 
      (setf helm-dash-browser-func #'binarin/helm-dash-browse-url)
    #+END_SRC
+** Elm
+   #+BEGIN_SRC emacs-lisp
+     (defun binarin/elm-mode-hook ()
+       (company-mode-on))
+
+     (add-hook 'elm-mode-hook #'binarin/elm-mode-hook)
+
+     (eval-after-load "elm-mode"
+       (lambda ()
+         (require 'company)
+         (add-to-list 'company-backends 'company-elm)))
+   #+END_SRC
 ** Erlang
    :PROPERTIES:
    :ID:       f947b108-a5c9-4806-85fc-90592ca8f19a
