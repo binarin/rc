@@ -23,7 +23,7 @@ import XMonad.Actions.OnScreen
 import XMonad.Hooks.DynamicLog
 import XMonad.Hooks.EwmhDesktops
 import XMonad.Hooks.ManageDocks
--- import XMonad.Hooks.ManageHelpers
+import XMonad.Hooks.ManageHelpers
 import XMonad.Hooks.Place
 import XMonad.Hooks.CurrentWorkspaceOnTop (currentWorkspaceOnTop)
 
@@ -82,6 +82,7 @@ padWorkspaceName x = " " ++ x ++ take (1 + maxNameLength - length x) (repeat ' '
 myManageHook :: ManageHook
 myManageHook = composeAll
     [ className =? "Sshmenu"        --> doFloat
+    , isFullscreen                  --> doFullFloat
     , resource  =? "desktop_window" --> doIgnore
     , resource  =? "kdesktop"       --> doIgnore
     , className =? "Xfce4-notifyd"  --> doIgnore
