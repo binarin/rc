@@ -1372,7 +1372,9 @@
    #+END_SRC
 ** Haskell
    #+BEGIN_SRC emacs-lisp
-     (add-hook 'haskell-mode-hook 'intero-mode)
+     (add-hook 'haskell-mode-hook 'intero-mode-whitelist)
+     (autoload 'intero-mode-whitelist "intero")
+     (setf intero-whitelist '("~/personal-workspace/learnopengl"))
    #+END_SRC
 ** Python
    #+BEGIN_SRC emacs-lisp
