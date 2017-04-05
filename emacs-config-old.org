@@ -153,17 +153,6 @@ MimeType=x-scheme-handler/org-protocol;
    - State "DONE___"    from "TODO___"    [2016-12-05 Пн 13:47]
    :END:
 
-#+begin_src emacs-lisp
-  (defun clockout-nagger ()
-    (call-process "~/.rc/nagger.py" nil nil nil))
-
-  (defun clockout-remove-nagger ()
-    (call-process "killall" nil nil nil "nagger.py"))
-
-  (add-hook 'org-clock-out-hook 'clockout-nagger)
-  (add-hook 'org-clock-in-hook 'clockout-remove-nagger)
-
-#+end_src
 ** Focusing on currently clocked-in item
    :PROPERTIES:
    :ID:       ca208a73-d192-49ee-a6d6-d088c6e661a0

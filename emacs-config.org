@@ -972,6 +972,14 @@
      (require 'org-clock)
      (add-hook 'emacs-startup-hook #'org-clock-load)
 
+     (defun binarin/clockout-nagger ()
+       (call-process "desktop-nagger" nil nil nil))
+
+     (defun binarin/clockout-remove-nagger ()
+       (call-process "pkill" nil nil nil "-f" "desktop-nagger"))
+
+     (add-hook 'org-clock-out-hook #'binarin/clockout-nagger)
+     (add-hook 'org-clock-in-hook #'binarin/clockout-remove-nagger)
    #+end_src
 ** Templates
    #+BEGIN_SRC emacs-lisp
