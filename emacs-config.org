@@ -422,6 +422,9 @@
    #+end_src
 
 ** Projectile
+   :PROPERTIES:
+   :ID:       a86040e5-291f-4b62-ab76-f6b213a483c8
+   :END:
    #+begin_src emacs-lisp
      (require 'projectile)
      (setf projectile-mode-line nil
@@ -654,7 +657,7 @@
          ;; map over all tasks entries
          (let* ((blog-file binarin/blog-source)
                 (posts-dir (expand-file-name "_posts" binarin/blog-dir))
-                (yaml-front-matter '(("layout" . "post"))))
+                (yaml-front-matter '(("layout" . "default"))))
            (find-file blog-file)
            (push-mark (point-min))
            (push-mark (point-max) nil t)
@@ -682,7 +685,7 @@
                            (id (org-id-get-create))
                            (yaml-front-matter `(("title" . ,heading)
                                                 ("draft" . ,(if is-draft "true" "false"))
-                                                ("layout" . "post")))
+                                                ("layout" . "default")))
                            (html (save-excursion
                                    (save-restriction
                                      (org-narrow-to-subtree)
