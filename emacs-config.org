@@ -1380,6 +1380,10 @@
      (add-hook 'lisp-interaction-mode-hook 'eldoc-mode)
      (add-hook 'ielm-mode-hook 'eldoc-mode)
      (add-hook 'eval-expression-minibuffer-setup-hook 'eldoc-mode)
+     (add-hook 'emacs-lisp-mode-hook 'easy-escape-minor-mode)
+
+     (set-face-attribute 'easy-escape-face nil :foreground "red2")
+     (set-face-attribute 'easy-escape-delimiter-face nil :foreground "red3")
    #+END_SRC
 ** Haskell
    #+BEGIN_SRC emacs-lisp
