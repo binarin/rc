@@ -620,6 +620,11 @@
      (add-hook 'prog-mode-hook #'(lambda () (editorconfig-mode 1)))
      (add-hook 'text-mode-hook #'(lambda () (editorconfig-mode 1)))
    #+END_SRC
+** Completion
+   #+BEGIN_SRC emacs-lisp
+   ;; (global-company-mode t)
+   #+END_SRC
+
 * Org
 ** Hacks
    #+BEGIN_SRC emacs-lisp
@@ -1340,6 +1345,10 @@
 
      (setf helm-dash-browser-func #'binarin/helm-dash-browse-url)
    #+END_SRC
+** Tags
+   #+BEGIN_SRC emacs-lisp
+     (setf tags-revert-without-query t)
+   #+END_SRC
 ** Elm
    #+BEGIN_SRC emacs-lisp
      (defun binarin/elm-mode-hook ()
@@ -1382,14 +1391,49 @@
      (add-hook 'eval-expression-minibuffer-setup-hook 'eldoc-mode)
      (add-hook 'emacs-lisp-mode-hook 'easy-escape-minor-mode)
 
-     (set-face-attribute 'easy-escape-face nil :foreground "red2")
-     (set-face-attribute 'easy-escape-delimiter-face nil :foreground "red3")
+     (eval-after-load "easy-escape"
+       (lambda ()
+         (set-face-attribute 'easy-escape-face nil :foreground "red2")
+         (set-face-attribute 'easy-escape-delimiter-face nil :foreground "red3")))
    #+END_SRC
 ** Haskell
    #+BEGIN_SRC emacs-lisp
-     (add-hook 'haskell-mode-hook 'intero-mode-whitelist)
-     (autoload 'intero-mode-whitelist "intero")
-     (setf intero-whitelist '("~/personal-workspace/learnopengl"))
+     ;; (add-hook 'haskell-mode-hook 'intero-mode-whitelist)
+     ;; (autoload 'intero-mode-whitelist "intero")
+     ;; (setf intero-whitelist '("~/personal-workspace/learnopengl"))
+
+     (setf haskell-stylish-on-save t)
+     (setf haskell-tags-on-save t)
+     (setf haskell-process-suggest-remove-import-lines t)
+     (setf haskell-process-auto-import-loaded-modules t)
+     (setf haskell-process-suggest-hoogle-imports t)
+     (setf haskell-process-use-presentation-mode t)
+     (setf haskell-process-log t)
+
+     (defun binarin/haskell-mode-hook ()
+       (company-mode t)
+       (structured-haskell-mode t)
+       (interactive-haskell-mode t)
+       ;; (flyspell-prog-mode t)
+       (set (make-local-variable 'company-backends)
+            (append '((company-capf company-dabbrev-code company-yasnippet))
+                    company-backends)))
+
+     (eval-after-load "haskell"
+       (lambda ()
+         (define-key interactive-haskell-mode-map (kbd "C-c C-t") 'haskell-mode-show-type-at)
+         (define-key interactive-haskell-mode-map (kbd "C-c C-l") 'haskell-process-load-or-reload)))
+
+     (eval-after-load "haskell-mode"
+       (lambda ()
+         (define-key haskell-mode-map (kbd "C-c C-c") 'haskell-compile)
+         (define-key haskell-mode-map (kbd "M-.") 'haskell-mode-jump-to-def-or-tag)))
+
+     (eval-after-load "haskell-cabal"
+       (lambda ()
+         (define-key haskell-cabal-mode-map (kbd "C-c C-c") 'haskell-compile)))
+
+     (add-hook 'haskell-mode-hook 'binarin/haskell-mode-hook)
    #+END_SRC
 ** Python
    #+BEGIN_SRC emacs-lisp
