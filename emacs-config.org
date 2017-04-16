@@ -1401,7 +1401,7 @@
      ;; (add-hook 'haskell-mode-hook 'intero-mode-whitelist)
      ;; (autoload 'intero-mode-whitelist "intero")
      ;; (setf intero-whitelist '("~/personal-workspace/learnopengl"))
-
+     (setf haskell-indent-spaces 4)
      (setf haskell-stylish-on-save t)
      (setf haskell-tags-on-save t)
      (setf haskell-process-suggest-remove-import-lines t)
