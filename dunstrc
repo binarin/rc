@@ -242,3 +242,7 @@
 #    urgency = normal
 #
 # vim: ft=cfg
+
+[Dropbox]
+    appname = Dropbox
+    format = ""
