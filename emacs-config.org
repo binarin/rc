@@ -749,11 +749,13 @@
            '((sequence "TODO___(t)" "STARTED(s)" "|" "DONE___(d!)")
              (sequence "BUY____(b)" "BUYING_(y)" "|" "BOUGHT_(g)")
              (type "|" "CANCELD(c)")
-             (type "WAITING(w)" "|")))
+             (type "WAITING(w)" "|")
+             (type "PAUSED_(p)" "|")))
 
      (setq org-todo-keyword-faces
            '(("TODO___" :foreground "red" :weight bold)
              ("STARTED" :foreground "red" :weight bold)
+             ("PAUSED_" :foreground "red" :weight bold)
              ("DONE___" :foreground "forest green" :weight bold)
              ("PUBLISH" :foreground "forest green" :weight bold)
 
@@ -882,8 +884,8 @@
 
 
      (setq org-agenda-custom-commands
-           `(("s" "Started Tasks" todo "STARTED" ,binarin/org-include-scheduled-todos)
-             ("w" "Tasks waiting on something" todo "WAITING" ((org-use-tag-inheritance nil)))
+           `(("s" "Started Tasks" tags "TODO=\"STARTED\"|TODO=\"PAUSED_\"" ,binarin/org-include-scheduled-todos)
+             ("w" "Tasks waiting on something" tags "TODO=\"WAITING\"" ((org-use-tag-inheritance nil)))
              ("r" "Refile New Notes and Tasks" tags "LEVEL=1+REFILE" ,binarin/org-include-scheduled-todos)
              ("p" "Projects" tags-todo ,binarin/project-matcher nil)
              ("l" . "Context-based agenda")
@@ -988,6 +990,50 @@
 
      (add-hook 'org-clock-out-hook #'binarin/clockout-nagger)
      (add-hook 'org-clock-in-hook #'binarin/clockout-remove-nagger)
+   #+end_src
+
+   I want to automatically clock-out from a current task if a computer
+   was inactive for some time. Builtin org-mode supports asking what I
+   want to do with such task, but I want to just clock-out
+   unconditionally - it makes moving between computers
+   easier. Clocked-out task is moved to a separate to-do state
+   "PAUSED_" so I still can find and fix its timer if I want to.
+
+   #+begin_src emacs-lisp
+     (setf org-clock-x11idle-program-name "xprintidle-ng")
+     (setf org-x11idle-exists-p t)
+
+     ;; (SEC-HIGH SEC-LOW MICROSEC PICOSEC) current-idle-time
+     (defvar binarin/idle-clockout-timeout 1800
+       "Perform first attempt to clock-out after this period of emacs
+       inactivity. It can decide to postpone the clocking-out if it's
+       only emacs that is idle, but not the computer itself.")
+
+     (defvar binarin/idle-clockout-recheck-interval 300
+       "After a sufficient idle time was achieved by emacs, we'll
+       periodically check current idle time of the whole OS to decide
+       whether we need to clock out")
+
+     (defvar binarin/idle-clockout-repeat-timer nil
+       "Timer for repeatedly (during a single idle interval) checking
+       whether we need to clock-out")
+
+     (defun binarin/clockout-when-idle ()
+       (awhen binarin/idle-clockout-repeat-timer
+         (cancel-timer it))
+       (when (org-clocking-p)
+         (if (> (org-user-idle-seconds)
+                binarin/idle-clockout-timeout)
+             (let ((org-clock-out-switch-to-state "PAUSED_"))
+               (org-clock-out nil t))
+           (setf binarin/idle-clockout-repeat-timer
+                 (run-with-idle-timer
+                  (time-add (current-idle-time) binarin/idle-clockout-recheck-interval)
+                  nil
+                  'binarin/clockout-when-idle)))))
+
+     (run-with-idle-timer binarin/idle-clockout-timeout t 'binarin/clockout-when-idle)
+
    #+end_src
 ** Templates
    #+BEGIN_SRC emacs-lisp
