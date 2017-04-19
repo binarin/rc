@@ -673,6 +673,7 @@
               (lambda ()
                 (let* ((props (org-entry-properties))
                        (todo (cdr (assoc "TODO" props)))
+                       (permalink (cdr (assoc "PERMALINK" props)))
                        (tags (org-get-tags)))
                   (when (and (binarin/is-blog-post tags)
                              (binarin/is-blog-entry-publishable props))
@@ -685,12 +686,13 @@
                                     "[ \t]" "-" heading)))
                            (str-time (and (string-match "\\([[:digit:]\-]+\\) " time)
                                           (match-string 1 time)))
-                           (to-file (format "%s-%s.html" str-time title))
+                           (to-file (format "%s-%s.html" str-time (or permalink title)))
                            (org-buffer (current-buffer))
                            (id (org-id-get-create))
                            (yaml-front-matter `(("title" . ,heading)
                                                 ("draft" . ,(if is-draft "true" "false"))
-                                                ("layout" . "default")))
+                                                ("layout" . "default")
+                                                ,@(when permalink `(("permalink" . ,permalink)))))
                            (html (save-excursion
                                    (save-restriction
                                      (org-narrow-to-subtree)
@@ -815,6 +817,7 @@
            (-map #'f-expand
                  (-filter #'f-exists?
                           '("~/org/personal.org"
+                            "~/org/blog.org"
                             "~/org/refile.org"
                             "~/org/subscriptions.org"
                             "~/org/mirantis.org"
