@@ -101,31 +101,6 @@
    :PROPERTIES:
    :ID:       992767f0-1151-410a-81d8-80c60bf73548
    :END:
-
-+begin_src emacs-lisp
-  (setf erc-hide-list '("JOIN" "PART" "QUIT"))
-
-  (use-package circe
-    :commands circe
-    :config
-    (setf circe-network-options `(("Freenode"
-                                   :channels ("#erlang" "#erlounge" "#openstack-oslo" "#rabbitmq"))
-                                  ("Bitlbee"
-                                   :port 6667
-                                   :channels ("#erlang-talks")
-                                   :pass ,(funcall (plist-get (nth 0 (auth-source-search :host "127.0.0.1" :port 6667 :user "binarin")) :secret)))))
-    (setf circe-reduce-lurker-spam t)
-    (load "lui-logging" nil t)
-    (enable-lui-logging-globally))
-
-  (defun irc ()
-    (interactive)
-    (circe "Freenode")
-    ;; (circe "Bitlbee")
-    )
-
-+end_src
-
 * Personal organization
 ** Notes about setting up org-capture
 

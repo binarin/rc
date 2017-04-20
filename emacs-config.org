@@ -1385,6 +1385,24 @@
       ;; (global-set-key (kbd "<f9>") #'binarin/mu4e-hydra/body)
     #+end_src
 
+** IRC
+   #+begin_src emacs-lisp
+     (setf circe-network-options `(("Freenode"
+                                    :channels ("#erlang" "#erlounge" "#rabbitmq" "#nixos" "#haskell" "#reflex-frp"))
+                                   ))
+     (setf circe-reduce-lurker-spam t)
+
+     (eval-after-load "circe"
+       (lambda ()
+         (load "lui-logging" nil t)
+         (enable-lui-logging-globally)))
+
+     (defun irc ()
+       (interactive)
+       (circe "Freenode"))
+   #+end_src
+
+
 * Programming
 ** helm-dash for documentation
    #+BEGIN_SRC emacs-lisp
