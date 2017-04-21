@@ -48,8 +48,6 @@ import XMonad.Util.WorkspaceCompare
 import Graphics.X11.ExtraTypes.XF86
 import Xkb
 
-xF86XK_TouchpadToggle = 269025193
-
 primaryWorkspaces :: [(String, String)]
 primaryWorkspaces =
   [ ("term", "[")
