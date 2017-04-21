@@ -625,6 +625,19 @@
    ;; (global-company-mode t)
    #+END_SRC
 
+** Emacsclient
+
+  #+begin_src emacs-lisp
+    (defun binarin/server-start ()
+      (require 'server)
+      (unless (server-running-p server-name)
+        (server-start)))
+
+    (add-hook 'after-init-hook #'binarin/server-start)
+
+    (setf server-temp-file-regexp "^/tmp/\\(zsh\\|Re\\)\\|/draft$")
+  #+end_src
+
 * Org
 ** Hacks
    #+BEGIN_SRC emacs-lisp
@@ -1785,12 +1798,3 @@
   :PROPERTIES:
   :ID:       06755181-420b-4911-80a7-cfec7cc4b655
   :END:
-
-  #+begin_src emacs-lisp
-    (defun binarin/server-start ()
-      (require 'server)
-      (unless (server-running-p server-name)
-        (server-start)))
-
-    (add-hook 'after-init-hook #'binarin/server-start)
-  #+end_src

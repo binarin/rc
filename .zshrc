@@ -114,6 +114,9 @@ add-zsh-hook preexec notifyosd-preexec
 
 for candidate in emacsclient vim vi; do
     if [[ ! -z $(which $candidate) ]]; then
+        if [[ $candidate == emacsclient ]]; then
+            candidate="emacsclient -nw"
+        fi
         export VISUAL=$candidate
         export EDITOR=$candidate
         break
@@ -127,9 +130,16 @@ export DEBEMAIL="binarin@binarin.ru"
 alias dch='dch --vendor=debian'
 alias di='docker run --rm -i -t'
 alias rgrep='grep -R'
-alias e='emacsclient -nw'
 alias o='xdg-open'
 alias pst='pstree -ap | less'
+
+e() {
+    local emacs_desktop_num=$(wmctrl -d | grep -oP '^(\d+)(?=.*emacs$)')
+    if [[ ! -z "$emacs_desktop_num" ]]; then
+        wmctrl -s "$emacs_desktop_num"
+    fi
+    emacsclient --no-wait "$@"
+}
 
 rr() {
     readlink -f $(which $1)
