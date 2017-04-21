@@ -171,3 +171,10 @@ man() {
         LESS_TERMCAP_us=$(printf "\e[1;32m") \
             man "$@"
 }
+
+fzf_binary=$(which fzf)
+if [[ $? == 0 ]]; then
+    fzf_share="$(dirname "$fzf_binary")/../share/fzf"
+    test -f "$fzf_share/completion.zsh" && . "$fzf_share/completion.zsh"
+    test -f "$fzf_share/key-bindings.zsh" && . "$fzf_share/key-bindings.zsh"
+fi
