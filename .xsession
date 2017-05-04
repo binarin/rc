@@ -13,6 +13,8 @@ bg-run() {
 set-dpi() {
     if [[ $HOST == demandred ]]; then
         xrandr --output DP1 --auto --primary --left-of HDMI2 --output HDMI2 --auto --rotate left --dpi 160
+    elif [[ $HOST == lanfear ]]; then
+        xrandr --output HDMI-0 --auto --right-of DisplayPort-0 --rotate left --output DisplayPort-0 --primary --auto
     fi
 }
 
