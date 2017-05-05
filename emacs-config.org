@@ -638,6 +638,11 @@
     (setf server-temp-file-regexp "^/tmp/\\(zsh\\|Re\\)\\|/draft$")
   #+end_src
 
+** Spell-checking
+   #+BEGIN_SRC emacs-lisp
+     (setf ispell-dictionary "en")
+     (add-hook 'org-mode-hook 'flyspell-mode)
+   #+END_SRC
 * Org
 ** Hacks
    #+BEGIN_SRC emacs-lisp

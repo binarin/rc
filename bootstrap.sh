@@ -22,7 +22,7 @@ fi
 
 cd ~
 
-cp -sn ~/.rc/{.emacs,.xmobarrc,.zshrc,.vimrc,.Xresources,.xsession,.sbclrc,.tmux.conf,.gitconfig,.quiltrc,.mbsyncrc,.conkerorrc,.dircolors} .
+cp -sn ~/.rc/{.emacs,.xmobarrc,.zshrc,.vimrc,.Xresources,.xsession,.sbclrc,.tmux.conf,.gitconfig,.quiltrc,.mbsyncrc,.conkerorrc,.dircolors,.aspell.en.pws} .
 if [ ! -e ~/.urxvt ]; then
     ln -s ~/.rc/.urxvt .
 fi
