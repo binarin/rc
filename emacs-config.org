@@ -1434,6 +1434,11 @@
    #+BEGIN_SRC emacs-lisp
      (setf tags-revert-without-query t)
    #+END_SRC
+** Elixir
+   #+BEGIN_SRC emacs-lisp
+     (add-hook 'elixir-mode-hook 'alchemist-mode)
+     (add-hook 'elixir-mode-hook 'company-mode)
+   #+END_SRC
 ** Elm
    #+BEGIN_SRC emacs-lisp
      (defun binarin/elm-mode-hook ()
