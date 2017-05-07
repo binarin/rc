@@ -822,7 +822,8 @@
              ("DOBR" "COMP" "PHON")
              ("WORK" "COMP" "PHON")
              ("AUTO" "CITY" "PHON")
-             ("CITY" "PHON")))
+             ("CITY" "PHON")
+             ("COMP")))
 
      (setq org-tag-alist `((:startgroup . nil) ;; contexts
                            ,@context-tags
