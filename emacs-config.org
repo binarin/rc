@@ -910,6 +910,8 @@
                                        (mapcar 'car context-tags)))
                   "-"))
 
+     (setf (cdr (assoc 'todo org-agenda-sorting-strategy)) '(priority-down user-defined-down category-keep))
+     (setf org-agenda-cmp-user-defined (binarin/agenda-sorter-tag-first "NEXT"))
 
      (setq org-agenda-custom-commands
            `(("s" "Started Tasks" tags "TODO=\"STARTED\"|TODO=\"PAUSED_\"" ,binarin/org-include-scheduled-todos)
