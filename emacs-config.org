@@ -779,6 +779,8 @@
      (setq org-todo-keyword-faces
            '(("TODO___" :foreground "red" :weight bold)
              ("STARTED" :foreground "red" :weight bold)
+             ("WRITE__" :foreground "red" :weight bold)
+             ("WRITING" :foreground "red" :weight bold)
              ("PAUSED_" :foreground "red" :weight bold)
              ("DONE___" :foreground "forest green" :weight bold)
              ("PUBLISH" :foreground "forest green" :weight bold)
