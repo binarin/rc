@@ -197,14 +197,23 @@
    #+begin_src emacs-lisp
      (setf auth-sources (binarin/optional-repo-files ".authinfo.gpg"))
    #+end_src
-** Prompt on C-x C-c - no more accidential exits
+** Killing buffers and exiting emacs
    :PROPERTIES:
    :ID:       4c9e3061-cfc7-420d-b82c-b8956b8fe95a
    :END:
 
-#+begin_src emacs-lisp
-  (setf confirm-kill-emacs #'y-or-n-p)
-#+end_src
+   Prompt on C-x C-c - no more accidential exits
+   #+begin_src emacs-lisp
+     (setf confirm-kill-emacs #'y-or-n-p)
+   #+end_src
+
+   Don't kill scratch buffers
+   #+BEGIN_SRC emacs-lisp
+     (defun binarin/dont-kill-scratch-buffer ()
+       (or (not (string= (buffer-name) "*scratch*"))
+           (ignore (bury-buffer))))
+     (add-hook 'kill-buffer-query-functions #'binarin/dont-kill-scratch-buffer)
+   #+END_SRC
 
 ** Scrolling
    :PROPERTIES:
