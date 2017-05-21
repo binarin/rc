@@ -238,6 +238,7 @@
    #+BEGIN_SRC emacs-lisp
      (setf select-enable-primary t)
      (setf select-enable-clipboard t)
+     (setf save-interprogram-paste-before-kill t)
    #+END_SRC
 ** Change "yes or no" to "y or n"
    :PROPERTIES:
