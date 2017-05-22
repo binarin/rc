@@ -146,6 +146,10 @@
    #+BEGIN_SRC emacs-lisp
      (add-hook 'dired-mode-hook 'dired-hide-details-mode)
    #+END_SRC
+** Tool-tips
+   #+BEGIN_SRC emacs-lisp
+     (setf x-gtk-use-system-tooltips nil)
+   #+END_SRC
 * Behaviour
 ** Narrowing
    #+BEGIN_SRC emacs-lisp
@@ -239,6 +243,7 @@
      (setf select-enable-primary t)
      (setf select-enable-clipboard t)
      (setf save-interprogram-paste-before-kill t)
+     (setf x-select-request-type '(UTF8_STRING COMPOUND_TEXT TEXT STRING))
    #+END_SRC
 ** Change "yes or no" to "y or n"
    :PROPERTIES:
