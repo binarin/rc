@@ -4,7 +4,7 @@ SyncState *
 IMAPAccount binarin@gmail.com
 Host imap.gmail.com
 User binarin@gmail.com
-PassCmd "gpg2 -q --for-your-eyes-only --no-tty -d ~/.rc.d/10-desktop-secrets/binarin@gmail.com.gpg"
+PassCmd "cat ~/.rc.d/10-desktop-secrets/binarin@gmail.com"
 CertificateFile /etc/ssl/certs/ca-certificates.crt
 SSLType IMAPS
 
@@ -83,7 +83,7 @@ Channel binarin@gmail.com-archive
 IMAPAccount binarin@binarin.ru
 Host imap.gmail.com
 User binarin@binarin.ru
-PassCmd "gpg2 -q --for-your-eyes-only --no-tty -d ~/.rc.d/10-desktop-secrets/binarin@binarin.ru.gpg"
+PassCmd "cat ~/.rc.d/10-desktop-secrets/binarin@binarin.ru"
 CertificateFile /etc/ssl/certs/ca-certificates.crt
 SSLType IMAPS
 
@@ -162,7 +162,7 @@ Channel binarin@binarin.ru-archive
 IMAPAccount alebedev@mirantis.com
 Host imap.gmail.com
 User alebedev@mirantis.com
-PassCmd "gpg2 -q --for-your-eyes-only --no-tty -d ~/.rc.d/10-desktop-secrets/alebedev@mirantis.com.gpg"
+PassCmd "cat ~/.rc.d/10-desktop-secrets/alebedev@mirantis.com"
 CertificateFile /etc/ssl/certs/ca-certificates.crt
 SSLType IMAPS
 
