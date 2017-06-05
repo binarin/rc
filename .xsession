@@ -44,6 +44,7 @@ setup-agents() {
 }
 
 xmonad-loop() {
+    rm -f $HOME/.xmonad/xmonad.state
     while true; do 
         xmonad
     done
