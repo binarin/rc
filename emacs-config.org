@@ -1511,6 +1511,7 @@
          (set-face-attribute 'easy-escape-delimiter-face nil :foreground "red3")))
    #+END_SRC
 ** Haskell
+
    #+BEGIN_SRC emacs-lisp
           ;; (add-hook 'haskell-mode-hook 'intero-mode-whitelist)
           ;; (autoload 'intero-mode-whitelist "intero")
@@ -1549,6 +1550,57 @@
 
           (add-hook 'haskell-mode-hook 'binarin/haskell-mode-hook)
    #+END_SRC
+
+   #+BEGIN_SRC emacs-lisp
+     (defun binarin/haskell-session-installed-modules (_session &optional _dontcreate)
+       (let ((session (haskell-session-maybe))
+             result)
+         (when session
+           (with-temp-buffer
+             (call-process "ghc-pkg" nil t nil "dump" "--simple-output")
+             (goto-char (point-min))
+             (awhile (and (re-search-forward "exposed-modules:\n\\(\\( +.*\n\\)+\\)" nil t)
+                          (goto-char (match-end 0)) ;; so nobody will mess with our match
+                          (match-string 1))
+               (setf result (nconc (split-string it) result)))))
+         result))
+
+     (defun binarin/haskell-session-installed-modules-advice (orig-fun &rest args)
+       (apply #'binarin/haskell-session-installed-modules args))
+
+     (advice-add 'haskell-session-installed-modules :around #'binarin/haskell-session-installed-modules-advice)
+
+     (defun binarin/haskell-add-import (&optional scope qualified)
+       (let ((modules-fn (if (eq scope :local)
+                             #'haskell-session-project-modules
+                           #'haskell-session-installed-modules)))
+         (awhen (ivy-read "Module: " (funcall modules-fn (haskell-modules-session)))
+           (goto-char (point-max))
+           (haskell-navigate-imports)
+           (when (eq scope :local) ;; try to choose the second group of imports
+             (haskell-navigate-imports))
+           (if (not qualified)
+               (insert "import " it "\n")
+             (let ((qualification (read-from-minibuffer "Qualifiy as: ")))
+               (when qualification
+                 (insert "import qualified " it " as " qualification "\n"))))
+           (haskell-align-imports))))
+
+     (defun binarin/haskell-add-global-import (prefix)
+       (interactive "P")
+       (binarin/haskell-add-import :global prefix))
+
+     (defun binarin/haskell-add-local-import (prefix)
+       (interactive "P")
+       (binarin/haskell-add-import :local prefix))
+
+     (eval-after-load "haskell-mode"
+       (lambda ()
+         (define-key haskell-mode-map (kbd "C-c i") #'binarin/haskell-add-global-import)
+         (define-key haskell-mode-map (kbd "C-c l") #'binarin/haskell-add-local-import)))
+   #+END_SRC
+
+
 ** Python
    #+BEGIN_SRC emacs-lisp
      (defun binarin/python-mode-hook ()
