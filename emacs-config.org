@@ -50,11 +50,6 @@
                " - "
                invocation-name))
    #+end_src
-
-
-
-
-
 ** Fonts
    :PROPERTIES:
    :ID:       26d38fee-8252-4024-b0e8-1466ff4052c9
@@ -1850,7 +1845,7 @@
 ** Other keybindings
   #+begin_src emacs-lisp
     (global-set-key (kbd "M-&") 'delete-other-windows)
-    (global-set-key (kbd "M-[") 'split-window-below)
+    ;; (global-set-key (kbd "M-[") 'split-window-below) -- fucks up bracketed-paste in terminal
     (global-set-key (kbd "M-{") 'split-window-right)
     (define-key org-mode-map (kbd "M-{") 'split-window-right)
 
