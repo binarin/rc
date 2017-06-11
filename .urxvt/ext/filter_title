@@ -1,7 +1,8 @@
 #! perl
+use 5.14.0;
 use Data::Dumper;
 use autodie;
-open my $fh, ">>", "/tmp/osc.log";
+
 sub on_osc_seq {
     my ($term, $op, $args, $resp) = @_;
     if( $op == 0 ) {
@@ -10,3 +11,9 @@ sub on_osc_seq {
     return;
 }
 
+sub on_tt_paste {
+    my ($term, $octets) = @_;
+    $octets =~ s/\[201~/^[[201~/g;
+    $term->tt_paste($octets);
+    return 1;
+}
