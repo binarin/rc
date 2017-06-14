@@ -636,7 +636,11 @@
    #+END_SRC
 ** Completion
    #+BEGIN_SRC emacs-lisp
-   ;; (global-company-mode t)
+     ;; (global-company-mode t)
+     (eval-after-load "company"
+       (lambda ()
+         (define-key company-active-map (kbd "C-n") 'company-select-next-or-abort)
+         (define-key company-active-map (kbd "C-p") 'company-select-previous-or-abort)))
    #+END_SRC
 
 ** Emacsclient
