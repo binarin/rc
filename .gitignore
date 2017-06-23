@@ -8,3 +8,4 @@ modules/
 *.o
 *.hi
 .stack-work
+TAGS
