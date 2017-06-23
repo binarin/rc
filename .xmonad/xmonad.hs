@@ -84,6 +84,7 @@ myManageHook = composeAll
     , resource  =? "desktop_window" --> doIgnore
     , resource  =? "kdesktop"       --> doIgnore
     , className =? "Xfce4-notifyd"  --> doIgnore
+    , className =? "Wine"           --> doFloat
     , className =? "Gnome-osd-server"  --> doFloat
     , className =? "Chromium"       --> doF (W.shift "web")
     , className =? "Conkeror"       --> doF (W.shift "web")
