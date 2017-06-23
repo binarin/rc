@@ -90,3 +90,8 @@ if [[ ! -f ~/.config/dunst/dunstrc ]]; then
     mkdir -p ~/.config/dunst/
     ln -sf ~/.rc/dunstrc ~/.config/dunst/dunstrc
 fi
+
+if [[ ! -f ~/.mplayer/config ]]; then
+    mkdir -p ~/.mplayer
+    ln -sf ~/.rc/mplayer.config ~/.mplayer/config
+fi
