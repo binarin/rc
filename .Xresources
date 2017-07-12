@@ -36,3 +36,5 @@ xscreensaver.lockTimeout: 1
 xscreensaver.splash: false
 xscreensaver.fade: false
 xscreensaver.mode: blank
+xscreensaver.dpmsEnabled: true
+xscreensaver.dpmsQuickOff: true
