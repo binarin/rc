@@ -859,8 +859,6 @@
                             "~/org/blog.org"
                             "~/org/refile.org"
                             "~/org/subscriptions.org"
-                            "~/org/mirantis.org"
-                            "~/org/mira-cal.org"
                             "~/.rc/emacs-config.org"
                             "~/org/ference.org"))))
    #+end_src
