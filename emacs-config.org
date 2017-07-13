@@ -668,6 +668,13 @@
      (setf ispell-dictionary "en")
      (add-hook 'org-mode-hook 'flyspell-mode)
    #+END_SRC
+** Improved help buffers
+   #+BEGIN_SRC emacs-lisp
+     (autoload 'helpful-command "helpful")
+     (autoload 'helpful-function "helpful")
+     (global-set-key (kbd "C-h k") #'helpful-command)
+     (global-set-key (kbd "C-h f") #'helpful-function)
+   #+END_SRC
 * Org
 ** Hacks
    #+BEGIN_SRC emacs-lisp
