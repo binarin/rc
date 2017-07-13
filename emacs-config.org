@@ -39,6 +39,13 @@
     (setf password-cache t)
   #+end_src
 * Appearance
+** Performance tuning
+
+   Greatly improves performance for buffers with very long lines.
+   #+BEGIN_SRC emacs-lisp
+     (setf bidi-display-reordering nil)
+   #+END_SRC
+
 ** Set window title
    Full name in window title, will be shown in xmobar.
 
