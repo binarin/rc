@@ -1,52 +1,54 @@
 {-# OPTIONS_GHC -fno-warn-missing-signatures #-}
 {-# LANGUAGE OverloadedStrings #-}
 
+import           XMonad.Layout.Tabbed
+import           XMonad.Layout.Accordion
 import qualified Data.Map as M
 import qualified XMonad.StackSet as W
-import System.Exit
-import System.IO
-import Data.Monoid
-import Data.Default
-import Data.List (isSuffixOf)
-import Data.Ratio ((%))
+import           System.Exit
+import           System.IO
+import           Data.Monoid
+import           Data.Default
+import           Data.List (isSuffixOf)
+import           Data.Ratio ((%))
 
-import XMonad
+import           XMonad
 -- import XMonad.Actions.CopyWindow(copy)
-import XMonad.Actions.CycleWindows
-import XMonad.Actions.CycleWS
+import           XMonad.Actions.CycleWindows
+import           XMonad.Actions.CycleWS
 -- import XMonad.Actions.DynamicWorkspaces
-import XMonad.Actions.GridSelect
-import XMonad.Actions.OnScreen
+import           XMonad.Actions.GridSelect
+import           XMonad.Actions.OnScreen
 
 -- import XMonad.Config.Gnome
 
-import XMonad.Hooks.DynamicLog
-import XMonad.Hooks.EwmhDesktops
-import XMonad.Hooks.ManageDocks
-import XMonad.Hooks.ManageHelpers
-import XMonad.Hooks.Place
-import XMonad.Hooks.CurrentWorkspaceOnTop (currentWorkspaceOnTop)
+import           XMonad.Hooks.DynamicLog
+import           XMonad.Hooks.EwmhDesktops
+import           XMonad.Hooks.ManageDocks
+import           XMonad.Hooks.ManageHelpers
+import           XMonad.Hooks.Place
+import           XMonad.Hooks.CurrentWorkspaceOnTop (currentWorkspaceOnTop)
 
-import XMonad.Layout.Grid
-import XMonad.Layout.IM
+import           XMonad.Layout.Grid
+import           XMonad.Layout.IM
 -- import XMonad.Layout.MouseResizableTile
-import XMonad.Layout.PerWorkspace
-import XMonad.Layout.NoBorders
-import XMonad.Layout.SimpleFloat(simpleFloat)
+import           XMonad.Layout.PerWorkspace
+import           XMonad.Layout.NoBorders
+import           XMonad.Layout.SimpleFloat (simpleFloat)
 
 -- import XMonad.Prompt
-import XMonad.Prompt.Window
+import           XMonad.Prompt.Window
 
-import XMonad.Util.EZConfig
+import           XMonad.Util.EZConfig
 -- import XMonad.Util.Loggers
-import XMonad.Util.Run(spawnPipe)
-import XMonad.Util.WorkspaceCompare
+import           XMonad.Util.Run (spawnPipe)
+import           XMonad.Util.WorkspaceCompare
 
 -- import qualified DBus as D
 -- import qualified DBus.Client as D
 -- import qualified Codec.Binary.UTF8.String as UTF8
-import Graphics.X11.ExtraTypes.XF86
-import Xkb
+import           Graphics.X11.ExtraTypes.XF86
+import           Xkb
 
 primaryWorkspaces :: [(String, String)]
 primaryWorkspaces =
