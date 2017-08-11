@@ -158,3 +158,82 @@ Channel binarin@binarin.ru-user-labels
 Channel binarin@binarin.ru-mailing-lists-and-notifications
 Channel binarin@binarin.ru-archive
 
+############################# alexey.lebedeff@booking.com
+IMAPAccount alexey.lebedeff@booking.com
+Host imap.gmail.com
+User alexey.lebedeff@booking.com
+PassCmd "cat ~/.rc.d/10-desktop-secrets/alexey.lebedeff@booking.com"
+CertificateFile /etc/ssl/certs/ca-certificates.crt
+SSLType IMAPS
+
+IMAPStore alexey.lebedeff@booking.com-remote
+Account alexey.lebedeff@booking.com
+
+MaildirStore alexey.lebedeff@booking.com-local
+Path ~/.mail/alexey.lebedeff@booking.com/
+Inbox ~/.mail/alexey.lebedeff@booking.com/INBOX
+SubFolders Verbatim
+
+MaildirStore alexey.lebedeff@booking.com-archive
+Path ~/.mail/archive-alexey.lebedeff@booking.com/
+
+Channel alexey.lebedeff@booking.com-archive
+Master ":alexey.lebedeff@booking.com-remote:[Gmail]/All Mail"
+Slave ":alexey.lebedeff@booking.com-archive:Archive"
+Create Slave
+SyncState *
+Sync Push Flags
+
+Channel alexey.lebedeff@booking.com-trash
+Master ":alexey.lebedeff@booking.com-remote:[Gmail]/Trash"
+Slave ":alexey.lebedeff@booking.com-archive:Trash"
+Create Slave
+Sync All
+
+Channel alexey.lebedeff@booking.com-drafts
+Master ":alexey.lebedeff@booking.com-remote:[Gmail]/Drafts"
+Slave ":alexey.lebedeff@booking.com-local:Drafts"
+Create Slave
+Sync All
+Expunge Both
+
+Channel alexey.lebedeff@booking.com-sent
+Master ":alexey.lebedeff@booking.com-remote:[Gmail]/Sent Mail"
+Slave ":alexey.lebedeff@booking.com-local:Sent"
+Create Slave
+Sync All
+Expunge Both
+
+Channel alexey.lebedeff@booking.com-inbox
+Master ":alexey.lebedeff@booking.com-remote:INBOX"
+Slave ":alexey.lebedeff@booking.com-local:INBOX"
+Create Slave
+Sync All
+Expunge Both
+
+# Channel alexey.lebedeff@booking.com-user-labels
+# Master :alexey.lebedeff@booking.com-remote:
+# Slave :alexey.lebedeff@booking.com-local:
+# Create Slave
+# Sync All
+# Patterns "*" "!Drafts" "!Sent" "!Trash" "![Gmail]*" "!INBOX" "!Lists*" "!Cron*"
+# Expunge Both
+
+# Channel alexey.lebedeff@booking.com-mailing-lists-and-notifications
+# Master :alexey.lebedeff@booking.com-remote:
+# Slave :alexey.lebedeff@booking.com-local:
+# Create Slave
+# Sync All
+# Patterns "Lists*" "Cron*"
+# MaxMessages 2000
+# Expunge Both
+
+Group alexey.lebedeff@booking.com
+Channel alexey.lebedeff@booking.com-trash
+Channel alexey.lebedeff@booking.com-inbox
+Channel alexey.lebedeff@booking.com-drafts
+Channel alexey.lebedeff@booking.com-sent
+# Channel alexey.lebedeff@booking.com-user-labels
+# Channel alexey.lebedeff@booking.com-mailing-lists-and-notifications
+Channel alexey.lebedeff@booking.com-archive
+

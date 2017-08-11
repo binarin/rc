@@ -872,7 +872,7 @@
                           '("~/org/personal.org"
                             "~/org/blog.org"
                             "~/org/refile.org"
-                            "~/org/subscriptions.org"
+                            "~/org/booking.org"
                             "~/.rc/emacs-config.org"
                             "~/org/ference.org"))))
    #+end_src
