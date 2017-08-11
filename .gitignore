@@ -1,6 +1,7 @@
 *~
 emacs-config.el*
 /emacs-config.html
+/.xmonad/dist
 /.xmonad/xmonad.hi
 /.xmonad/xmonad.o
 .tmp/
