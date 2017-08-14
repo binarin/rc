@@ -1,3 +1,4 @@
+{-# LANGUAGE RecordWildCards #-}
 {-# OPTIONS_GHC -fno-warn-missing-signatures #-}
 {-# LANGUAGE OverloadedStrings #-}
 
@@ -71,7 +72,9 @@ secondaryWorkspaces =
   ]
 
 myWorkspaces :: [(String, String)]
-myWorkspaces = primaryWorkspaces ++ secondaryWorkspaces
+myWorkspaces = (p:s:ps) ++ ss
+  where p:ps = primaryWorkspaces
+        s:ss = secondaryWorkspaces
 
 maxNameLength :: Int
 maxNameLength = maximum $ map (length . fst) myWorkspaces
@@ -234,9 +237,9 @@ myConfig logHandle = ewmh def {
         -- , ("M-S-a", withWorkspace defaultXPConfig (windows . copy))
         -- , ("M-S-r", renameWorkspace defaultXPConfig)
         ]
-         ++ [ ("M-" ++ key, windows $ greedyViewOnScreen 0 name)
+         ++ [ ("M-" ++ key, windows $ viewPrimary name)
             | (name, key) <- primaryWorkspaces ]
-         ++ [ ("M-" ++ key, windows $ W.greedyView name)
+         ++ [ ("M-" ++ key, windows $ viewSecondary name)
             | (name, key) <- secondaryWorkspaces ]
         )
         `additionalKeys`
@@ -251,3 +254,10 @@ myConfig logHandle = ewmh def {
         , ((0, xF86XK_AudioNext), spawn "playerctl next")
         , ((0, xF86XK_AudioPrev), spawn "playerctl previous")
         ]
+
+viewPrimary, viewSecondary :: WorkspaceId -> WindowSet -> WindowSet
+viewPrimary i ss@(W.StackSet {W.visible = []}) = W.view i ss
+viewPrimary i ss = greedyViewOnScreen 0 i ss
+
+viewSecondary i ss@(W.StackSet {W.visible = []}) = W.view i ss
+viewSecondary i ss = greedyViewOnScreen 1 i ss
