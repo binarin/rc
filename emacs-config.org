@@ -1249,7 +1249,7 @@
 
 *** Multiple mail accounts
     #+begin_src emacs-lisp
-      (defvar binarin/gmail-accounts '("binarin@gmail.com" "binarin@binarin.ru" "alebedev@mirantis.com"))
+      (defvar binarin/gmail-accounts '("binarin@gmail.com" "binarin@binarin.ru" "alexey.lebedeff@booking.com"))
 
       (setf mu4e-user-mail-address-list binarin/gmail-accounts
             mu4e-context-policy 'pick-first)
