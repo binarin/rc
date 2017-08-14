@@ -28,6 +28,25 @@
     (load-file custom-file)
   #+end_src
 
+* Starting up
+  #+BEGIN_SRC sh
+    gpg --gen-key
+
+    EMAILS="binarin@binarin.ru binarin@gmail.com alexey.lebedeff@booking.com"
+
+    mkdir -p ~/.rc.d/10-desktop-secrets
+
+    touch ~/.rc.d/10-desktop-secrets/.authinfo.gpg
+    echo -n  >  ~/.rc.d/10-desktop-secrets/.authinfo.sample
+
+    for m in $EMAILS ; do
+        mkdir -p ~/.mail/$m ~/.mail/archive-$m
+        touch ~/.rc.d/10-desktop-secrets/$m
+        chmod 0600 ~/.rc.d/10-desktop-secrets/$m
+        echo "machine smtp.gmail.com login $m password XXX port 465" >> ~/.rc.d/10-desktop-secrets/.authinfo.sample
+    done
+  #+END_SRC
+
 * Personal information
   :PROPERTIES:
   :ID:       04b545bf-52b7-412d-9ce5-80ee4bbe10cf
