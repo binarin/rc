@@ -105,3 +105,6 @@ if [[ ! -f ~/.config/pulse/default.pa ]]; then
     ln -sf ~/.rc/default.pa ~/.config/pulse/default.pa
 fi
 
+mkdir -p ~/personal-workspace/ ~/booking-workspace/
+
+
