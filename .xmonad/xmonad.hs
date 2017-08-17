@@ -2,53 +2,39 @@
 {-# OPTIONS_GHC -fno-warn-missing-signatures #-}
 {-# LANGUAGE OverloadedStrings #-}
 
-import           XMonad.Layout.Tabbed
-import           XMonad.Layout.Accordion
-import qualified Data.Map as M
-import qualified XMonad.StackSet as W
-import           System.Exit
-import           System.IO
-import           Data.Monoid
 import           Data.Default
 import           Data.List (isSuffixOf)
+import qualified Data.Map as M
+import           Data.Monoid
 import           Data.Ratio ((%))
-
+import           System.Exit
+import           System.IO
+import           XMonad.Layout.Accordion
+import           XMonad.Layout.Tabbed
+import qualified XMonad.StackSet as W
 import           XMonad
--- import XMonad.Actions.CopyWindow(copy)
 import           XMonad.Actions.CycleWindows
 import           XMonad.Actions.CycleWS
--- import XMonad.Actions.DynamicWorkspaces
 import           XMonad.Actions.GridSelect
 import           XMonad.Actions.OnScreen
-
--- import XMonad.Config.Gnome
-
 import           XMonad.Hooks.DynamicLog
 import           XMonad.Hooks.EwmhDesktops
 import           XMonad.Hooks.ManageDocks
 import           XMonad.Hooks.ManageHelpers
 import           XMonad.Hooks.Place
 import           XMonad.Hooks.CurrentWorkspaceOnTop (currentWorkspaceOnTop)
-
 import           XMonad.Layout.Grid
 import           XMonad.Layout.IM
--- import XMonad.Layout.MouseResizableTile
 import           XMonad.Layout.PerWorkspace
 import           XMonad.Layout.NoBorders
 import           XMonad.Layout.SimpleFloat (simpleFloat)
-
--- import XMonad.Prompt
 import           XMonad.Prompt.Window
-
 import           XMonad.Util.EZConfig
--- import XMonad.Util.Loggers
 import           XMonad.Util.Run (spawnPipe)
 import           XMonad.Util.WorkspaceCompare
-
--- import qualified DBus as D
--- import qualified DBus.Client as D
--- import qualified Codec.Binary.UTF8.String as UTF8
+import System.Taffybar.Hooks.PagerHints (pagerHints)
 import           Graphics.X11.ExtraTypes.XF86
+
 import           Xkb
 
 primaryWorkspaces :: [(String, String)]
@@ -148,43 +134,12 @@ gsconfig1 = def
 
 main :: IO ()
 main = do
-  xmobarPipe <- spawnPipe "xmobar"
-  xmonad $ myConfig xmobarPipe
-
-xmobarPrettyPrinter :: Handle -> PP
-xmobarPrettyPrinter xmobarPipe = def
-  { ppTitle    = pad
-  , ppOutput   = hPutStrLn xmobarPipe
-  , ppCurrent  = xmobarColor "#2b4f98" "green" . padWorkspaceName
-  , ppVisible  = xmobarColor "grey" "#2b4f98" . padWorkspaceName
-  , ppHidden   = const ""
-  , ppHiddenNoWindows = const ""
-  , ppUrgent   = xmobarColor "red" "yellow" . pad
-  , ppWsSep    = ""
-  , ppSep      = ""
-  , ppLayout   = xmobarColor "yellow" "#2b4f98" .
-                 (\x ->
-                   pad $ case x of
-                          "Full" -> "FL"
-                          "MouseResizableTile" -> "M_"
-                          "Mirror MouseResizableTile" -> "MM"
-                          "Tall" -> "TL"
-                          "Mirror Tall" -> "TM"
-                          "Grid" -> "GR"
-                          "IM Grid" -> "IG"
-                          _ -> x
-                 )
-  , ppOrder = \(ws:layout:windowTitle:extras) -> layout:ws:windowTitle:extras
-  , ppSort = mkWsSort getXineramaPhysicalWsCompare
-  }
-
-prettyPrinter :: Handle -> PP
-prettyPrinter = xmobarPrettyPrinter
+  xmonad $ myConfig
 
 myManageFloats :: ManageHook
 myManageFloats = placeHook $ inBounds $ withGaps (16,0,16,0) (smart (0.5,0.5))
 
-myConfig logHandle = ewmh def {
+myConfig = ewmh $ pagerHints $ def {
   modMask = mod4Mask
   , workspaces = map fst myWorkspaces
   , terminal           = "urxvt"
@@ -197,7 +152,7 @@ myConfig logHandle = ewmh def {
                       , fullscreenEventHook
                       ]
   , layoutHook = myLayoutHook
-  , logHook = currentWorkspaceOnTop <+> dynamicLogWithPP (prettyPrinter logHandle)
+  , logHook = currentWorkspaceOnTop
   }
         `additionalKeysP`
         ([ ("M-y", spawn "urxvt")
