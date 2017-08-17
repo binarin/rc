@@ -219,14 +219,14 @@ Expunge Both
 # Patterns "*" "!Drafts" "!Sent" "!Trash" "![Gmail]*" "!INBOX" "!Lists*" "!Cron*"
 # Expunge Both
 
-# Channel alexey.lebedeff@booking.com-mailing-lists-and-notifications
-# Master :alexey.lebedeff@booking.com-remote:
-# Slave :alexey.lebedeff@booking.com-local:
-# Create Slave
-# Sync All
-# Patterns "Lists*" "Cron*"
-# MaxMessages 2000
-# Expunge Both
+Channel alexey.lebedeff@booking.com-mailing-lists-and-notifications
+Master :alexey.lebedeff@booking.com-remote:
+Slave :alexey.lebedeff@booking.com-local:
+Create Slave
+Sync All
+Patterns "Lists*"
+MaxMessages 2000
+Expunge Both
 
 Group alexey.lebedeff@booking.com
 Channel alexey.lebedeff@booking.com-trash
@@ -234,6 +234,6 @@ Channel alexey.lebedeff@booking.com-inbox
 Channel alexey.lebedeff@booking.com-drafts
 Channel alexey.lebedeff@booking.com-sent
 # Channel alexey.lebedeff@booking.com-user-labels
-# Channel alexey.lebedeff@booking.com-mailing-lists-and-notifications
+Channel alexey.lebedeff@booking.com-mailing-lists-and-notifications
 Channel alexey.lebedeff@booking.com-archive
 
