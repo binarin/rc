@@ -40,6 +40,10 @@ mkdir -p ~/.xmonad
 cd ~/.xmonad
 cp -sn ~/.rc/.xmonad/xmonad.hs .
 
+mkdir -p ~/.config/taffybar
+cd ~/.config/taffybar
+cp -sn ~/.rc/taffybar/taffybar.hs .
+
 if [ ! -e ~/.xmonad/lib ]; then
     ln -s ~/.rc/.xmonad/lib ~/.xmonad/lib
 fi
