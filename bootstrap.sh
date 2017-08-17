@@ -108,3 +108,6 @@ fi
 mkdir -p ~/personal-workspace/ ~/booking-workspace/
 
 
+# hack to disable dropbox updates
+rm -rf ~/.dropbox-dist
+install -dm0 ~/.dropbox-dist
