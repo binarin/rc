@@ -11,33 +11,33 @@ import           Data.Ratio ((%))
 import           System.Exit
 import           System.IO
 
+import           System.Taffybar.Hooks.PagerHints (pagerHints)
 import           XMonad
-import           XMonad.Hooks.ManageHelpers (doFullFloat, isFullscreen)
+import           XMonad.Hooks.CurrentWorkspaceOnTop (currentWorkspaceOnTop)
 import           XMonad.Hooks.EwmhDesktops (ewmh, fullscreenEventHook)
 import           XMonad.Hooks.ManageDocks (docks, avoidStruts)
+import           XMonad.Hooks.ManageHelpers (doFullFloat, isFullscreen)
 import           XMonad.Hooks.Place (smart, withGaps, inBounds, placeHook)
-import XMonad.Hooks.SetWMName (setWMName)
+import           XMonad.Hooks.SetWMName (setWMName)
 import           XMonad.Hooks.UrgencyHook (withUrgencyHook, NoUrgencyHook(NoUrgencyHook), focusUrgent)
 import           XMonad.Layout.Decoration (Shrinker(shrinkIt), Theme(fontName))
 import           XMonad.Layout.Fullscreen (fullscreenSupport)
+import           XMonad.Layout.SimpleFloat (simpleFloat)
 import           XMonad.Layout.Tabbed (tabbedLeft)
 import qualified XMonad.StackSet as W
+import           XMonad.Util.Run (spawnPipe)
 
 import           XMonad.Actions.CycleWindows
 import           XMonad.Actions.CycleWS
 import           XMonad.Actions.GridSelect
 import           XMonad.Actions.OnScreen
-import           XMonad.Hooks.CurrentWorkspaceOnTop (currentWorkspaceOnTop)
 import           XMonad.Layout.Grid
 import           XMonad.Layout.IM
 import           XMonad.Layout.PerWorkspace
 import           XMonad.Layout.NoBorders
-import           XMonad.Layout.SimpleFloat (simpleFloat)
 import           XMonad.Prompt.Window
 import           XMonad.Util.EZConfig
-import           XMonad.Util.Run (spawnPipe)
 import           XMonad.Util.WorkspaceCompare
-import           System.Taffybar.Hooks.PagerHints (pagerHints)
 import           Graphics.X11.ExtraTypes.XF86
 
 import           Xkb
