@@ -5,6 +5,7 @@ import Text.Read (readMaybe)
 import System.Taffybar
 import System.Taffybar.Systray
 import System.Taffybar.TaffyPager
+import System.Taffybar.Battery
 import System.Taffybar.SimpleClock
 import System.Taffybar.Widgets.PollingGraph
 import System.Information.CPU
@@ -23,7 +24,8 @@ main = do
       pager = taffyPagerNew defaultPagerConfig
       tray = systrayNew
       cpu = pollingGraphNew cpuCfg 0.5 cpuCallback
+      battery = batteryBarNew defaultBatteryConfig 30
   defaultTaffybar defaultTaffybarConfig { startWidgets = [ pager ]
-                                        , endWidgets = [ tray, clock, cpu ]
+                                        , endWidgets = [ tray, clock, cpu, battery ]
                                         , monitorNumber = chosenMonitorNumber
                                         }
