@@ -19,7 +19,8 @@ import           XMonad.Hooks.ManageDocks (docks, avoidStruts)
 import           XMonad.Hooks.ManageHelpers (doFullFloat, isFullscreen)
 import           XMonad.Hooks.Place (smart, withGaps, inBounds, placeHook)
 import           XMonad.Hooks.SetWMName (setWMName)
-import           XMonad.Hooks.UrgencyHook (withUrgencyHook, NoUrgencyHook(NoUrgencyHook), focusUrgent)
+import           XMonad.Hooks.UrgencyHook (withUrgencyHookC, NoUrgencyHook(NoUrgencyHook), focusUrgent, urgencyConfig)
+import qualified XMonad.Hooks.UrgencyHook as Urgency
 import           XMonad.Layout.Decoration (Shrinker(shrinkIt), Theme(fontName))
 import           XMonad.Layout.Fullscreen (fullscreenSupport)
 import           XMonad.Layout.SimpleFloat (simpleFloat)
@@ -156,7 +157,7 @@ myManageFloats :: ManageHook
 myManageFloats = placeHook $ inBounds $ withGaps (16,0,16,0) (smart (0.5,0.5))
 
 configModifiers =
-      withUrgencyHook NoUrgencyHook
+      withUrgencyHookC NoUrgencyHook urgencyConfig {Urgency.suppressWhen = Urgency.Never}
     . ewmh
     . pagerHints
     . fullscreenSupport
