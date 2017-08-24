@@ -90,16 +90,6 @@
     ;; (add-hook 'after-make-frame-functions 'my-fix-emojis)
   #+end_src
 
-** Zooming
-   #+begin_src emacs-lisp
-     (autoload 'zoom-in/out "zoom-frm")
-     (global-set-key (kbd "C-x C-+") 'zoom-in/out)
-     (global-set-key (kbd "C-x C--") 'zoom-in/out)
-     (global-set-key (kbd "C-x C-=") 'zoom-in/out)
-     (global-set-key (kbd "C-x C-0") 'zoom-in/out)
-     (setf frame-zoom-font-difference 2)
-   #+end_src
-
 ** Estimated screen size
    :PROPERTIES:
    :ID:       5ee383df-5065-4f42-87ac-21975acebc72
