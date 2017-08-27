@@ -32,7 +32,7 @@ start-programs() {
 
     bg-run kupfer --no-splash
     bg-run xscreensaver -nosplash
-    bg-run quasselclient
+    # bg-run quasselclient
     bg-run skype
     bg-run dunst
 }
