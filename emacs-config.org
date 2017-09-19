@@ -684,7 +684,6 @@
    #+BEGIN_SRC emacs-lisp
      (autoload 'helpful-command "helpful")
      (autoload 'helpful-function "helpful")
-     (global-set-key (kbd "C-h k") #'helpful-command)
      (global-set-key (kbd "C-h f") #'helpful-function)
    #+END_SRC
 * Org
