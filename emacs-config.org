@@ -1467,6 +1467,32 @@
    #+end_src
 
 
+** Jabber
+   #+BEGIN_SRC emacs-lisp
+     (setf jabber-account-list '(("alexey.lebedeff@booking.com")))
+     (setf jabber-activity-make-strings #'jabber-activity-make-strings-shorten)
+     (add-hook 'jabber-chat-mode-hook #'flyspell-mode)
+     (setf jabber-history-enabled t)
+     (setf jabber-groupchat-buffer-format "#%n")
+     (setf jabber-chat-fill-long-lines t)
+     (defun binarin/jabber-hook ()
+       (emojify-mode)
+       (setf fill-column 80))
+     (add-hook 'jabber-chat-mode-hook #'binarin/jabber-hook)
+     (setf jabber-muc-colorize-local t
+           jabber-muc-colorize-foreign t)
+
+     ;; use this if you don't like all those notices about people joining/leaving
+     (defun binarin/jabber-muc-process-presence-remove-notices (jc presence)
+       (let* ((from (jabber-xml-get-attribute presence 'from))
+              (group (jabber-jid-user from))
+              (buffer (get-buffer (jabber-muc-get-buffer group))))
+         (if buffer
+             (with-current-buffer buffer
+               (ewoc-filter jabber-chat-ewoc (lambda (elt) (not (eq (car elt) :muc-notice))))))))
+
+     (advice-add 'jabber-muc-process-presence :after #'binarin/jabber-muc-process-presence-remove-notices)
+   #+END_SRC
 * Programming
 ** helm-dash for documentation
    #+BEGIN_SRC emacs-lisp
