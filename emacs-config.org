@@ -461,7 +461,8 @@
      (require 'projectile)
      (setf projectile-mode-line nil
            projectile-enable-caching t
-           projectile-git-command (f-expand "~/.rc/projectile-git-command.sh"))
+           ;; projectile-git-command (f-expand "~/.rc/projectile-git-command.sh")
+           )
 
      (message "Preload")
 
