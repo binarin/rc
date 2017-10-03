@@ -82,7 +82,7 @@
    :END:
 
   #+begin_src emacs-lisp
-    (setq default-frame-alist '((font . "Iosevka-18")))
+    (setq default-frame-alist '((font . "Iosevka-22")))
     (defun my-fix-emojis (&optional frame)
       (when (window-system)
         (dolist (char '(65039 ;; VARIATION SELECTOR-16, used by dead.parrot
