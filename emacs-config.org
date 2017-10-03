@@ -135,7 +135,9 @@
 ** smart-mode-line
    #+begin_src emacs-lisp
      (require 'smart-mode-line)
-     (setf sml/theme 'respectful)
+     (require 'smart-mode-line-powerline-theme)
+     (setf sml/theme 'powerline)
+     (setf rm-blacklist '(" hl-p" " Smrt" " Paredit" " Helm" " SliNav" " yas" " MRev" " ARev" " ElDoc" " Undo-Tree" " ^_^" " FS" " Fly" " EditorConfig" " wb" " ez-esc"))
      (sml/setup)
    #+end_src
 ** Truncate lines by default
