@@ -1472,14 +1472,19 @@
    #+BEGIN_SRC emacs-lisp
      (setf jabber-account-list '(("alexey.lebedeff@booking.com")))
      (setf jabber-activity-make-strings #'jabber-activity-make-strings-shorten)
-     (add-hook 'jabber-chat-mode-hook #'flyspell-mode)
+
      (setf jabber-history-enabled t)
      (setf jabber-groupchat-buffer-format "#%n")
      (setf jabber-chat-fill-long-lines t)
+     (setf jabber-alert-muc-hooks nil
+           jabber-alert-presence-hooks nil)
+
      (defun binarin/jabber-hook ()
        (emojify-mode)
+       (flyspell-mode)
        (setf fill-column 80))
      (add-hook 'jabber-chat-mode-hook #'binarin/jabber-hook)
+
      (setf jabber-muc-colorize-local t
            jabber-muc-colorize-foreign t)
 
