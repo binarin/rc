@@ -1001,10 +1001,9 @@
               "* TODO___ %a\n  :PROPERTIES:\n  :ID: %(org-id-new)\n  :END:\n  %U\n\n  %i" :prepend t :immediate-finish t :kill-buffer nil)))
 
      (defvar binarin/org-protocol-mundane-link-descriptions
-       '(" - alebedev@mirantis.com - Mirantis, Inc. Mail"
-         " - binarin@gmail.com - Gmail"
-         " : Bugs : Mirantis OpenStack"
-         " : Bugs : Fuel for OpenStack"))
+       '(" - binarin@gmail.com - Gmail"
+         " - Booking.com Ltd"
+         " - YouTube"))
 
      (defun binarin/org-protocol-capture-postprocess ()
        (awhen (re-search-forward (concat (regexp-opt binarin/org-protocol-mundane-link-descriptions t) "]]") nil t)
