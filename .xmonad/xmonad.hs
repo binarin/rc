@@ -242,6 +242,10 @@ viewPrimary i ss@(W.StackSet {W.visible = []}) = W.view i ss
 viewPrimary i ss = greedyViewOnScreen 0 i ss
 
 viewSecondary i ss@(W.StackSet {W.visible = []}) = W.view i ss
+viewSecondary i ss@(W.StackSet {W.visible = (_:_:[]), W.current = W.Screen {W.screen = cur}}) =
+  case cur of
+    0 -> greedyViewOnScreen 1 i ss
+    _ -> greedyViewOnScreen cur i ss
 viewSecondary i ss = greedyViewOnScreen 1 i ss
 
 setFullscreenSupported :: X ()
