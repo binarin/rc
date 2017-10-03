@@ -111,3 +111,9 @@ mkdir -p ~/personal-workspace/ ~/booking-workspace/
 # hack to disable dropbox updates
 rm -rf ~/.dropbox-dist
 install -dm0 ~/.dropbox-dist
+
+if [[ !( -f ~/.config/user-dirs.dirs) || !(grep -q HOME/Downloads ~/.config/user-dirs.dirs) ]]; then
+    mkdir -p ~/.config
+    rm -f ~/.config/user-dirs.{dirs,locale}
+    LANG=C xdg-user-dirs-update --force
+fi
