@@ -16,7 +16,7 @@ import           XMonad
 import           XMonad.Hooks.CurrentWorkspaceOnTop (currentWorkspaceOnTop)
 import           XMonad.Hooks.EwmhDesktops (ewmh, fullscreenEventHook)
 import           XMonad.Hooks.ManageDocks (docks, avoidStruts)
-import           XMonad.Hooks.ManageHelpers (doFullFloat, isFullscreen)
+import           XMonad.Hooks.ManageHelpers (doFullFloat, isFullscreen, doCenterFloat)
 import           XMonad.Hooks.Place (smart, withGaps, inBounds, placeHook)
 import           XMonad.Hooks.SetWMName (setWMName)
 import           XMonad.Hooks.UrgencyHook (withUrgencyHookC, NoUrgencyHook(NoUrgencyHook), focusUrgent, urgencyConfig)
@@ -93,6 +93,7 @@ myManageHook = composeAll
     , className =? "Workrave"       --> doFloat <+> doF (W.shift "secondary4")
     , fmap (isSuffixOf "KeePass") title --> doF (W.shift "passwd")
     , title     =? "Simple Demo with Shaders" --> doFloat
+    , title     =? "FAST_CHOICE"    --> doCenterFloat
     ]
 
 myLayout = smartBorders Full ||| Mirror tiled ||| tiled
