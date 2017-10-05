@@ -166,6 +166,10 @@
      (setf x-gtk-use-system-tooltips nil)
    #+END_SRC
 * Behaviour
+** Browser choice
+   #+BEGIN_SRC emacs-lisp
+     (setf browse-url-browser-function #'browse-url-xdg-open)
+   #+END_SRC
 ** Narrowing
    #+BEGIN_SRC emacs-lisp
      (put 'narrow-to-region 'disabled nil)

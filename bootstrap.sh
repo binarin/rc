@@ -117,3 +117,14 @@ if [[ !( -f ~/.config/user-dirs.dirs) || !(grep -q HOME/Downloads ~/.config/user
     rm -f ~/.config/user-dirs.{dirs,locale}
     LANG=C xdg-user-dirs-update --force
 fi
+
+if [[ ! -f ~/.local/share/applications/smart-browser-chooser.desktop ]]; then
+    mkdir -p ~/.local/share/applications
+    ln -s ~/.rc/smart-browser-chooser.desktop ~/.local/share/applications/
+    update-desktop-database ~/.local/share/applications
+fi
+
+if [[ ! -L ~/.local/share/applications/mimeapps.list ]] ;then
+    rm -f ~/.local/share/applications/mimeapps.list
+    ln -s ~/.config/mimeapps.list ~/.local/share/applications/mimeapps.list
+fi
