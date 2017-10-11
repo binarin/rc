@@ -1007,7 +1007,8 @@
      (defvar binarin/org-protocol-mundane-link-descriptions
        '(" - binarin@gmail.com - Gmail"
          " - Booking.com Ltd"
-         " - YouTube"))
+         " - YouTube"
+         " - Booking.com Mail"))
 
      (defun binarin/org-protocol-capture-postprocess ()
        (awhen (re-search-forward (concat (regexp-opt binarin/org-protocol-mundane-link-descriptions t) "]]") nil t)
