@@ -16,7 +16,7 @@ if [[ $TERM == "dumb" ]]; then	# in emacs
     unsetopt prompt_subst
 else
     # source $ZSH/oh-my-zsh.sh
-    PROMPT="$HOST_PROMPT_$GIT_PROMPT"
+    # PROMPT="$HOST_PROMPT_$GIT_PROMPT"
     # if [ -x /usr/bin/keychain ] ; then
     #    eval `keychain --eval -q`
     # fi
