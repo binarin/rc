@@ -10,14 +10,6 @@ bg-run() {
     fg-run "$@" &
 }
 
-set-dpi() {
-    if [[ $HOST == demandred ]]; then
-        xrandr --output DP1 --auto --primary --left-of HDMI2 --output HDMI2 --auto --rotate left --dpi 160
-    elif [[ $HOST == lanfear ]]; then
-        xrandr --output HDMI-0 --auto --right-of DisplayPort-0 --rotate left --output DisplayPort-0 --primary --auto
-    fi
-}
-
 load-custom-xresources() {
     CUSTOM_XRESOURCES_FILE="~/.rc/.Xresources.$HOST"
     if [[ -f $CUSTOM_XRESOURCES_FILE ]]; then
@@ -30,11 +22,13 @@ start-programs() {
     fg-run insync start
     fg-run yandex-disc start
 
-    bg-run kupfer --no-splash
+    # bg-run kupfer --no-splash
     bg-run xscreensaver -nosplash
     # bg-run quasselclient
-    bg-run skype
+    # bg-run skype
     bg-run dunst
+    bg-run workrave
+    bg-run nm-applet
 }
 
 setup-agents() {
@@ -50,8 +44,14 @@ xmonad-loop() {
     done
 }
 
-set-dpi
 load-custom-xresources
 setup-agents
 start-programs
+
+systemctl --user stop compton.service
+systemctl --user stop taffybar.service
+fg-run xrandr-auto configure
+systemctl --user start compton.service
+systemctl --user start taffybar.service
+
 xmonad-loop
