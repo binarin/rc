@@ -1594,42 +1594,44 @@
 ** Haskell
 
    #+BEGIN_SRC emacs-lisp
-          ;; (add-hook 'haskell-mode-hook 'intero-mode-whitelist)
-          ;; (autoload 'intero-mode-whitelist "intero")
-          ;; (setf intero-whitelist '("~/personal-workspace/learnopengl"))
-          (setf haskell-indent-spaces 4)
-          (setf haskell-stylish-on-save nil)
-          (setf haskell-tags-on-save t)
-          (setf haskell-process-suggest-remove-import-lines t)
-          (setf haskell-process-auto-import-loaded-modules t)
-          (setf haskell-process-suggest-hoogle-imports t)
-          (setf haskell-process-use-presentation-mode t)
-          (setf haskell-process-log t)
+     ;; (add-hook 'haskell-mode-hook 'intero-mode-whitelist)
+     ;; (autoload 'intero-mode-whitelist "intero")
+     ;; (setf intero-whitelist '("~/personal-workspace/learnopengl"))
+     (setf haskell-indent-spaces 4)
+     (setf haskell-stylish-on-save nil)
+     (setf haskell-tags-on-save t)
+     (setf haskell-process-suggest-remove-import-lines t)
+     (setf haskell-process-auto-import-loaded-modules t)
+     (setf haskell-process-suggest-hoogle-imports t)
+     (setf haskell-process-use-presentation-mode t)
+     (setf haskell-process-log t)
 
-          (defun binarin/haskell-mode-hook ()
-            (company-mode t)
-            (structured-haskell-mode t)
-            (interactive-haskell-mode t)
-            ;; (flyspell-prog-mode t)
-            (set (make-local-variable 'company-backends)
-                 (append '((company-capf company-dabbrev-code company-yasnippet))
-                         company-backends)))
+     (defun binarin/haskell-mode-hook ()
+       (company-mode t)
+       (structured-haskell-mode t)
+       ;; (dante-mode t)
+       ;; (flycheck-mode t)
+       (interactive-haskell-mode t)
+       ;; (flyspell-prog-mode t)
+       (set (make-local-variable 'company-backends)
+            (append '((company-capf company-dabbrev-code company-yasnippet))
+                    company-backends)))
 
-          (eval-after-load "haskell"
-            (lambda ()
-              (define-key interactive-haskell-mode-map (kbd "C-c C-t") 'haskell-mode-show-type-at)
-              (define-key interactive-haskell-mode-map (kbd "C-c C-l") 'haskell-process-load-or-reload)))
+     (eval-after-load "haskell"
+       (lambda ()
+         (define-key interactive-haskell-mode-map (kbd "C-c C-t") 'haskell-mode-show-type-at)
+         (define-key interactive-haskell-mode-map (kbd "C-c C-l") 'haskell-process-load-or-reload)))
 
-          (eval-after-load "haskell-mode"
-            (lambda ()
-              (define-key haskell-mode-map (kbd "C-c C-c") 'haskell-compile)
-              (define-key haskell-mode-map (kbd "M-.") 'haskell-mode-jump-to-def-or-tag)))
+     (eval-after-load "haskell-mode"
+       (lambda ()
+         (define-key haskell-mode-map (kbd "C-c C-c") 'haskell-compile)
+         (define-key haskell-mode-map (kbd "M-.") 'haskell-mode-jump-to-def-or-tag)))
 
-          (eval-after-load "haskell-cabal"
-            (lambda ()
-              (define-key haskell-cabal-mode-map (kbd "C-c C-c") 'haskell-compile)))
+     (eval-after-load "haskell-cabal"
+       (lambda ()
+         (define-key haskell-cabal-mode-map (kbd "C-c C-c") 'haskell-compile)))
 
-          (add-hook 'haskell-mode-hook 'binarin/haskell-mode-hook)
+     (add-hook 'haskell-mode-hook 'binarin/haskell-mode-hook)
    #+END_SRC
 
    #+BEGIN_SRC emacs-lisp
