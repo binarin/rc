@@ -1520,10 +1520,16 @@
 
      (advice-add 'jabber-muc-process-presence :after #'binarin/jabber-muc-process-presence-remove-notices)
 
+     ;; 1st time fix it after autoloads
      (eval-after-load "jabber-autoloads"
        #'(lambda ()
            (global-set-key (kbd "<f8>") #'jabber-activity-switch-to)
            (global-set-key (kbd "C-z C-j") jabber-global-keymap)
+           (global-set-key (kbd "C-x C-j") #'dired-jump)))
+
+     ;; 2nd - after actually loading jabber
+     (eval-after-load "jabber-keymap"
+       #'(lambda ()
            (global-set-key (kbd "C-x C-j") #'dired-jump)))
    #+END_SRC
 * Programming
