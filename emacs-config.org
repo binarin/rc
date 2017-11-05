@@ -1614,10 +1614,10 @@
 
      (defun binarin/haskell-mode-hook ()
        (company-mode t)
-       (structured-haskell-mode t)
-       ;; (dante-mode t)
-       ;; (flycheck-mode t)
+       (dante-mode t)
+       (flycheck-mode t)
        (interactive-haskell-mode t)
+       (structured-haskell-mode t)
        ;; (flyspell-prog-mode t)
        (set (make-local-variable 'company-backends)
             (append '((company-capf company-dabbrev-code company-yasnippet))
