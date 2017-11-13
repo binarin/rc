@@ -14,6 +14,7 @@
     (require 'cl-lib)
     (require 'f)
     (require 'anaphora)
+    (require 'general)
   #+end_src
 
 ** Suppress some compiler warnings
@@ -462,8 +463,8 @@
 
        (global-set-key (kbd "M-x") 'helm-M-x)
        (global-set-key (kbd "M-y") 'helm-show-kill-ring)
-       (global-set-key (kbd "C-x b") 'helm-mini)
-       (global-set-key (kbd "C-x C-b") 'helm-mini)
+       ;; (global-set-key (kbd "C-x b") 'helm-mini)
+       ;; (global-set-key (kbd "C-x C-b") 'helm-mini)
        (global-set-key (kbd "C-x C-f") 'helm-find-files)
        (global-set-key [f3] 'helm-find-files)
 
@@ -472,7 +473,40 @@
 
 ** Ivy
    #+BEGIN_SRC emacs-lisp
-     (global-set-key (kbd "C-s") 'swiper)
+     (require 'ivy)
+     (require 'ivy-rich)
+
+     (general-define-key "C-s" 'swiper
+                         "C-'" 'ivy-avy)
+
+     (ivy-mode 1)
+
+     (ivy-set-display-transformer 'ivy-switch-buffer 'ivy-rich-switch-buffer-transformer)
+
+     ;; add ‘recentf-mode’ and bookmarks to ‘ivy-switch-buffer’.
+     (setf ivy-use-virtual-buffers t)
+     (setf ivy-virtual-abbreviate 'full)
+     (setf ivy-rich-switch-buffer-align-virtual-buffer nil)
+     (setq ivy-rich-path-style 'absolute)
+     (setf ivy-rich-switch-buffer-name-max-length 48
+           ivy-rich-switch-buffer-mode-max-length 18)
+
+     ;; number of result lines to display
+     (setq ivy-height 10)
+
+     ;; does not count candidates
+     (setq ivy-count-format "")
+
+     ;; no regexp by default
+     (setq ivy-initial-inputs-alist nil)
+
+     ;; configure regexp engine.
+     (setq ivy-re-builders-alist
+           ;; allow input not in order
+           '((t   . ivy--regex-ignore-order)))
+
+     (require 'counsel-projectile)
+     (counsel-projectile-on)
    #+END_SRC
 ** Startup
    #+begin_src emacs-lisp
@@ -490,15 +524,13 @@
            ;; projectile-git-command (f-expand "~/.rc/projectile-git-command.sh")
            )
 
-     (message "Preload")
-
      (projectile-global-mode)
 
      (add-to-list 'projectile-project-root-files ".edts")
      (add-to-list 'projectile-project-root-files "erlang.mk")
 
-     (require 'helm-projectile)
-     (helm-projectile-on)
+     ;; (require 'helm-projectile)
+     ;; (helm-projectile-on)
 
      ;; Bad interaction happens between epg, tramp and projectile.
      ;; Waiting for proper fix of https://github.com/bbatsov/projectile/issues/835
@@ -1883,7 +1915,6 @@
 | ,ǁ<          | wǁW    | self                                 | self | kill-region                       | kill-ring-save                   | append-next-kill        | kill-region                       |                         | append-next-kill        |
 | .ǁ>          | vǁV    | self                                 | self | scroll-up-command                 | scroll-down-command              | scroll-other-window     | scroll-up-command                 |                         | scroll-other-window     |
 | /ǁ?          | zǁZ    | self                                 | self | suspend-frame                     | zap-to-char                      |                         | suspend-frame                     |                         |                         |
-
 
 ** Global keybindings overview (regenerate manually)
 
