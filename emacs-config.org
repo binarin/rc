@@ -1672,6 +1672,7 @@
      (setf haskell-process-suggest-hoogle-imports t)
      (setf haskell-process-use-presentation-mode t)
      (setf haskell-process-log t)
+     (setf haskell-process-type 'cabal-new-repl)
 
      (defun binarin/haskell-mode-hook ()
        (company-mode t)
