@@ -166,6 +166,10 @@
      (setf x-gtk-use-system-tooltips nil)
    #+END_SRC
 * Behaviour
+** Hyperbole
+   #+BEGIN_SRC emacs-lisp
+     (require 'hyperbole)
+   #+END_SRC
 ** Frame handling
    #+BEGIN_SRC emacs-lisp
      (defun clone-indirect-buffer-other-frame (newname display-flag)
