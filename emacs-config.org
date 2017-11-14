@@ -169,7 +169,7 @@
 * Behaviour
 ** Hyperbole
    #+BEGIN_SRC emacs-lisp
-     (require 'hyperbole)
+   ;; (require 'hyperbole)
    #+END_SRC
 ** Frame handling
    #+BEGIN_SRC emacs-lisp
