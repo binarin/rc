@@ -245,7 +245,9 @@
 
 ** Search for authinfo files
    #+begin_src emacs-lisp
-     (setf auth-sources (binarin/optional-repo-files ".authinfo.gpg"))
+     (setf auth-sources (cons
+                         "~/.authinfo"
+                         (binarin/optional-repo-files ".authinfo.gpg")))
    #+end_src
 ** Killing buffers and exiting emacs
    :PROPERTIES:
