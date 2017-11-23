@@ -204,6 +204,12 @@
          (apply orig-fun args)))
 
      (advice-add 'shell-command-to-string :around #'binarin/shell-command-to-string-remote-advice)
+
+     (setq vc-ignore-dir-regexp
+           (format "\\(%s\\)\\|\\(%s\\)"
+                   vc-ignore-dir-regexp
+                   tramp-file-name-regexp))
+
    #+END_SRC
 ** Eshell
    :PROPERTIES:
