@@ -2086,6 +2086,11 @@
    #+END_SRC
 
 ** Other keybindings
+
+   #+BEGIN_SRC emacs-lisp
+     (general-define-key "M-SPC" 'cycle-spacing)
+   #+END_SRC
+
   #+begin_src emacs-lisp
     (global-set-key (kbd "M-&") 'delete-other-windows)
     ;; (global-set-key (kbd "M-[") 'split-window-below) -- fucks up bracketed-paste in terminal
