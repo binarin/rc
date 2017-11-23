@@ -194,6 +194,9 @@
 ** Narrowing
    #+BEGIN_SRC emacs-lisp
      (put 'narrow-to-region 'disabled nil)
+     ;; (define-key ctl-x-4-map "nd" 'ni-narrow-to-defun-other-window)
+     ;; (define-key ctl-x-4-map "nn" 'ni-narrow-to-region-other-window)
+     ;; (define-key ctl-x-4-map "np" 'ni-narrow-to-page-other-window)
    #+END_SRC
 ** Tramp
    #+BEGIN_SRC emacs-lisp
