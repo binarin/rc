@@ -1840,6 +1840,49 @@
 
    #+end_src
 
+   #+BEGIN_SRC emacs-lisp
+
+     (defun binarin/system-to-string (command &rest args)
+       "Execute command COMMAND with arguments ARGS and return its output as a string."
+       (with-output-to-string
+         (with-current-buffer
+           standard-output
+           (apply #'process-file command nil t nil args))))
+
+     (defun binarin/all-perl-modules ()
+       (let ((perl-code "
+     use File::Find::Rule;
+
+     sub modulize {
+       for ($_[0]) {
+         s/\.pm$//;
+         s|/|::|g;
+       }
+       $_;
+     }
+
+     $SIG{__WARN__} = sub { }; # some silly warning from File::Find::Rule about our silliness =)
+
+     my @files = map {modulize $_} File::Find::Rule->extras({follow => 1})->relative->file()->name( q{*.pm} )->in( @INC );
+
+     say for sort @files;
+
+     "))
+         (s-lines (binarin/system-to-string "booking-perl" "-E" perl-code))))
+
+     (defun binarin/insert-perl-import (module)
+       (end-of-line)
+         (insert "\n")
+         (beginning-of-line)
+         (insert "use " module ";"))
+
+     (defun binarin/choose-perl-import ()
+       (interactive "")
+       (ivy-read "Module name: " (binarin/all-perl-modules) :action #'binarin/insert-perl-import))
+
+   #+END_SRC
+
+
 ** Python
    #+BEGIN_SRC emacs-lisp
      (defun binarin/python-mode-hook ()
