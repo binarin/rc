@@ -10,3 +10,4 @@ modules/
 *.hi
 .stack-work
 TAGS
+.xmonad/dist-newstyle/
