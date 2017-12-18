@@ -1,15 +1,18 @@
+{-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE RecordWildCards #-}
 {-# OPTIONS_GHC -fno-warn-missing-signatures #-}
 {-# LANGUAGE OverloadedStrings #-}
 
+import Data.List (sortBy)
 import Control.Monad (when, join)
 import Data.Maybe (maybeToList)
 -- import           Data.Function ((&))
 import           Data.Default
 import qualified Data.Map as M
--- import           Data.Monoid
+import           Data.Monoid (All(..))
 import           Data.Ratio ((%))
 import           System.Exit
+import Control.Lens
 
 import           System.Taffybar.Hooks.PagerHints (pagerHints)
 import           XMonad
@@ -34,6 +37,7 @@ import           XMonad.Layout.PerWorkspace
 import           XMonad.Layout.NoBorders
 import           XMonad.Util.EZConfig
 import           Graphics.X11.ExtraTypes.XF86
+import qualified XMonad.Util.ExtensibleState as ES
 
 import           Xkb
 
@@ -52,13 +56,16 @@ secondaryWorkspaces =
   [ ("secondary", "*")
   , ("coins", ")")
   , ("passwd", "+")
-  , ("secondary2", "!")
-  , ("secondary3", "]")
+  , ("secondary2", "]")
+  , ("secondary3", "!")
   , ("secondary4", "#")
   ]
 
+scratchpadWorkspace :: (String, String)
+scratchpadWorkspace = ("scratch", "<Esc>")
+
 myWorkspaces :: [(String, String)]
-myWorkspaces = (p:s:ps) ++ ss
+myWorkspaces = (p:s:scratchpadWorkspace:ps) ++ ss
   where p:ps = primaryWorkspaces
         s:ss = secondaryWorkspaces
 
@@ -143,10 +150,11 @@ myConfig =  configModifiers def
   , handleEventHook = mconcat $
                       [ handleEventHook def
                       , fullscreenEventHook
+                      , onRescreen placeWorkplaces
                       ]
   , layoutHook = myLayoutHook
   , logHook = currentWorkspaceOnTop
-  , startupHook = startupHook def >> addEWMHFullscreen
+  , startupHook = startupHook def >> addEWMHFullscreen >> placeWorkplaces
   }
         `additionalKeysP`
         ([ ("M-y", spawn "urxvt")
@@ -178,10 +186,12 @@ myConfig =  configModifiers def
          , ("C-\\", sendMessage (XkbToggle Nothing))
          , ("M-g", focusUrgent)
         ]
-         ++ [ ("M-" ++ key, windows $ viewPrimary name)
+         ++ [ ("M-" ++ key, switchToPrimary name)
             | (name, key) <- primaryWorkspaces ]
-         ++ [ ("M-" ++ key, windows $ viewSecondary name)
+         ++ [ ("M-" ++ key, switchToSecondary name)
             | (name, key) <- secondaryWorkspaces ]
+         ++ [ ("M-" ++ key, switchToTertiary name)
+            | (name, key) <- [scratchpadWorkspace] ]
         )
         `additionalKeys`
         [ ((0, xF86XK_Mail), return ())
@@ -196,16 +206,102 @@ myConfig =  configModifiers def
         , ((0, xF86XK_AudioPrev), spawn "playerctl previous")
         ]
 
-viewPrimary, viewSecondary :: WorkspaceId -> WindowSet -> WindowSet
-viewPrimary i ss@(W.StackSet {W.visible = []}) = W.view i ss
-viewPrimary i ss = greedyViewOnScreen 0 i ss
+-- primary workspaces, secondary workspaces, scratchpad(s?)
+-- 1 screen: everything on it
+-- 2 screens: primary on 1st, secondary and scratchpad ond 2nd
+-- 3 screens: primary on 1st, secondary on 2nd, scratchpad always on 3rd
 
-viewSecondary i ss@(W.StackSet {W.visible = []}) = W.view i ss
-viewSecondary i ss@(W.StackSet {W.visible = (_:_:[]), W.current = W.Screen {W.screen = cur}}) =
-  case cur of
-    0 -> greedyViewOnScreen 1 i ss
-    _ -> greedyViewOnScreen cur i ss
-viewSecondary i ss = greedyViewOnScreen 1 i ss
+-- 3 screens at work: primary in the middle, secondary to the left, tertiary to the right (laptop)
+-- 3 screen at home: secondary to the left of primary, and tertiary is below secondary
+
+
+data MonitorConfig
+  = SingleMonitor
+  | DualMonitor
+  | TripleMonitor ScreenId ScreenId
+
+data WorkspaceChoice = WorkspaceChoice WorkspaceId WorkspaceId WorkspaceId deriving (Typeable, Read, Show)
+instance ExtensionClass WorkspaceChoice where
+  initialValue = WorkspaceChoice (fst $ head primaryWorkspaces) (fst $ head secondaryWorkspaces) (fst scratchpadWorkspace)
+  extensionType = PersistentExtension
+
+primaryChoiceL :: Lens' WorkspaceChoice WorkspaceId
+primaryChoiceL k (WorkspaceChoice prim sec ter) = fmap (\newPrim -> WorkspaceChoice newPrim sec ter) (k prim)
+
+secondaryChoiceL :: Lens' WorkspaceChoice WorkspaceId
+secondaryChoiceL k (WorkspaceChoice prim sec ter) = fmap (\newSec -> WorkspaceChoice prim newSec ter) (k sec)
+
+tertiaryChoiceL :: Lens' WorkspaceChoice WorkspaceId
+tertiaryChoiceL k (WorkspaceChoice prim sec ter) = fmap (\newTer -> WorkspaceChoice prim sec newTer) (k ter)
+
+switchToPrimary :: WorkspaceId -> X ()
+switchToPrimary name = do
+  windows $ viewPrimary name
+  ES.modify $ primaryChoiceL .~ name
+  pure ()
+
+switchToSecondary :: WorkspaceId -> X ()
+switchToSecondary name = do
+  windows $ viewSecondary name
+  ES.modify $ secondaryChoiceL .~ name
+  pure ()
+
+switchToTertiary :: WorkspaceId -> X ()
+switchToTertiary name = do
+  windows $ viewTertiary name
+  ES.modify $ tertiaryChoiceL .~ name
+  pure ()
+
+detectMonitorConfig :: WindowSet -> MonitorConfig
+detectMonitorConfig W.StackSet {W.visible = []} = SingleMonitor
+detectMonitorConfig W.StackSet {W.visible = [_]} = DualMonitor
+detectMonitorConfig ss@(W.StackSet {W.visible = (_:_:[])}) = TripleMonitor (chooseSecondary ss) (chooseTertiary ss)
+detectMonitorConfig _ = SingleMonitor -- No idea how to handle more than 3 monitors =)
+
+scratchPadPosition :: WindowSet -> ScreenId
+scratchPadPosition ss = go (detectMonitorConfig ss)
+  where
+    go SingleMonitor = 0
+    go DualMonitor = 1
+    go (TripleMonitor _ ter) = ter
+
+-- very dumb logic - top-leftmost screen is always secondary
+chooseSecondary :: WindowSet -> ScreenId
+chooseSecondary W.StackSet { W.visible = visible, W.current = current } =
+  case sorted of
+    _primary:a:b:_ ->
+      case screenRect (W.screenDetail a) of
+        Rectangle { rect_x = 0, rect_y = 0 } -> W.screen a
+        _ -> W.screen b
+    _ -> W.screen current
+  where
+    allScreens = current : visible
+    sorted = sortBy (\x y -> compare (W.screen x) (W.screen y)) allScreens
+
+chooseTertiary :: WindowSet -> ScreenId
+chooseTertiary ss = case chooseSecondary ss of
+                      1 -> 2
+                      2 -> 1
+                      _ -> 1
+
+viewPrimary, viewSecondary, viewTertiary :: WorkspaceId -> WindowSet -> WindowSet
+
+viewPrimary i ss = go (detectMonitorConfig ss)
+  where
+    go SingleMonitor = W.view i ss
+    go _ = greedyViewOnScreen 0 i ss
+
+viewSecondary i ss = go (detectMonitorConfig ss)
+  where
+    go SingleMonitor = W.view i ss
+    go DualMonitor = greedyViewOnScreen 1 i ss
+    go (TripleMonitor sec _) = greedyViewOnScreen sec i ss
+
+viewTertiary i ss = go (detectMonitorConfig ss)
+  where
+    go SingleMonitor = W.view i ss
+    go DualMonitor = greedyViewOnScreen 1 i ss
+    go (TripleMonitor _ ter) = greedyViewOnScreen ter i ss
 
 addNETSupported :: Atom -> X ()
 addNETSupported x   = withDisplay $ \dpy -> do
@@ -222,3 +318,23 @@ addEWMHFullscreen   = do
     wms <- getAtom "_NET_WM_STATE"
     wfs <- getAtom "_NET_WM_STATE_FULLSCREEN"
     mapM_ addNETSupported [wms, wfs]
+
+placeWorkplaces :: X ()
+placeWorkplaces = do
+  monConf <- detectMonitorConfig <$> gets windowset
+  WorkspaceChoice prim sec ter <- ES.get
+  case monConf of
+    SingleMonitor -> do
+      switchToPrimary prim
+    DualMonitor -> do
+      switchToSecondary sec
+      switchToPrimary prim
+    TripleMonitor _ _ -> do
+      switchToTertiary ter
+      switchToSecondary sec
+      switchToPrimary prim
+
+onRescreen :: X () -> Event -> X All
+onRescreen u (ConfigureEvent {ev_window = w}) =
+  whenX (isRoot w) u >> return (All True)
+onRescreen _ _ = return (All True)
