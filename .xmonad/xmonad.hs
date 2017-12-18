@@ -2,14 +2,14 @@
 {-# OPTIONS_GHC -fno-warn-missing-signatures #-}
 {-# LANGUAGE OverloadedStrings #-}
 
-import           Data.Function ((&))
+import Control.Monad (when, join)
+import Data.Maybe (maybeToList)
+-- import           Data.Function ((&))
 import           Data.Default
-import           Data.List (isSuffixOf)
 import qualified Data.Map as M
-import           Data.Monoid
+-- import           Data.Monoid
 import           Data.Ratio ((%))
 import           System.Exit
-import           System.IO
 
 import           System.Taffybar.Hooks.PagerHints (pagerHints)
 import           XMonad
@@ -18,15 +18,11 @@ import           XMonad.Hooks.EwmhDesktops (ewmh, fullscreenEventHook)
 import           XMonad.Hooks.ManageDocks (docks, avoidStruts)
 import           XMonad.Hooks.ManageHelpers (doFullFloat, isFullscreen, doCenterFloat)
 import           XMonad.Hooks.Place (smart, withGaps, inBounds, placeHook)
-import           XMonad.Hooks.SetWMName (setWMName)
 import           XMonad.Hooks.UrgencyHook (withUrgencyHookC, NoUrgencyHook(NoUrgencyHook), focusUrgent, urgencyConfig)
 import qualified XMonad.Hooks.UrgencyHook as Urgency
-import           XMonad.Layout.Decoration (Shrinker(shrinkIt), Theme(fontName))
 import           XMonad.Layout.Fullscreen (fullscreenSupport)
 import           XMonad.Layout.SimpleFloat (simpleFloat)
-import           XMonad.Layout.Tabbed (tabbedLeft)
 import qualified XMonad.StackSet as W
-import           XMonad.Util.Run (spawnPipe)
 
 import           XMonad.Actions.CycleWindows
 import           XMonad.Actions.CycleWS
@@ -36,9 +32,7 @@ import           XMonad.Layout.Grid
 import           XMonad.Layout.IM
 import           XMonad.Layout.PerWorkspace
 import           XMonad.Layout.NoBorders
-import           XMonad.Prompt.Window
 import           XMonad.Util.EZConfig
-import           XMonad.Util.WorkspaceCompare
 import           Graphics.X11.ExtraTypes.XF86
 
 import           Xkb
@@ -68,12 +62,6 @@ myWorkspaces = (p:s:ps) ++ ss
   where p:ps = primaryWorkspaces
         s:ss = secondaryWorkspaces
 
-maxNameLength :: Int
-maxNameLength = maximum $ map (length . fst) myWorkspaces
-
-padWorkspaceName :: String -> String
-padWorkspaceName x = " " ++ x ++ take (1 + maxNameLength - length x) (repeat ' ')
-
 myManageHook :: ManageHook
 myManageHook = composeAll
     [ className =? "Sshmenu"        --> doFloat
@@ -82,17 +70,8 @@ myManageHook = composeAll
     , resource  =? "kdesktop"       --> doIgnore
     , className =? "Xfce4-notifyd"  --> doIgnore
     , className =? "Wine"           --> doFloat
-    , className =? "Gnome-osd-server"  --> doFloat
-    , className =? "Chromium"       --> doF (W.shift "web")
-    , className =? "Conkeror"       --> doF (W.shift "web")
-    , className =? "Thunderbird"    --> doF (W.shift "misc2")
-    , className =? "Icedove"        --> doF (W.shift "misc2")
     , className =? "Skype"          --> doF (W.shift "msg")
     , className =? "Viber"          --> doF (W.shift "msg")
-    , className =? "quassel"        --> doF (W.shift "secondary4")
-    , className =? "Workrave"       --> doFloat <+> doF (W.shift "secondary4")
-    , fmap (isSuffixOf "KeePass") title --> doF (W.shift "passwd")
-    , title     =? "Simple Demo with Shaders" --> doFloat
     , title     =? "FAST_CHOICE"    --> doCenterFloat
     ]
 
@@ -103,16 +82,6 @@ myLayout = smartBorders Full ||| Mirror tiled ||| tiled
     ratio = 1/2
     delta = 5/100
 
-
-data NonShrinkingShrinker = NonShrinkingShrinker
-instance Show NonShrinkingShrinker where show _ = ""
-instance Read NonShrinkingShrinker where readsPrec _ s = [(NonShrinkingShrinker, s)]
-instance Shrinker NonShrinkingShrinker where
-  shrinkIt _ cs = [take 24 cs]
-
-jabberLayout = tabbedLeft NonShrinkingShrinker config
-    where config = def { fontName = "xft:Terminus:size=12" }
-
 myLayoutHook =
   xkbLayout $
   avoidStruts $
@@ -120,7 +89,6 @@ myLayoutHook =
   onWorkspace "passwd" (noBorders Grid) $
   onWorkspace "secondary" simpleFloat $
   onWorkspace "msg" (withIM (1%5) (Title "binarin - Skype™") Grid) $
-  onWorkspace "jabber" jabberLayout $
   myLayout
 
 myNavigation :: TwoD a (Maybe a)
@@ -164,8 +132,8 @@ configModifiers =
     . fullscreenSupport
     . docks
 
-myConfig =  configModifiers def {
-  modMask = mod4Mask
+myConfig =  configModifiers def
+  { modMask = mod4Mask
   , workspaces = map fst myWorkspaces
   , terminal           = "urxvt"
   , borderWidth        = 3
@@ -178,19 +146,16 @@ myConfig =  configModifiers def {
                       ]
   , layoutHook = myLayoutHook
   , logHook = currentWorkspaceOnTop
-  , startupHook = startupHook def <+> setFullscreenSupported
+  , startupHook = startupHook def >> addEWMHFullscreen
   }
         `additionalKeysP`
         ([ ("M-y", spawn "urxvt")
-         -- , ("M-p", withFocused (\windowId -> do { floats <- gets (W.floating . windowset); if windowId `M.member` floats then withFocused $ windows . W.sink else float windowId }))
-         , ("M-j", windowPromptGoto def)
          , ("M-;", spawn "sshmenu")
          , ("M-l", spawn "exe=$(yeganesh -x) && exec $exe")
          , ("M-S-l", spawn "gmrun")
          , ("M-<Print>", spawn "shutter -w")
          , ("M-q", spawn "xmonad --recompile && xmonad --restart")
          , ("M-S-q", io (exitWith ExitSuccess))
-         , ("M-b", refresh)
          , ("M-h", windows W.focusDown)
          , ("M-t", windows W.focusUp)
          , ("M-m", windows W.focusMaster)
@@ -212,12 +177,6 @@ myConfig =  configModifiers def {
          , ("M-<Backspace>", cycleRecentWindows [xK_Super_L, xK_Super_R] xK_BackSpace xK_Delete)
          , ("C-\\", sendMessage (XkbToggle Nothing))
          , ("M-g", focusUrgent)
-        -- , ("M-S-<Backspace>", removeWorkspace)
-        -- , ("M-S-j", selectWorkspace defaultXPConfig)
-        -- , ("M-a", withWorkspace defaultXPConfig (windows . W.shift))
-        -- , ("M-r", addWorkspacePrompt defaultXPConfig)
-        -- , ("M-S-a", withWorkspace defaultXPConfig (windows . copy))
-        -- , ("M-S-r", renameWorkspace defaultXPConfig)
         ]
          ++ [ ("M-" ++ key, windows $ viewPrimary name)
             | (name, key) <- primaryWorkspaces ]
@@ -248,22 +207,18 @@ viewSecondary i ss@(W.StackSet {W.visible = (_:_:[]), W.current = W.Screen {W.sc
     _ -> greedyViewOnScreen cur i ss
 viewSecondary i ss = greedyViewOnScreen 1 i ss
 
-setFullscreenSupported :: X ()
-setFullscreenSupported = withDisplay $ \dpy -> do
-    r <- asks theRoot
-    a <- getAtom "_NET_SUPPORTED"
-    c <- getAtom "ATOM"
-    supp <- mapM getAtom ["_NET_WM_STATE_HIDDEN"
-                         ,"_NET_WM_STATE_FULLSCREEN" -- XXX Copy-pasted to add this line
-                         ,"_NET_NUMBER_OF_DESKTOPS"
-                         ,"_NET_CLIENT_LIST"
-                         ,"_NET_CLIENT_LIST_STACKING"
-                         ,"_NET_CURRENT_DESKTOP"
-                         ,"_NET_DESKTOP_NAMES"
-                         ,"_NET_ACTIVE_WINDOW"
-                         ,"_NET_WM_DESKTOP"
-                         ,"_NET_WM_STRUT"
-                         ]
-    io $ changeProperty32 dpy r a c propModeReplace (fmap fromIntegral supp)
+addNETSupported :: Atom -> X ()
+addNETSupported x   = withDisplay $ \dpy -> do
+    r               <- asks theRoot
+    a_NET_SUPPORTED <- getAtom "_NET_SUPPORTED"
+    a               <- getAtom "ATOM"
+    liftIO $ do
+        sup <- (join . maybeToList) <$> getWindowProperty32 dpy a_NET_SUPPORTED r
+        when (fromIntegral x `notElem` sup) $
+          changeProperty32 dpy r a_NET_SUPPORTED a propModeAppend [fromIntegral x]
 
-    setWMName "xmonad"
+addEWMHFullscreen :: X ()
+addEWMHFullscreen   = do
+    wms <- getAtom "_NET_WM_STATE"
+    wfs <- getAtom "_NET_WM_STATE_FULLSCREEN"
+    mapM_ addNETSupported [wms, wfs]
