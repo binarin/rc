@@ -335,6 +335,12 @@ placeWorkplaces = do
       switchToPrimary prim
 
 onRescreen :: X () -> Event -> X All
-onRescreen u (ConfigureEvent {ev_window = w}) =
-  whenX (isRoot w) u >> return (All True)
+onRescreen u (ConfigureEvent {ev_window = w}) = do
+  rootPred <- isRoot w
+  case rootPred of
+    True -> do
+      rescreen
+      u
+      return (All False)
+    _ -> return (All True)
 onRescreen _ _ = return (All True)
