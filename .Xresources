@@ -17,6 +17,7 @@ URxvt.fadeColor: black
 URxvt.reverseVideo: false
 URxvt.pointerColor: red
 URxvt.pointerColor2: cyan
+URxvt.color12: #5555FF
 
 URxvt.urgentOnBell: true
 URxvt.visualBell: true
