@@ -485,22 +485,22 @@
 ** Ivy
    #+BEGIN_SRC emacs-lisp
      (require 'ivy)
-     (require 'ivy-rich)
+     ;(require 'ivy-rich)
 
      (general-define-key "C-s" 'swiper
                          "C-'" 'ivy-avy)
 
      (ivy-mode 1)
 
-     (ivy-set-display-transformer 'ivy-switch-buffer 'ivy-rich-switch-buffer-transformer)
+     ;(ivy-set-display-transformer 'ivy-switch-buffer 'ivy-rich-switch-buffer-transformer)
 
      ;; add ‘recentf-mode’ and bookmarks to ‘ivy-switch-buffer’.
      (setf ivy-use-virtual-buffers t)
      (setf ivy-virtual-abbreviate 'full)
-     (setf ivy-rich-switch-buffer-align-virtual-buffer nil)
-     (setq ivy-rich-path-style 'absolute)
-     (setf ivy-rich-switch-buffer-name-max-length 48
-           ivy-rich-switch-buffer-mode-max-length 18)
+     ;; (setf ivy-rich-switch-buffer-align-virtual-buffer nil)
+     ;; (setq ivy-rich-path-style 'absolute)
+     ;; (setf ivy-rich-switch-buffer-name-max-length 48
+     ;;       ivy-rich-switch-buffer-mode-max-length 18)
 
      ;; number of result lines to display
      (setq ivy-height 10)
@@ -1636,12 +1636,12 @@
      (defun binarin/erlang-mode-hook ()
        (local-set-key (kbd "M-*") #'edts-find-source-unwind))
 
-     (add-hook 'erlang-mode-hook 'binarin/erlang-mode-hook)
+     ;; (add-hook 'erlang-mode-hook 'binarin/erlang-mode-hook)
 
-     (when (f-dir? "~/personal-workspace/edts")
-       (setf edts-inhibit-package-check t)
-       (add-to-list 'load-path "~/personal-workspace/edts")
-       (require 'edts-start))
+     ;; (when (f-dir? "~/personal-workspace/edts")
+     ;;   (setf edts-inhibit-package-check t)
+     ;;   (add-to-list 'load-path "~/personal-workspace/edts")
+     ;;   (require 'edts-start))
    #+end_src
 
 ** Emacs Lisp
