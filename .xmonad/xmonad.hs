@@ -1,4 +1,5 @@
 {-# LANGUAGE RankNTypes #-}
+{-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE RecordWildCards #-}
 {-# OPTIONS_GHC -fno-warn-missing-signatures #-}
 {-# LANGUAGE OverloadedStrings #-}
@@ -153,7 +154,7 @@ myConfig =  configModifiers def
                       , onRescreen placeWorkplaces
                       ]
   , layoutHook = myLayoutHook
-  , logHook = currentWorkspaceOnTop
+  , logHook = currentWorkspaceOnTop <+> enforceWorkspaceToMonitors
   , startupHook = startupHook def >> addEWMHFullscreen >> placeWorkplaces
   }
         `additionalKeysP`
@@ -265,6 +266,7 @@ scratchPadPosition ss = go (detectMonitorConfig ss)
     go DualMonitor = 1
     go (TripleMonitor _ ter) = ter
 
+
 -- very dumb logic - top-leftmost screen is always secondary
 chooseSecondary :: WindowSet -> ScreenId
 chooseSecondary W.StackSet { W.visible = visible, W.current = current } =
@@ -302,6 +304,30 @@ viewTertiary i ss = go (detectMonitorConfig ss)
     go SingleMonitor = W.view i ss
     go DualMonitor = greedyViewOnScreen 1 i ss
     go (TripleMonitor _ ter) = greedyViewOnScreen ter i ss
+
+
+enforceWorkspaceToMonitors :: X ()
+enforceWorkspaceToMonitors = do
+  ws <- gets windowset
+  detectMonitorConfig <$> gets windowset >>= \case
+    SingleMonitor -> pure ()
+    DualMonitor -> do
+      enforcePrimary
+      enforceSecondary 1
+    TripleMonitor sec trt -> do
+      enforcePrimary
+      enforceSecondary sec
+      enforceTertiary trt
+  pure ()
+
+enforcePrimary :: X ()
+enforcePrimary = pure ()
+
+enforceSecondary :: ScreenId -> X ()
+enforceSecondary _ = pure ()
+
+enforceTertiary :: ScreenId -> X ()
+enforceTertiary _ = pure ()
 
 addNETSupported :: Atom -> X ()
 addNETSupported x   = withDisplay $ \dpy -> do
