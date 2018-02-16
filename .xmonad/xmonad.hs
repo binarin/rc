@@ -306,28 +306,76 @@ viewTertiary i ss = go (detectMonitorConfig ss)
     go (TripleMonitor _ ter) = greedyViewOnScreen ter i ss
 
 
+workspaceOnScreen :: ScreenId -> X WorkspaceId
+workspaceOnScreen sid = do
+  W.StackSet{current = currentScreen, visible = visibleScreens} <- gets windowset
+  let allScreens = currentScreen:visibleScreens
+  pure $ W.tag $ W.workspace $ head $ filter (\x -> W.screen x == sid) allScreens
+
 enforceWorkspaceToMonitors :: X ()
 enforceWorkspaceToMonitors = do
-  ws <- gets windowset
-  detectMonitorConfig <$> gets windowset >>= \case
-    SingleMonitor -> pure ()
-    DualMonitor -> do
-      enforcePrimary
-      enforceSecondary 1
-    TripleMonitor sec trt -> do
-      enforcePrimary
-      enforceSecondary sec
-      enforceTertiary trt
+  -- detectMonitorConfig <$> gets windowset >>= \case
+  --   SingleMonitor -> pure ()
+  --   DualMonitor -> do
+  --     enforcePrimary
+  --     enforceSecondary
+  --   TripleMonitor _ trt -> do
+  --     enforcePrimary
+  --     -- enforceSecondary
+  --     -- enforceTertiary trt
   pure ()
 
-enforcePrimary :: X ()
-enforcePrimary = pure ()
+data WorkspaceType = Primary | Secondary | Tertiary
+classifyWorkspace :: WorkspaceId -> WorkspaceType
 
-enforceSecondary :: ScreenId -> X ()
-enforceSecondary _ = pure ()
+classifyWorkspace ws
+  | ws `elem` (fst <$> primaryWorkspaces) = Primary
+  | ws `elem` (fst <$> secondaryWorkspaces) = Secondary
+  | otherwise = Tertiary
+
+enforcePrimary :: X ()
+enforcePrimary = do
+  WorkspaceChoice expected _ _ <- ES.get
+  got <- workspaceOnScreen 0
+  when (expected /= got) $ do
+    case classifyWorkspace got of
+      Primary -> pure ()
+      Secondary -> do
+        switchToPrimary expected
+        switchToSecondary got
+      Tertiary -> do
+        switchToPrimary expected
+        switchToTertiary got
+
+enforceSecondary :: X ()
+enforceSecondary = do
+  WorkspaceChoice _ expected _ <- ES.get
+  got <- workspaceOnScreen 1
+  when (expected /= got) $ do
+    case classifyWorkspace got of
+      Primary -> do
+        switchToPrimary got
+        switchToSecondary expected
+      Secondary -> do
+        pure ()
+      Tertiary -> do
+        switchToTertiary got
+        switchToSecondary expected
 
 enforceTertiary :: ScreenId -> X ()
-enforceTertiary _ = pure ()
+enforceTertiary trtScreen = do
+  WorkspaceChoice _ _ expected <- ES.get
+  got <- workspaceOnScreen trtScreen
+  when (expected /= got) $ do
+    case classifyWorkspace got of
+      Primary -> do
+        switchToPrimary got
+        switchToTertiary expected
+      Secondary -> do
+        switchToSecondary got
+        switchToTertiary expected
+      Tertiary -> do
+        pure ()
 
 addNETSupported :: Atom -> X ()
 addNETSupported x   = withDisplay $ \dpy -> do
