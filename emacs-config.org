@@ -852,12 +852,17 @@
                              (aref it 0)
                            org-default-priority)
                          org-highest-priority))
+           (item-tags (cdr (assoc "TAGS" props)))
+           (tag-next-prio (if (and item-tags
+                                   (string-match ":NEXT:" item-tags))
+                              -10
+                            0))
            (modified-todo-order
             (append binarin/priority-todos-for-sorting
                     (-remove #'(lambda (todo) (member todo binarin/priority-todos-for-sorting)) org-todo-keywords-1)))
            (todo-idx (if item-todo (1+ (-elem-index item-todo modified-todo-order)) 0))
            (prio-range (1+ (- org-default-priority org-highest-priority))))
-      (+ (* prio-range todo-idx) item-prio)))
+      (+ (* prio-range todo-idx) item-prio tag-next-prio)))
 
   (defun binarin/org-sort-entries ()
     (interactive)
