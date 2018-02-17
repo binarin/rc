@@ -4,21 +4,22 @@
 {-# OPTIONS_GHC -fno-warn-missing-signatures #-}
 {-# LANGUAGE OverloadedStrings #-}
 
-import Data.List (sortBy)
-import Control.Monad (when, join)
-import Data.Maybe (maybeToList)
+import           Data.List (sortBy, find)
+import           Control.Monad (when, join)
+import           Data.Maybe (maybeToList, fromMaybe)
 -- import           Data.Function ((&))
 import           Data.Default
 import qualified Data.Map as M
-import           Data.Monoid (All(..))
+import           Data.Monoid (All(..), (<>))
 import           Data.Ratio ((%))
 import           System.Exit
-import Control.Lens
+import           Control.Lens
 
 import           System.Taffybar.Hooks.PagerHints (pagerHints)
 import           XMonad
+import           XMonad.Core (withWindowSet)
 import           XMonad.Hooks.CurrentWorkspaceOnTop (currentWorkspaceOnTop)
-import           XMonad.Hooks.EwmhDesktops (ewmh, fullscreenEventHook)
+import           XMonad.Hooks.EwmhDesktops (ewmh, fullscreenEventHook, ewmhDesktopsStartup, ewmhDesktopsLogHook)
 import           XMonad.Hooks.ManageDocks (docks, avoidStruts)
 import           XMonad.Hooks.ManageHelpers (doFullFloat, isFullscreen, doCenterFloat)
 import           XMonad.Hooks.Place (smart, withGaps, inBounds, placeHook)
@@ -27,6 +28,8 @@ import qualified XMonad.Hooks.UrgencyHook as Urgency
 import           XMonad.Layout.Fullscreen (fullscreenSupport)
 import           XMonad.Layout.SimpleFloat (simpleFloat)
 import qualified XMonad.StackSet as W
+import           XMonad.Util.WorkspaceCompare (getSortByIndex)
+import           XMonad.Util.XUtils (fi)
 
 import           XMonad.Actions.CycleWindows
 import           XMonad.Actions.CycleWS
@@ -135,10 +138,61 @@ myManageFloats = placeHook $ inBounds $ withGaps (16,0,16,0) (smart (0.5,0.5))
 
 configModifiers =
       withUrgencyHookC NoUrgencyHook urgencyConfig {Urgency.suppressWhen = Urgency.Never}
-    . ewmh
+    . myEwmh
     . pagerHints
     . fullscreenSupport
     . docks
+
+myEwmh :: XConfig l -> XConfig l
+myEwmh xc = xc { startupHook = startupHook xc <> ewmhDesktopsStartup
+               , handleEventHook = handleEventHook xc <> myEwmhDesktopsEventHook
+               , logHook = logHook xc <> ewmhDesktopsLogHook
+               }
+
+myEwmhDesktopsEventHook :: Event -> X All
+myEwmhDesktopsEventHook ClientMessageEvent
+  { ev_window = w
+  , ev_message_type = mt
+  , ev_data = d
+  } = withWindowSet $ \s -> do
+    sort' <- getSortByIndex
+    let ws = sort' $ W.workspaces s
+
+    a_cd <- getAtom "_NET_CURRENT_DESKTOP"
+    a_d <- getAtom "_NET_WM_DESKTOP"
+    a_aw <- getAtom "_NET_ACTIVE_WINDOW"
+    a_cw <- getAtom "_NET_CLOSE_WINDOW"
+    if  mt == a_cd then do
+            let n = head d
+            if 0 <= n && fi n < length ws then
+                    showWSOnProperScreen (W.tag (ws !! fi n))
+              else  trace $ "Bad _NET_CURRENT_DESKTOP with data[0]="++show n
+     else if mt == a_d then do
+            let n = head d
+            if 0 <= n && fi n < length ws then
+                    windows $ W.shiftWin (W.tag (ws !! fi n)) w
+              else  trace $ "Bad _NET_DESKTOP with data[0]="++show n
+     else if mt == a_aw then do
+            case W.findTag w s of
+              Nothing -> pure ()
+              Just tag -> do
+                showWSOnProperScreen tag
+            windows $ W.focusWindow w
+     else if mt == a_cw then do
+            killWindow w
+     else do
+       -- The Message is unknown to us, but that is ok, not all are meant
+       -- to be handled by the window manager
+        pure ()
+    return (All True)
+myEwmhDesktopsEventHook _ = return (All True)
+
+showWSOnProperScreen :: String -> X ()
+showWSOnProperScreen ws = case classifyWorkspace ws of
+  Primary -> switchToPrimary ws
+  Secondary -> switchToSecondary ws
+  Tertiary -> switchToTertiary ws
+
 
 myConfig =  configModifiers def
   { modMask = mod4Mask
@@ -154,7 +208,7 @@ myConfig =  configModifiers def
                       , onRescreen placeWorkplaces
                       ]
   , layoutHook = myLayoutHook
-  , logHook = currentWorkspaceOnTop <+> enforceWorkspaceToMonitors
+  , logHook = currentWorkspaceOnTop
   , startupHook = startupHook def >> addEWMHFullscreen >> placeWorkplaces
   }
         `additionalKeysP`
@@ -221,7 +275,7 @@ data MonitorConfig
   | DualMonitor
   | TripleMonitor ScreenId ScreenId
 
-data WorkspaceChoice = WorkspaceChoice WorkspaceId WorkspaceId WorkspaceId deriving (Typeable, Read, Show)
+data WorkspaceChoice = WorkspaceChoice WorkspaceId WorkspaceId WorkspaceId deriving (Typeable, Read, Show, Eq)
 instance ExtensionClass WorkspaceChoice where
   initialValue = WorkspaceChoice (fst $ head primaryWorkspaces) (fst $ head secondaryWorkspaces) (fst scratchpadWorkspace)
   extensionType = PersistentExtension
@@ -305,6 +359,35 @@ viewTertiary i ss = go (detectMonitorConfig ss)
     go DualMonitor = greedyViewOnScreen 1 i ss
     go (TripleMonitor _ ter) = greedyViewOnScreen ter i ss
 
+getActualWorkspaceChoice :: X WorkspaceChoice
+getActualWorkspaceChoice = do
+  cfg <- detectMonitorConfig <$> gets windowset
+  WorkspaceChoice _ secChoice terChoice <- ES.get
+  priReal <- workspaceOnScreen 0
+  case cfg of
+    SingleMonitor ->
+      pure $ WorkspaceChoice priReal secChoice terChoice
+    DualMonitor -> do
+      secReal <- workspaceOnScreen 1
+      pure $ WorkspaceChoice priReal secReal terChoice
+    TripleMonitor secSid terSid -> do
+      secReal <- workspaceOnScreen secSid
+      terReal <- workspaceOnScreen terSid
+      pure $ WorkspaceChoice priReal secReal terReal
+
+fixWorkspaceChoice :: WorkspaceChoice -> WorkspaceChoice -> WorkspaceChoice
+fixWorkspaceChoice (WorkspaceChoice priChoice secChoice terChoice) (WorkspaceChoice priReal secReal terReal) =
+    WorkspaceChoice priNew secNew terNew
+  where
+    mkOverride ws typ = if classifyWorkspace ws /= typ then [ws] else []
+    everything = mkOverride priReal Primary
+              ++ mkOverride secReal Secondary
+              ++ mkOverride terReal Tertiary
+              ++ [priChoice, secChoice, terChoice]
+    chooseWorkspace typ dflt = fromMaybe dflt $ find (\x -> classifyWorkspace x == typ) everything
+    priNew = chooseWorkspace Primary priChoice
+    secNew = chooseWorkspace Secondary secChoice
+    terNew = chooseWorkspace Tertiary terChoice
 
 workspaceOnScreen :: ScreenId -> X WorkspaceId
 workspaceOnScreen sid = do
@@ -314,68 +397,22 @@ workspaceOnScreen sid = do
 
 enforceWorkspaceToMonitors :: X ()
 enforceWorkspaceToMonitors = do
-  -- detectMonitorConfig <$> gets windowset >>= \case
-  --   SingleMonitor -> pure ()
-  --   DualMonitor -> do
-  --     enforcePrimary
-  --     enforceSecondary
-  --   TripleMonitor _ trt -> do
-  --     enforcePrimary
-  --     -- enforceSecondary
-  --     -- enforceTertiary trt
+  actual <- getActualWorkspaceChoice
+  choice <- ES.get
+  let fixed = fixWorkspaceChoice choice actual
+  when (fixed /= actual) $ do
+    liftIO $ appendFile "/tmp/xm.log" $ show choice <> " -> " <> show actual <> " -> " <> show fixed <> "\n"
+    -- ES.put fixed
+    -- placeWorkplaces
   pure ()
 
-data WorkspaceType = Primary | Secondary | Tertiary
+data WorkspaceType = Primary | Secondary | Tertiary deriving (Eq)
 classifyWorkspace :: WorkspaceId -> WorkspaceType
 
 classifyWorkspace ws
   | ws `elem` (fst <$> primaryWorkspaces) = Primary
   | ws `elem` (fst <$> secondaryWorkspaces) = Secondary
   | otherwise = Tertiary
-
-enforcePrimary :: X ()
-enforcePrimary = do
-  WorkspaceChoice expected _ _ <- ES.get
-  got <- workspaceOnScreen 0
-  when (expected /= got) $ do
-    case classifyWorkspace got of
-      Primary -> pure ()
-      Secondary -> do
-        switchToPrimary expected
-        switchToSecondary got
-      Tertiary -> do
-        switchToPrimary expected
-        switchToTertiary got
-
-enforceSecondary :: X ()
-enforceSecondary = do
-  WorkspaceChoice _ expected _ <- ES.get
-  got <- workspaceOnScreen 1
-  when (expected /= got) $ do
-    case classifyWorkspace got of
-      Primary -> do
-        switchToPrimary got
-        switchToSecondary expected
-      Secondary -> do
-        pure ()
-      Tertiary -> do
-        switchToTertiary got
-        switchToSecondary expected
-
-enforceTertiary :: ScreenId -> X ()
-enforceTertiary trtScreen = do
-  WorkspaceChoice _ _ expected <- ES.get
-  got <- workspaceOnScreen trtScreen
-  when (expected /= got) $ do
-    case classifyWorkspace got of
-      Primary -> do
-        switchToPrimary got
-        switchToTertiary expected
-      Secondary -> do
-        switchToSecondary got
-        switchToTertiary expected
-      Tertiary -> do
-        pure ()
 
 addNETSupported :: Atom -> X ()
 addNETSupported x   = withDisplay $ \dpy -> do
