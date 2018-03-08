@@ -1804,6 +1804,7 @@
       "))
 
       (defun my-cperl-mode-hook ()
+        (origami-mode t)
         (hs-minor-mode t)
         (yas-minor-mode t)
         (setf prettify-symbols-alist '(("->" . ?→)
@@ -1811,7 +1812,7 @@
                                        ("<=" . ?≤)))
         ;; ("<>" . ?≠)  ("=>" . ?⇒)
         (prettify-symbols-mode t)
-        (local-set-key (read-kbd-macro "C-c C-c") 'hs-toggle-hiding)
+        (local-set-key (read-kbd-macro "C-c C-c") 'origami-forward-toggle-node)
         (local-set-key (read-kbd-macro "M-.") 'helm-etags-select)
         (setf tags-file-name (expand-file-name "TAGS" (projectile-project-root))
               tags-table-list nil))
