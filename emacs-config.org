@@ -1560,6 +1560,7 @@
      (setf jabber-account-list '(("alexey.lebedeff@booking.com")))
      (setf jabber-activity-make-strings #'jabber-activity-make-strings-shorten)
 
+     (setf jabber-auto-reconnect t)
      (setf jabber-history-enabled t)
      (setf jabber-groupchat-buffer-format "#%n")
      (setf jabber-chat-fill-long-lines t)
