@@ -766,6 +766,14 @@
 
 ** Blogging
    #+BEGIN_SRC emacs-lisp
+     (with-eval-after-load 'ox
+       (require 'ox-hugo))
+
+     (setf org-hugo-default-section-directory "post")
+
+
+   #+END_SRC
+   #+BEGIN_SRC emacs-lisp
      (defvar binarin/blog-dir "~/blog")
      (defvar binarin/blog-source "~/org/blog.org")
 
