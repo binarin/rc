@@ -1907,6 +1907,11 @@
 
      (add-hook 'python-mode-hook #'binarin/python-mode-hook)
    #+END_SRC
+** HTML
+   #+BEGIN_SRC emacs-lisp
+     (setf web-mode-enable-engine-detection t)
+     (add-to-list 'web-mode-engines-alist '("go" . "\\.html\\'"))
+   #+END_SRC
 * Keybindings
 ** Default global keybindings (for reference)
    :PROPERTIES:
