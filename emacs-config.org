@@ -1909,8 +1909,22 @@
    #+END_SRC
 ** HTML
    #+BEGIN_SRC emacs-lisp
-     (setf web-mode-enable-engine-detection t)
-     (add-to-list 'web-mode-engines-alist '("go" . "\\.html\\'"))
+     (add-to-list 'auto-mode-alist '("\\.html\\'" . web-mode))
+     (eval-after-load "web-mode"
+       (lambda ()
+         (setf web-mode-enable-engine-detection t)
+         (add-to-list 'web-mode-engines-alist '("go" . "\\.html\\'"))))
+
+     (defun binarin/less-css-mode-hook ()
+       (firestarter-mode)
+       (setf firestarter
+             '(projectile-with-default-dir (projectile-project-root)
+                (let ((display-buffer-alist '(("^*Async Shell Command*" . (display-buffer-no-window)))))
+                  (async-shell-command "make"))
+                )))
+
+     (add-hook 'less-css-mode-hook #'binarin/less-css-mode-hook)
+
    #+END_SRC
 * Keybindings
 ** Default global keybindings (for reference)
