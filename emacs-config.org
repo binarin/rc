@@ -1040,6 +1040,7 @@
              ("w" "Tasks waiting on something" tags "TODO=\"WAITING\"" ((org-use-tag-inheritance nil)))
              ("r" "Refile New Notes and Tasks" tags "LEVEL=1+REFILE" ,binarin/org-include-scheduled-todos)
              ("p" "Projects" tags-todo ,binarin/project-matcher nil)
+             ("b" "Things to buy" tags "TODO=\"BUY____\"")
              ("l" . "Context-based agenda")
              ("la" "Agenda and people agenda"
               ((agenda "")
@@ -1121,6 +1122,7 @@
      ;; Keep clocks running
      (setf org-remember-clock-out-on-exit nil)
 
+     (setq org-log-done 'time)
      (setq org-log-into-drawer t)
 
      (org-clock-persistence-insinuate)
