@@ -1042,6 +1042,7 @@
              ("r" "Refile New Notes and Tasks" tags "LEVEL=1+REFILE" ,binarin/org-include-scheduled-todos)
              ("p" "Projects" tags-todo ,binarin/project-matcher nil)
              ("b" "Things to buy" tags "TODO=\"BUY____\"")
+             ("j" "ToDo actions" tags-todo "-PROJ/-WAITING-BUY____")
              ("l" . "Context-based agenda")
              ("la" "Agenda and people agenda"
               ((agenda "")
