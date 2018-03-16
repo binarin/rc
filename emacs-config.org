@@ -983,6 +983,7 @@
      (setq org-agenda-start-on-weekday 1)
      (setq org-agenda-window-setup 'current-window)
 
+     (setf org-agenda-hide-tags-regexp "ATTACH")
 
      (setq org-agenda-todo-ignore-with-date t)
      (setq org-agenda-skip-deadline-if-done t)
