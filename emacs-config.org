@@ -872,6 +872,26 @@
            (prio-range (1+ (- org-default-priority org-highest-priority))))
       (+ (* prio-range todo-idx) item-prio tag-next-prio)))
 
+  (defun binarin/compare-on-next-status-and-tag-priority (a b)
+    (let ((ta (get-text-property 1 'tags a))
+          (tb (get-text-property 1 'tags b))
+          (next-a (member "next" (get-text-property 1 'tags a)))
+          (next-b (member "next" (get-text-property 1 'tags b)))
+          (prio-a (member (get-text-property 1 'todo-state a) binarin/priority-todos-for-sorting))
+          (prio-b (member (get-text-property 1 'todo-state b) binarin/priority-todos-for-sorting)))
+      (cond
+       ((and next-a next-b)
+        (cond
+         ((and prio-a prio-b) nil)
+         ((not prio-a) -1)
+         (t +1)))
+       (next-a 1)
+       (next-b -1)
+       ((and prio-a prio-b) nil)
+       (prio-a 1)
+       (prio-b -1))))
+
+
   (defun binarin/org-sort-entries ()
     (interactive)
     (org-sort-entries nil ?f #'binarin/todo-to-started-first-int)
@@ -1042,7 +1062,12 @@
              ("r" "Refile New Notes and Tasks" tags "LEVEL=1+REFILE" ,binarin/org-include-scheduled-todos)
              ("p" "Projects" tags-todo ,binarin/project-matcher nil)
              ("b" "Things to buy" tags "TODO=\"BUY____\"")
-             ("j" "ToDo actions" tags-todo "-PROJ/-WAITING-BUY____")
+             ("j" "ToDo actions" tags-todo "-PROJ/-WAITING-BUY____"
+              ((org-agenda-todo-ignore-scheduled 'past)
+               (org-agenda-todo-ignore-deadlines 'past)
+               (org-agenda-sorting-strategy '(priority-down user-defined-down category-up))
+               (org-agenda-cmp-user-defined 'binarin/compare-on-next-status-and-tag-priority)
+               ))
              ("l" . "Context-based agenda")
              ("la" "Agenda and people agenda"
               ((agenda "")
