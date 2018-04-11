@@ -1619,12 +1619,14 @@
        (circe "my bitlbee"))
 
 
-     (defun binarin/circe-prompt ()
+     (defun binarin/circe-chat-mode-hook ()
+       (emojify-mode)
        (lui-set-prompt
         (concat (propertize (concat (buffer-name) ">")
         'face 'circe-prompt-face)
                 " ")))
-     (add-hook 'circe-chat-mode-hook #'binarin/circe-prompt)
+
+     (add-hook 'circe-chat-mode-hook #'binarin/circe-chat-mode-hook)
 
      (setq lui-flyspell-p t
            lui-flyspell-alist '((".*" "american")))
