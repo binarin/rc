@@ -931,7 +931,10 @@
              ("BOUGHT_" :foreground "forest green" :weight bold)
 
              ("WAITING" :foreground "orange3" :weight bold)
-             ("CANCELD" :foreground "forest green" :weight bold)))
+             ("CANCELD" :foreground "forest green" :weight bold)
+
+             ;; for ox-hugo
+             ("TODO" :foreground "red" :weight bold)))
 
      (setq org-todo-state-tags-triggers
            '(("STARTED" ("NEXT" . t))
@@ -1136,6 +1139,9 @@
      (setq org-export-with-drawers t)
    #+END_SRC
 ** Clocking
+   :PROPERTIES:
+   :ID:       677d1432-15de-42c8-8a43-f39549acde65
+   :END:
    #+begin_src emacs-lisp
      ;; Yes it's long... but more is better ;)
      (setf org-clock-history-length 35)
@@ -1155,7 +1161,6 @@
      ;; Keep clocks running
      (setf org-remember-clock-out-on-exit nil)
 
-     (setq org-log-done 'time)
      (setq org-log-into-drawer t)
 
      (org-clock-persistence-insinuate)
