@@ -1106,14 +1106,38 @@
      (setq org-tags-exclude-from-inheritance '("PROJ"))
    #+end_src
 ** Capture
+   :PROPERTIES:
+   :ID:       4bc78dad-e5f5-40ba-8d98-c57f4261c7a7
+   :END:
    #+begin_src emacs-lisp
      (setq org-default-notes-file "~/org/refile.org")
      (define-key global-map "\C-cr" 'org-capture)
+
+     (defun binarin/hide-drawers-hook ()
+       (save-excursion
+         (beginning-of-buffer)
+         (org-cycle-hide-drawers 'children)))
+
+     (defun binarin/capture-remove-guidance-comment ()
+       (save-excursion
+         (beginning-of-buffer)
+         (delete-matching-lines "^ \*# J:")))
+
+     (add-hook 'org-capture-mode-hook #'binarin/hide-drawers-hook)
+     (add-hook 'org-capture-mode-hook #'auto-fill-mode)
+     (add-hook 'org-capture-prepare-finalize-hook #'binarin/capture-remove-guidance-comment)
 
      (setq org-capture-templates
            '(("t" "todo" entry
               (file "~/org/refile.org")
               "* TODO___ %?\n  :PROPERTIES:\n  :ID: %(org-id-new)\n  :END:\n  %u\n  %a" :prepend t :kill-buffer nil)
+             ("j" "journal" entry
+              (file+olp+datetree "~/org/journal.org")
+              (file "~/.rc/org-journal-template.org")
+              :tree-type week)
+             ("c" "comment on clocked" plain
+              (clock)
+              "%?")
              ("w" "org-protocol" entry
               "* TODO___ %c\n\n  :PROPERTIES:\n  :ID: %(org-id-new)\n  :END:  %U" :prepend t :immediate-finish t :kill-buffer nil)
              ("l" "Link" entry

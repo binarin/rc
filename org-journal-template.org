@@ -1,0 +1,12 @@
+* %U
+  :PROPERTIES:
+  :ID: %(org-id-new)
+  :CONTEXT: %a
+  :CLOCKED: %K
+  :END:
+  %?
+
+# J:   - What project did I just finish?
+# J:   - Are there any parts of that project that I’m still thinking about?
+# J:   - What is the first action of the project I’m about to start?
+# J:   - How should I approach getting the project done?
