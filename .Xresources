@@ -24,7 +24,7 @@ URxvt.visualBell: true
 URxvt.scrollBar: false
 
 URxvt.perl-ext: filter_title
-URxvt.perl-ext-common: default,matcher,font-size
+URxvt.perl-ext-common: default,matcher,font-size,selection-to-clipboard
 URxvt.url-launcher: xdg-open
 
 URxvt.keysym.C-Up:     font-size:increase

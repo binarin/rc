@@ -128,3 +128,5 @@ if [[ ! -L ~/.local/share/applications/mimeapps.list ]] ;then
     rm -f ~/.local/share/applications/mimeapps.list
     ln -s ~/.config/mimeapps.list ~/.local/share/applications/mimeapps.list
 fi
+
+ln -sf /run/current-system/sw/bin/gopass ~/bin/pass

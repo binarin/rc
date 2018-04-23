@@ -15,6 +15,7 @@ import           Data.Ratio ((%))
 import           System.Exit
 import           Control.Lens
 
+import           XMonad.Prompt.Pass (passPrompt)
 import           System.Taffybar.Hooks.PagerHints (pagerHints)
 import           XMonad
 import           XMonad.Core (withWindowSet)
@@ -213,6 +214,7 @@ myConfig =  configModifiers def
   }
         `additionalKeysP`
         ([ ("M-y", spawn "urxvt")
+         , ("M-i", passPrompt def)
          , ("M-;", spawn "sshmenu")
          , ("M-l", spawn "exe=$(yeganesh -x) && exec $exe")
          , ("M-S-l", spawn "gmrun")
