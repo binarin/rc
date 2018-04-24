@@ -4,7 +4,7 @@
 {-# OPTIONS_GHC -fno-warn-missing-signatures #-}
 {-# LANGUAGE OverloadedStrings #-}
 
-import           Data.List (sortBy, find)
+import           Data.List (sortBy, find, isInfixOf)
 import           Control.Monad (when, join)
 import           Data.Maybe (maybeToList, fromMaybe)
 -- import           Data.Function ((&))
@@ -15,6 +15,7 @@ import           Data.Ratio ((%))
 import           System.Exit
 import           Control.Lens
 
+import           XMonad.Prompt
 import           XMonad.Prompt.Pass (passPrompt)
 import           System.Taffybar.Hooks.PagerHints (pagerHints)
 import           XMonad
@@ -214,7 +215,7 @@ myConfig =  configModifiers def
   }
         `additionalKeysP`
         ([ ("M-y", spawn "urxvt")
-         , ("M-i", passPrompt def)
+         , ("M-i", getPassword)
          , ("M-;", spawn "sshmenu")
          , ("M-l", spawn "exe=$(yeganesh -x) && exec $exe")
          , ("M-S-l", spawn "gmrun")
@@ -457,3 +458,10 @@ onRescreen u (ConfigureEvent {ev_window = w}) = do
       return (All False)
     _ -> return (All True)
 onRescreen _ _ = return (All True)
+
+getPassword = passPrompt def { font = "xft:Arial:size=20"
+                             , height = 40
+                             , searchPredicate = \input variant -> input `isInfixOf` variant
+                             , autoComplete = Just 1000000
+                             , position = Top
+                             }
