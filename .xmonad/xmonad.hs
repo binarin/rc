@@ -475,14 +475,15 @@ getPassword = passPrompt def { font = "xft:Arial:size=20"
 
 data FullscreenTracker a = FullscreenTracker (Set Window) deriving (Show, Read)
 
-instance LayoutModifier FullscreenTracker a where
-  handleMess (FullscreenTracker fsWindows) mess = do
-    case fromMessage mess of
-      Just (AddFullscreen win) -> do
+instance forall a. LayoutModifier FullscreenTracker a where
+  handleMess (FullscreenTracker fsWindows) mess = maybe (pure Nothing) handleFullscreen (fromMessage mess)
+    where
+      handleFullscreen :: FullscreenMessage -> X (Maybe (FullscreenTracker a))
+      handleFullscreen (AddFullscreen win) =
         pure $ Just $ FullscreenTracker $ Set.insert win fsWindows
-      Just (RemoveFullscreen win) -> do
+      handleFullscreen (RemoveFullscreen win) =
         pure $ Just $ FullscreenTracker $ Set.delete win fsWindows
-      Just FullscreenChanged -> do
+      handleFullscreen FullscreenChanged = do
         case Set.null fsWindows of
           True ->
             liftIO $ appendFile "/tmp/xm.log" $ "Exiting fullscreen\n"
@@ -490,7 +491,6 @@ instance LayoutModifier FullscreenTracker a where
             -- XXX Is any of fullscreen windows visible now?
             liftIO $ appendFile "/tmp/xm.log" $ "Entering fullscreen\n"
         pure Nothing
-      _ -> pure Nothing
 
 fullscreenTracker :: l a -> ModifiedLayout FullscreenTracker l a
 fullscreenTracker = ModifiedLayout $ FullscreenTracker mempty
