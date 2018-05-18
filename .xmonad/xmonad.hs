@@ -490,6 +490,7 @@ instance LayoutModifier FullscreenTracker a where
             -- XXX Is any of fullscreen windows visible now?
             liftIO $ appendFile "/tmp/xm.log" $ "Entering fullscreen\n"
         pure Nothing
+      _ -> pure Nothing
 
 fullscreenTracker :: l a -> ModifiedLayout FullscreenTracker l a
 fullscreenTracker = ModifiedLayout $ FullscreenTracker mempty
