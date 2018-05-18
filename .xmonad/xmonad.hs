@@ -1,3 +1,5 @@
+{-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE RecordWildCards #-}
@@ -5,11 +7,13 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 import           Data.List (sortBy, find, isInfixOf)
-import           Control.Monad (when, join)
+import           Control.Monad (when, join, void)
 import           Data.Maybe (maybeToList, fromMaybe)
 -- import           Data.Function ((&))
 import           Data.Default
 import qualified Data.Map as M
+import           Data.Set (Set)
+import qualified Data.Set as Set
 import           Data.Monoid (All(..), (<>))
 import           Data.Ratio ((%))
 import           System.Exit
@@ -19,7 +23,7 @@ import           XMonad.Prompt
 import           XMonad.Prompt.Pass (passPrompt)
 import           System.Taffybar.Hooks.PagerHints (pagerHints)
 import           XMonad
-import           XMonad.Core (withWindowSet)
+import           XMonad.Core (withWindowSet, fromMessage)
 import           XMonad.Hooks.CurrentWorkspaceOnTop (currentWorkspaceOnTop)
 import           XMonad.Hooks.EwmhDesktops (ewmh, fullscreenEventHook, ewmhDesktopsStartup, ewmhDesktopsLogHook)
 import           XMonad.Hooks.ManageDocks (docks, avoidStruts)
@@ -27,8 +31,9 @@ import           XMonad.Hooks.ManageHelpers (doFullFloat, isFullscreen, doCenter
 import           XMonad.Hooks.Place (smart, withGaps, inBounds, placeHook)
 import           XMonad.Hooks.UrgencyHook (withUrgencyHookC, NoUrgencyHook(NoUrgencyHook), focusUrgent, urgencyConfig)
 import qualified XMonad.Hooks.UrgencyHook as Urgency
-import           XMonad.Layout.Fullscreen (fullscreenSupport)
+import           XMonad.Layout.Fullscreen (fullscreenSupport, FullscreenMessage(AddFullscreen, RemoveFullscreen, FullscreenChanged))
 import           XMonad.Layout.SimpleFloat (simpleFloat)
+import           XMonad.Layout.LayoutModifier (LayoutModifier, handleMess, ModifiedLayout(..))
 import qualified XMonad.StackSet as W
 import           XMonad.Util.WorkspaceCompare (getSortByIndex)
 import           XMonad.Util.XUtils (fi)
@@ -96,6 +101,7 @@ myLayout = smartBorders Full ||| Mirror tiled ||| tiled
     delta = 5/100
 
 myLayoutHook =
+  fullscreenTracker $
   xkbLayout $
   avoidStruts $
   onWorkspace "coins" Grid $
@@ -466,3 +472,24 @@ getPassword = passPrompt def { font = "xft:Arial:size=20"
                              , autoComplete = Just 1000000
                              , position = Top
                              }
+
+data FullscreenTracker a = FullscreenTracker (Set Window) deriving (Show, Read)
+
+instance LayoutModifier FullscreenTracker a where
+  handleMess (FullscreenTracker fsWindows) mess = do
+    case fromMessage mess of
+      Just (AddFullscreen win) -> do
+        pure $ Just $ FullscreenTracker $ Set.insert win fsWindows
+      Just (RemoveFullscreen win) -> do
+        pure $ Just $ FullscreenTracker $ Set.delete win fsWindows
+      Just FullscreenChanged -> do
+        case Set.null fsWindows of
+          True ->
+            liftIO $ appendFile "/tmp/xm.log" $ "Exiting fullscreen\n"
+          False ->
+            -- XXX Is any of fullscreen windows visible now?
+            liftIO $ appendFile "/tmp/xm.log" $ "Entering fullscreen\n"
+        pure Nothing
+
+fullscreenTracker :: l a -> ModifiedLayout FullscreenTracker l a
+fullscreenTracker = ModifiedLayout $ FullscreenTracker mempty
