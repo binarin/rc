@@ -146,7 +146,7 @@ configModifiers =
     . docks
 
 myEwmh :: XConfig l -> XConfig l
-myEwmh xc = xc { startupHook = startupHook xc <> ewmhDesktopsStartup
+myEwmh xc = xc { startupHook = startupHook xc <> ewmhDesktopsStartup  <> addEWMHFullscreen
                , handleEventHook = handleEventHook xc <> myEwmhDesktopsEventHook
                , logHook = logHook xc <> ewmhDesktopsLogHook
                }
@@ -211,7 +211,7 @@ myConfig =  configModifiers def
                       ]
   , layoutHook = myLayoutHook
   , logHook = currentWorkspaceOnTop
-  , startupHook = startupHook def >> addEWMHFullscreen >> placeWorkplaces
+  , startupHook = startupHook def >> placeWorkplaces
   }
         `additionalKeysP`
         ([ ("M-y", spawn "urxvt")
@@ -431,6 +431,7 @@ addEWMHFullscreen :: X ()
 addEWMHFullscreen   = do
     wms <- getAtom "_NET_WM_STATE"
     wfs <- getAtom "_NET_WM_STATE_FULLSCREEN"
+    -- liftIO $ appendFile "/tmp/xm.log" $ "enabling fullscreen"
     mapM_ addNETSupported [wms, wfs]
 
 placeWorkplaces :: X ()
