@@ -98,7 +98,6 @@ myLayout = smartBorders Full ||| Mirror tiled ||| tiled
     delta = 5/100
 
 myLayoutHook =
-  fullscreenTracker $
   xkbLayout $
   avoidStruts $
   onWorkspace "coins" Grid $
@@ -145,7 +144,6 @@ configModifiers =
       withUrgencyHookC NoUrgencyHook urgencyConfig {Urgency.suppressWhen = Urgency.Never}
     . myEwmh
     . pagerHints
-    . fullscreenSupport
     . docks
 
 myEwmh :: XConfig l -> XConfig l
@@ -469,25 +467,3 @@ getPassword = passPrompt def { font = "xft:Arial:size=20"
                              , autoComplete = Just 1000000
                              , position = Top
                              }
-
-data FullscreenTracker a = FullscreenTracker (Set Window) deriving (Show, Read)
-
-instance forall a. LayoutModifier FullscreenTracker a where
-  handleMess (FullscreenTracker fsWindows) mess = maybe (pure Nothing) handleFullscreen (fromMessage mess)
-    where
-      handleFullscreen :: FullscreenMessage -> X (Maybe (FullscreenTracker a))
-      handleFullscreen (AddFullscreen win) =
-        pure $ Just $ FullscreenTracker $ Set.insert win fsWindows
-      handleFullscreen (RemoveFullscreen win) =
-        pure $ Just $ FullscreenTracker $ Set.delete win fsWindows
-      handleFullscreen FullscreenChanged = do
-        case Set.null fsWindows of
-          True ->
-            liftIO $ appendFile "/tmp/xm.log" $ "Exiting fullscreen\n"
-          False ->
-            -- XXX Is any of fullscreen windows visible now?
-            liftIO $ appendFile "/tmp/xm.log" $ "Entering fullscreen\n"
-        pure Nothing
-
-fullscreenTracker :: l a -> ModifiedLayout FullscreenTracker l a
-fullscreenTracker = ModifiedLayout $ FullscreenTracker mempty
