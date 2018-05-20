@@ -95,6 +95,11 @@ if [[ ! -f ~/.config/dunst/dunstrc ]]; then
     ln -sf ~/.rc/dunstrc ~/.config/dunst/dunstrc
 fi
 
+if [[ ! -f ~/.mplayer/config ]]; then
+    mkdir -p ~/.mplayer
+    ln -sf ~/.rc/mplayer.config ~/.mplayer/config
+fi
+
 mkdir -p ~/.config/pulse/
 if [[ ! -f ~/.config/pulse/default.pa ]]; then
     ln -sf ~/.rc/default.pa ~/.config/pulse/default.pa
