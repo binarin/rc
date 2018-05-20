@@ -22,10 +22,7 @@ start-programs() {
     fg-run insync start
     fg-run yandex-disc start
 
-    # bg-run kupfer --no-splash
-    bg-run xscreensaver -nosplash
-    # bg-run quasselclient
-    # bg-run skype
+    bg-run light-locker
     bg-run dunst
     bg-run workrave
     bg-run nm-applet
