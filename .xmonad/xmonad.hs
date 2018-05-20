@@ -1,28 +1,30 @@
-{-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE FlexibleInstances #-}
-{-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE LambdaCase #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE RecordWildCards #-}
 {-# OPTIONS_GHC -fno-warn-missing-signatures #-}
-{-# LANGUAGE OverloadedStrings #-}
 
-import           Data.List (sortBy, find, isInfixOf)
+import           Control.Lens
 import           Control.Monad (when, join, void)
-import           Data.Maybe (maybeToList, fromMaybe)
--- import           Data.Function ((&))
 import           Data.Default
+import           Data.List (sortBy, find, isInfixOf)
 import qualified Data.Map as M
-import           Data.Set (Set)
-import qualified Data.Set as Set
+import           Data.Maybe (maybeToList, fromMaybe)
 import           Data.Monoid (All(..), (<>))
 import           Data.Ratio ((%))
+import           Data.Set (Set)
+import qualified Data.Set as Set
 import           System.Exit
-import           Control.Lens
-
-import           XMonad.Prompt
-import           XMonad.Prompt.Pass (passPrompt)
 import           System.Taffybar.Hooks.PagerHints (pagerHints)
+
+import           Graphics.X11.ExtraTypes.XF86
 import           XMonad
+import           XMonad.Actions.CycleWS
+import           XMonad.Actions.CycleWindows
+import           XMonad.Actions.GridSelect
+import           XMonad.Actions.OnScreen
 import           XMonad.Core (withWindowSet, fromMessage)
 import           XMonad.Hooks.CurrentWorkspaceOnTop (currentWorkspaceOnTop)
 import           XMonad.Hooks.EwmhDesktops (ewmh, fullscreenEventHook, ewmhDesktopsStartup, ewmhDesktopsLogHook)
@@ -31,24 +33,19 @@ import           XMonad.Hooks.ManageHelpers (doFullFloat, isFullscreen, doCenter
 import           XMonad.Hooks.Place (smart, withGaps, inBounds, placeHook)
 import           XMonad.Hooks.UrgencyHook (withUrgencyHookC, NoUrgencyHook(NoUrgencyHook), focusUrgent, urgencyConfig)
 import qualified XMonad.Hooks.UrgencyHook as Urgency
-import           XMonad.Layout.Fullscreen (fullscreenSupport, FullscreenMessage(AddFullscreen, RemoveFullscreen, FullscreenChanged))
-import           XMonad.Layout.SimpleFloat (simpleFloat)
-import           XMonad.Layout.LayoutModifier (LayoutModifier, handleMess, ModifiedLayout(..))
-import qualified XMonad.StackSet as W
-import           XMonad.Util.WorkspaceCompare (getSortByIndex)
-import           XMonad.Util.XUtils (fi)
-
-import           XMonad.Actions.CycleWindows
-import           XMonad.Actions.CycleWS
-import           XMonad.Actions.GridSelect
-import           XMonad.Actions.OnScreen
 import           XMonad.Layout.Grid
 import           XMonad.Layout.IM
-import           XMonad.Layout.PerWorkspace
+import           XMonad.Layout.LayoutModifier (LayoutModifier, handleMess, ModifiedLayout(..))
 import           XMonad.Layout.NoBorders
+import           XMonad.Layout.PerWorkspace
+import           XMonad.Layout.SimpleFloat (simpleFloat)
+import           XMonad.Prompt
+import           XMonad.Prompt.Pass (passPrompt)
+import qualified XMonad.StackSet as W
 import           XMonad.Util.EZConfig
-import           Graphics.X11.ExtraTypes.XF86
 import qualified XMonad.Util.ExtensibleState as ES
+import           XMonad.Util.WorkspaceCompare (getSortByIndex)
+import           XMonad.Util.XUtils (fi)
 
 import           Xkb
 
