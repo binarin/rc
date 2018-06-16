@@ -640,7 +640,7 @@
     #+end_src
 
     #+begin_src emacs-lisp
-      (setf recentf-max-saved-items 200)
+      (setf recentf-max-saved-items 2000)
     #+end_src
 
     #+begin_src emacs-lisp
