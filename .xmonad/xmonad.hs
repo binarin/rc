@@ -254,8 +254,8 @@ myConfig =  configModifiers def
         )
         `additionalKeys`
         [ ((0, xF86XK_Mail), return ())
-        , ((0, xF86XK_MonBrightnessUp), spawn "xbacklight +5")
-        , ((0, xF86XK_MonBrightnessDown), spawn "xbacklight -5")
+        , ((0, xF86XK_MonBrightnessUp), spawn "light -A 5")
+        , ((0, xF86XK_MonBrightnessDown), spawn "light -U 5")
         , ((0, xF86XK_TouchpadToggle), spawn "toggle-touchpad")
         , ((0, xF86XK_AudioLowerVolume), spawn "volume.sh down")
         , ((0, xF86XK_AudioRaiseVolume), spawn "volume.sh up")
