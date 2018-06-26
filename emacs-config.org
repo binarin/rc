@@ -1781,7 +1781,6 @@
          (set-face-attribute 'easy-escape-delimiter-face nil :foreground "red3")))
    #+END_SRC
 ** Haskell
-
    #+BEGIN_SRC emacs-lisp
      ;; (add-hook 'haskell-mode-hook 'intero-mode-whitelist)
      ;; (autoload 'intero-mode-whitelist "intero")
@@ -1873,8 +1872,6 @@
          (define-key haskell-mode-map (kbd "C-c i") #'binarin/haskell-add-global-import)
          (define-key haskell-mode-map (kbd "C-c l") #'binarin/haskell-add-local-import)))
    #+END_SRC
-
-
 ** Perl
     #+begin_src emacs-lisp
       (fset 'perl-mode 'cperl-mode)
