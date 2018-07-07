@@ -660,81 +660,6 @@
        (require 'ox-hugo))
 
      (setf org-hugo-default-section-directory "post")
-
-
-   #+END_SRC
-   #+BEGIN_SRC emacs-lisp
-     (defvar binarin/blog-dir "~/blog")
-     (defvar binarin/blog-source "~/org/blog.org")
-
-     (defun binarin/is-blog-entry-publishable (props)
-       (let ((todo (cdr (assoc "TODO" props))))
-         (or (string= todo "STARTED")
-             (string= todo "READY__")
-             (string= todo "PUBLISH"))))
-
-     (defun binarin/is-blog-draft (props)
-       (let ((todo (cdr (assoc "TODO" props))))
-         (or (string= todo "STARTED")
-             (string= todo "READY__"))))
-
-     (defun binarin/is-blog-post (tags)
-       (member "post" tags))
-
-     (defun binarin/blog-post-timestamp (props)
-       (or (cdr (assoc "TIMESTAMP_IA" props))
-           (format-time-string "%Y-%m-%d 00:00:00")))
-
-     (defun binarin/blog-publish ()
-       (save-mark-and-excursion
-         ;; map over all tasks entries
-         (let* ((blog-file binarin/blog-source)
-                (posts-dir (expand-file-name "_posts" binarin/blog-dir))
-                (yaml-front-matter '(("layout" . "default"))))
-           (find-file blog-file)
-           (push-mark (point-min))
-           (push-mark (point-max) nil t)
-           (goto-char (point-min))
-           (save-restriction
-             (widen)
-             (org-map-region
-              (lambda ()
-                (let* ((props (org-entry-properties))
-                       (todo (cdr (assoc "TODO" props)))
-                       (permalink (cdr (assoc "PERMALINK" props)))
-                       (tags (org-get-tags)))
-                  (when (and (binarin/is-blog-post tags)
-                             (binarin/is-blog-entry-publishable props))
-                    (let* ((heading (org-get-heading t t))
-                           (is-draft (binarin/is-blog-draft props))
-                           (time (binarin/blog-post-timestamp props))
-                           (title (replace-regexp-in-string
-                                   "[:=\(\)\?]" ""
-                                   (replace-regexp-in-string
-                                    "[ \t]" "-" heading)))
-                           (str-time (and (string-match "\\([[:digit:]\-]+\\) " time)
-                                          (match-string 1 time)))
-                           (to-file (format "%s-%s.html" str-time (or permalink title)))
-                           (org-buffer (current-buffer))
-                           (id (org-id-get-create))
-                           (yaml-front-matter `(("title" . ,heading)
-                                                ("draft" . ,(if is-draft "true" "false"))
-                                                ("layout" . "default")
-                                                ,@(when permalink `(("permalink" . ,permalink)))))
-                           (html (save-excursion
-                                   (save-restriction
-                                     (org-narrow-to-subtree)
-                                     (let ((org-export-show-temporary-export-buffer nil))
-                                       (org-html-export-as-html nil nil nil t))))))
-                      (with-temp-file (expand-file-name to-file posts-dir)
-                        (when yaml-front-matter
-                          (insert "---\n")
-                          (mapc (lambda (pair) (insert (format "%s: %s\n" (car pair) (cdr pair))))
-                                yaml-front-matter)
-                          (insert "---\n\n"))
-                        (insert-buffer html))))))
-              0 (point-max))))))
-
    #+END_SRC
 ** Custom sorting
 
@@ -780,7 +705,6 @@
        ((and prio-a prio-b) nil)
        (prio-a 1)
        (prio-b -1))))
-
 
   (defun binarin/org-sort-entries ()
     (interactive)
@@ -844,10 +768,8 @@
 ** Contexts
    #+begin_src emacs-lisp
      (setq context-tags
-           '(("HOME" . ?h)  ;; nagornaya
-             ("DOBR" . ?d)  ;; dobrynka
+           '(("HOME" . ?h)  ;; home
              ("WORK" . ?w)  ;; office
-             ("AUTO" . ?r)  ;; in or around the car
              ("CITY" . ?y)  ;; on the go
              ("COMP" . ?c)  ;; some place that has trusted computer
              ("PHON" . ?o)  ;; anywhere where I can make phone call
@@ -855,9 +777,7 @@
 
      (setq context-tag-includes
            '(("HOME" "COMP" "PHON")
-             ("DOBR" "COMP" "PHON")
              ("WORK" "COMP" "PHON")
-             ("AUTO" "CITY" "PHON")
              ("CITY" "PHON")
              ("COMP")))
 
@@ -909,7 +829,6 @@
 
      (setf org-agenda-clockreport-parameter-plist '(:link t :maxlevel 2 :narrow 60))
      (setf org-clock-report-include-clocking-task 't)
-
 
    #+END_SRC
 
@@ -2185,6 +2104,7 @@
       "org-mode clocking"
       ("<f11>" org-clock-goto "goto current")
       ("i" org-clock-in "clock in"))
+    (general-define-key "<f11>" 'binarin/org-clock-hydra/body)
 
     ;; (global-set-key (kbd "<f11>") 'org-clock-goto)
     ;; (global-set-key (kbd "C-<f11>") 'org-clock-in)
