@@ -3,13 +3,12 @@ import Data.Maybe (fromMaybe)
 import System.Environment (getArgs)
 import Text.Read (readMaybe)
 import System.Taffybar
-import System.Taffybar.SimpleConfig
-import System.Taffybar.Widget.Battery
-import System.Taffybar.Widget.SimpleClock
-import System.Taffybar.Widget.Generic.PollingGraph
-import System.Taffybar.Information.CPU
-
-import System.Taffybar.Widget.SNITray
+import System.Taffybar.Systray
+import System.Taffybar.TaffyPager
+import System.Taffybar.Battery
+import System.Taffybar.SimpleClock
+import System.Taffybar.Widgets.PollingGraph
+import System.Information.CPU
 
 cpuCallback = do
   (_, systemLoad, totalLoad) <- cpuLoad
@@ -22,16 +21,11 @@ main = do
                                   , graphLabel = Just "cpu"
                                   }
       clock = textClockNew Nothing "<span fgcolor='orange'>%a %b %_d %H:%M</span>" 1
-      -- pager = taffyPagerNew defaultPagerConfig
-      tray = sniTrayNew
+      pager = taffyPagerNew defaultPagerConfig
+      tray = systrayNew
       cpu = pollingGraphNew cpuCfg 0.5 cpuCallback
-      -- battery = batteryBarNew defaultBatteryConfig 30
-      simpleConfig = defaultSimpleTaffyConfig
-        { startWidgets = [ -- pager
-                         ]
-        , endWidgets = [ tray, clock, cpu
-                       -- , battery
-                       ]
-        , monitorsAction = pure [chosenMonitorNumber]
-        }
-  simpleTaffybar simpleConfig
+      battery = batteryBarNew defaultBatteryConfig 30
+  defaultTaffybar defaultTaffybarConfig { startWidgets = [ pager ]
+                                        , endWidgets = [ tray, clock, cpu, battery ]
+                                        , monitorNumber = chosenMonitorNumber
+                                        }
