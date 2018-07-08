@@ -2099,11 +2099,30 @@
     (global-set-key (kbd "M-o") #'binarin/other-window-multiframe)
     (global-set-key (kbd "M-n") 'delete-window)
 
+    (defconst binarin/common-tasks-for-clocking
+      '(("internet" . "3762fad1-cf8c-40ae-b010-bacc1cf6b879")
+        ("daily" . "c7e6c3e1-41a2-4fdc-84ee-d56ca3c8b8e3")
+        ("weekly" . "6ddefbe6-9130-4707-94f3-2bc4da826bea")))
+
+    (defun binarin/clock-in-predefined (alias)
+      (aand (assoc alias binarin/common-tasks-for-clocking)
+            (org-id-find (cdr it) t)
+            (save-current-buffer
+              (save-excursion
+                (set-buffer (marker-buffer it))
+                (goto-char (marker-position it))
+                (let ((org-clock-in-switch-to-state nil))
+                  (org-clock-in))))))
+
     (require 'hydra)
-    (defhydra binarin/org-clock-hydra (global-map "<f11>")
+    (defhydra binarin/org-clock-hydra (:exit t)
       "org-mode clocking"
       ("<f11>" org-clock-goto "goto current")
-      ("i" org-clock-in "clock in"))
+      ("i" org-clock-in "clock in")
+      ("o" org-clock-out "clock out")
+      ("n" (binarin/clock-in-predefined "internet") "Тупление в интернете")
+      ("d" (binarin/clock-in-predefined "daily") "Daily review")
+      ("w" (binarin/clock-in-predefined "weekly") "Weekly review"))
     (general-define-key "<f11>" 'binarin/org-clock-hydra/body)
 
     ;; (global-set-key (kbd "<f11>") 'org-clock-goto)
