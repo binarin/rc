@@ -17,6 +17,6 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(flyspell-incorrect ((t (:inherit nil :underline (:color "orange" :style wave)))))
- '(mode-line ((t :foreground "gray60" :background "black" :box (:line-width -1 :color "Black"))))
- '(mode-line-inactive ((t (:background "Black" :foreground "gray60" :box (:line-width -3 :color "black") :slant italic :height 0.6))))
+ '(mode-line ((t (:background "black" :foreground "gray60" :box (:line-width -1 :color "Black") :height 0.6))))
+ '(mode-line-inactive ((((background dark)) :foreground "gray60" :background "Black" :slant italic :box (:line-width -3 :color "black")) (((background light)) :foreground "gray60" :background "Black" :slant italic :box (:line-width -2 :color "white"))))
  '(org-agenda-current-time ((t (:inherit org-time-grid :foreground "green")))))
