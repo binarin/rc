@@ -796,6 +796,7 @@
            (-map #'f-expand
                  (-filter #'f-exists?
                           '("~/org/personal.org"
+                            "~/org/contacts.org"
                             "~/org/blog.org"
                             "~/org/refile.org"
                             "~/org/booking.org"
@@ -944,9 +945,12 @@
               (file+olp+datetree "~/org/journal.org")
               (file "~/.rc/org-journal-template.org")
               :tree-type week)
-             ("c" "comment on clocked" plain
+             ("n" "comment on clocked" plain
               (clock)
               "%?")
+             ("c" "contact" entry
+              (file "~/org/refile.org")
+              (file "~/.rc/org-contact-template.org"))
              ("w" "org-protocol" entry
               "* TODO___ %c\n\n  :PROPERTIES:\n  :ID: %(org-id-new)\n  :END:  %U" :prepend t :immediate-finish t :kill-buffer nil)
              ("l" "Link" entry
@@ -1195,6 +1199,36 @@
            org-gcal-file-alist '(("alexey.lebedeff@booking.com" .  "~/org/bcal.org")
                                  ("booking.com_m7nonokhet6ua0s6iflvat1g1o@group.calendar.google.com" .  "~/org/bcal-spd.org")
                                  ("7pgunlpa0t36dtkhpcuhhhmddcnt9b8d@import.calendar.google.com" . "~/org/bcal-evts.org")))
+   #+END_SRC
+** Contacts
+   #+BEGIN_SRC emacs-lisp
+     (defconst binarin/org-contact-field-defaults
+       '(("TYPE" . "person")
+         ("EMAIL" . "")
+         ("PHONE" . "")
+         ("BIRTHDAY" . "")
+         ("GENDER" . "")))
+
+     (defun binarin/helm-org-contacts-field-insert (field)
+       (awhen (assoc field binarin/org-contact-field-defaults)
+         (org-set-property field (cdr it))
+         (org-back-to-heading)
+         (let ((range (org-get-property-block (point) 'force)))
+           (org-flag-drawer nil)
+           (goto-char (car range))
+           (re-search-forward (org-re-property field nil t)))))
+
+     (setq helm-source-org-contacts-field
+       `((name . "Org-contacts fields")
+         (candidates . ,(-map #'car binarin/org-contact-field-defaults))
+         (no-matchplugin)
+         (nohighlight)
+         (action . binarin/helm-org-contacts-field-insert)))
+
+     (defun helm-org-contacts-field ()
+       "Select a field for insertion in an org-contacts entry."
+       (interactive)
+       (helm :sources '(helm-source-org-contacts-field)))
    #+END_SRC
 * Communication
 ** Email
