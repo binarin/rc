@@ -835,7 +835,7 @@
    #+end_src
 
    #+BEGIN_SRC emacs-lisp
-     (setq org-agenda-include-diary t)
+     (setq org-agenda-include-diary nil)
      (setq org-agenda-span 'day)
      (setq org-agenda-start-on-weekday 1)
      (setq org-agenda-window-setup 'current-window)
@@ -1647,6 +1647,9 @@
    #+END_SRC
 ** Contacts
    #+BEGIN_SRC emacs-lisp
+     (require 'org-contacts)
+     (setf org-contacts-files '("~/org/contacts.org"))
+
      (defconst binarin/org-contact-field-defaults
        '(("TYPE" . "person")
          ("EMAIL" . "")
