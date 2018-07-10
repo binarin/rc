@@ -37,7 +37,7 @@
 ** Hide startup screen
 
    #+begin_src emacs-lisp
-       (setq inhibit-startup-screen t)
+       (gsetq inhibit-startup-screen t)
    #+end_src
 
 ** Delay keybindings
@@ -67,7 +67,7 @@
    :END:
 
   #+begin_src emacs-lisp
-    (setq default-frame-alist '((font . "Iosevka-22")))
+    (gsetq default-frame-alist '((font . "Iosevka-22")))
     (defconst binarin/minimal-screen-width 124
       "Iosevka-22 on 1920x1080 screen")
   #+end_src
@@ -80,7 +80,7 @@
    Full name in window title, will be shown in taskbar.
 
    #+begin_src emacs-lisp
-       (setq frame-title-format
+       (gsetq frame-title-format
              '((:eval (if (buffer-file-name)
                           (abbreviate-file-name (buffer-file-name))
                         "%b"))
@@ -119,9 +119,9 @@
      (define-key helm-map (kbd "M-x")  'helm-select-action) ; list actions using C-z
 
      (when (executable-find "curl")
-       (setq helm-google-suggest-use-curl-p t))
+       (gsetq helm-google-suggest-use-curl-p t))
 
-     (setq helm-quick-update                     t ; do not display invisible candidates
+     (gsetq helm-quick-update                     t ; do not display invisible candidates
 	   helm-split-window-in-side-p           t ; open helm buffer inside current window, not occupy whole other window
 	   helm-buffers-fuzzy-matching           t ; fuzzy matching buffer names when non--nil
 	   helm-ff-search-library-in-sexp        t ; search for library in `require' and `declare-function' sexp.
@@ -235,7 +235,322 @@
      (binarin/define-key
       "<f4>" 'replace-string
       "C-<f4>" 'replace-regexp
-      "<f12>" 'magit-status)
+      "<f12>" 'magit-status
+      "C-<f3>" 'binarin/kill-current-buffer)
+
+     (defun binarin/kill-current-buffer ()
+       (interactive)
+       (kill-buffer (current-buffer)))
+   #+END_SRC
+* Org
+** Agenda files
+   Expand filenames so we can later directly compare them with (buffer-file-name)
+
+   #+begin_src emacs-lisp
+     (gsetq org-agenda-files
+           (-map #'f-expand
+                 (-filter #'f-exists?
+                          '("~/org/personal.org"
+                            "~/org/contacts.org"
+                            "~/org/blog.org"
+                            "~/org/refile.org"
+                            "~/org/booking.org"
+                            "~/org/bcal.org"
+                            "~/org/bcal-spd.org"
+                            "~/org/bcal-evts.org"
+                            "~/.rc/emacs-config.org"
+                            "~/org/ference.org"))))
+   #+end_src
+
+** Task classification
+   #+BEGIN_SRC emacs-lisp
+     (defun bh/is-task-p ()
+       "Any task with a todo keyword and no subtask"
+       (save-restriction
+         (widen)
+         (let ((has-subtask)
+               (subtree-end (save-excursion (org-end-of-subtree t)))
+               (is-a-task (member (nth 2 (org-heading-components)) org-todo-keywords-1)))
+           (save-excursion
+             (forward-line 1)
+             (while (and (not has-subtask)
+                         (< (point) subtree-end)
+                         (re-search-forward "^\*+ " subtree-end t))
+               (when (member (org-get-todo-state) org-todo-keywords-1)
+                 (setq has-subtask t))))
+           (and is-a-task (not has-subtask)))))
+
+     (defun bh/is-project-p ()
+       "Any task with a todo keyword subtask"
+       (save-restriction
+         (widen)
+         (let ((has-subtask)
+               (subtree-end (save-excursion (org-end-of-subtree t)))
+               (is-a-task (member (nth 2 (org-heading-components)) org-todo-keywords-1)))
+           (save-excursion
+             (forward-line 1)
+             (while (and (not has-subtask)
+                         (< (point) subtree-end)
+                         (re-search-forward "^\*+ " subtree-end t))
+               (when (member (org-get-todo-state) org-todo-keywords-1)
+                 (setq has-subtask t))))
+           (and is-a-task has-subtask))))
+   #+END_SRC
+
+** Todo states
+   #+begin_src emacs-lisp
+     (gsetq org-enforce-todo-dependencies t)
+
+     (gsetq org-use-fast-todo-selection 'prefix)
+     (gsetq org-fast-tag-selection-single-key t)
+
+     (gsetq org-todo-keywords
+	   '((sequence "TODO(t)" "NEXT(s)" "|" "DONE(d!)")
+	     (type "|" "CANCELLED(c)")
+	     (type "HOLD(h)" "WAIT(w)" "|")))
+
+     (gsetq org-todo-keyword-faces
+	   '(("TODO" :foreground "red" :weight bold)
+	     ("NEXT" :foreground "cyan3" :weight bold)
+	     ("DONE" :foreground "green4" :weight bold)
+
+	     ("WAIT" :foreground "orange3" :weight bold)
+	     ("HOLD" :foreground "orange3" :weight bold)
+	     ("CANCELLED" :foreground "forest green" :weight bold)))
+
+     (defun bh/clock-in-to-next (kw)
+       "Switch a task from TODO to NEXT when clocking in.
+     Skips capture tasks, projects, and subprojects.
+     Switch projects and subprojects from NEXT back to TODO"
+       (when (not (and (boundp 'org-capture-mode) org-capture-mode))
+	 (cond
+	  ((and (member (org-get-todo-state) (list "TODO"))
+		(bh/is-task-p))
+	   "NEXT")
+	  ((and (member (org-get-todo-state) (list "NEXT"))
+		(bh/is-project-p))
+	   "TODO"))))
+
+     (gsetq org-clock-in-switch-to-state #'bh/clock-in-to-next)
+   #+end_src
+
+** Contexts
+   #+begin_src emacs-lisp
+     (setq context-tags
+           '(("HOME" . ?h)  ;; home
+             ("WORK" . ?w)  ;; office
+             ("CITY" . ?y)  ;; on the go
+             ("COMP" . ?c)  ;; some place that has trusted computer
+             ("PHON" . ?o)  ;; anywhere where I can make phone call
+             ))
+
+     (setq context-tag-includes
+           '(("HOME" "COMP" "PHON")
+             ("WORK" "COMP" "PHON")
+             ("CITY" "PHON")
+             ("COMP")))
+
+     (setq org-tag-alist `((:startgroup . nil) ;; contexts
+                           ,@context-tags
+                           (:endgroup . nil)
+                           ("AGND" . ?a)
+                           ("PROJ" . ?p)
+                           ("NEXT" . ?n)
+                           ("HABT" . ?b)))
+   #+end_src
+
+** Appearance
+   #+begin_src emacs-lisp
+     (gsetq org-pretty-entities nil)
+     (gsetq org-agenda-dim-blocked-tasks t)
+     (gsetq org-ellipsis " ▾")
+     (gsetq org-cycle-separator-lines 0)
+   #+end_src
+
+   #+begin_src emacs-lisp
+     (gsetq org-tags-column (- (length org-ellipsis) binarin/minimal-screen-width)
+	   org-agenda-tags-column (- (length org-ellipsis) binarin/minimal-screen-width))
+   #+end_src
+
+   #+begin_src emacs-lisp
+     (eval-after-load "org-habit"
+       (lambda ()
+	 (gsetq org-habit-graph-column (- binarin/minimal-screen-width
+					  org-habit-preceding-days
+					  org-habit-following-days
+					  1))))
+   #+end_src
+
+** Behaviour
+   #+begin_src emacs-lisp
+     (gsetq org-reverse-note-order t)
+     (gsetq org-outline-path-complete-in-steps nil)
+     (gsetq org-catch-invisible-edits 'smart)
+     (gsetq org-return-follows-link t)
+     (gsetq org-id-link-to-org-use-id t)
+     (gsetq org-fast-tag-selection-include-todo nil)
+     (gsetq org-use-speed-commands t)
+   #+end_src
+** Agenda
+   #+begin_src emacs-lisp
+     (binarin/define-key "C-c a" 'org-agenda)
+   #+end_src
+
+   #+BEGIN_SRC emacs-lisp
+     (gsetq org-agenda-include-diary nil
+	    org-agenda-span 'day
+	    org-agenda-start-on-weekday 1
+	    org-agenda-window-setup 'current-window
+
+	    org-agenda-hide-tags-regexp "ATTACH"
+
+	    org-agenda-todo-ignore-with-date t
+	    org-agenda-skip-deadline-if-done t
+	    org-agenda-skip-scheduled-if-done t
+	    org-agenda-skip-timestamp-if-done t
+
+	    org-deadline-warning-days 30
+	    org-agenda-window-frame-fractions '(1 . 1)
+	    org-agenda-restore-windows-after-quit t
+
+	    org-agenda-clockreport-parameter-plist '(:link t :maxlevel 2 :narrow 60)
+	    org-clock-report-include-clocking-task 't
+
+	    org-agenda-block-separator nil)
+   #+END_SRC
+
+
+   #+begin_src emacs-lisp
+     (defun binarin/agenda-sorter-tag-first (tag)
+       #'(lambda (a b)
+	   (let ((ta (member (downcase tag) (get-text-property 1 'tags a)))
+		 (tb (member (downcase tag) (get-text-property 1 'tags b))))
+	     (cond
+	      ((and ta tb) nil)
+	      ((not ta) -1)
+	      (t +1)))))
+
+     (defvar binarin/org-include-scheduled-todos
+       '((org-agenda-todo-ignore-scheduled nil)
+	 (org-agenda-todo-ignore-deadlines nil)
+	 (org-agenda-todo-ignore-with-date nil))
+       "Items with scheduling information are usually hidden from
+     agendas, but sometimes we want to include everything. This list
+     will spliced into org-agenda-custom-commands on such occasions.
+     ")
+
+     (defvar binarin/project-matcher
+       "+PROJ/+TODO")
+
+     (defun binarin/todo-filter-for-context (context)
+       "Generates tags-todo filter string for a given context"
+       (concat (mapconcat 'identity
+			  (list* "-agenda_hide"
+				 (cl-remove-if (lambda (elt)
+						 (member elt (or (assoc context context-tag-includes)
+								 context)))
+					       (mapcar 'car context-tags)))
+			  "-")
+	       "/+NEXT"))
+
+     (gsetq org-agenda-sorting-strategy '((agenda habit-down time-up priority-down category-keep)
+					  (todo priority-down user-defined-down category-keep)
+					  (tags priority-down category-keep)
+					  (search category-keep))
+	    org-agenda-cmp-user-defined (binarin/agenda-sorter-tag-first "NEXT"))
+
+     (defun binarin/shrink-text ()
+       (text-scale-increase 0)
+       (text-scale-increase -1))
+
+     (add-hook 'org-agenda-mode-hook #'binarin/shrink-text)
+
+     (defconst binarin/agenda-block-separator
+       "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
+
+     (setq org-agenda-custom-commands
+	   `(("l" . "Context-based agenda")
+	     ,@(loop for (tag . char) in context-tags
+		     collect (list (concat "l" (char-to-string char))
+				   (concat "Agenda and context " tag)
+				   `((agenda "" ((org-agenda-span 2)))
+				     (tags-todo ,(binarin/todo-filter-for-context tag)
+						((org-agenda-overriding-header ,(concat binarin/agenda-block-separator "\nContext: " tag))
+						 (org-agenda-todo-ignore-scheduled t)
+						 (org-agenda-todo-ignore-deadlines t)
+						 (org-agenda-sorting-strategy '(priority-down user-defined-down category-up))
+						 (org-agenda-cmp-user-defined ',(binarin/agenda-sorter-tag-first tag))))
+				     (tags-todo ,binarin/project-matcher
+						((org-agenda-overriding-header ,(concat binarin/agenda-block-separator "\nProjects: "))
+						 (org-agenda-dim-blocked-tasks t))))
+				   `((org-agenda-dim-blocked-tasks 'invisible))))))
+
+     (setq org-agenda-tags-todo-honor-ignore-options t)
+   #+end_src
+** Contacts
+   #+BEGIN_SRC emacs-lisp
+     (require 'org-contacts)
+     (gsetq org-contacts-files '("~/org/contacts.org"))
+
+     (defconst binarin/org-contact-field-defaults
+       '(("TYPE" . "person")
+         ("EMAIL" . "")
+         ("PHONE" . "")
+         ("BIRTHDAY" . "")
+         ("GENDER" . "")))
+
+     (defun binarin/helm-org-contacts-field-insert (field)
+       (awhen (assoc field binarin/org-contact-field-defaults)
+         (org-set-property field (cdr it))
+         (org-back-to-heading)
+         (let ((range (org-get-property-block (point) 'force)))
+           (org-flag-drawer nil)
+           (goto-char (car range))
+           (re-search-forward (org-re-property field nil t)))))
+
+     (gsetq helm-source-org-contacts-field
+       `((name . "Org-contacts fields")
+         (candidates . ,(-map #'car binarin/org-contact-field-defaults))
+         (no-matchplugin)
+         (nohighlight)
+         (action . binarin/helm-org-contacts-field-insert)))
+
+     (defun helm-org-contacts-field ()
+       "Select a field for insertion in an org-contacts entry."
+       (interactive)
+       (helm :sources '(helm-source-org-contacts-field)))
+   #+END_SRC
+** Refiling
+   #+BEGIN_SRC emacs-lisp
+     ;; Targets include this file and any file contributing to the agenda - up to 5 levels deep
+     (gsetq org-refile-targets
+           '((org-agenda-files :maxlevel . 5)
+             (nil :maxlevel . 5)))
+
+     ;; Targets start with the file name - allows creating level 1 tasks
+     (gsetq org-refile-use-outline-path 'file)
+
+     (defun binarin/update-parent-todo-statistics (&rest rest)
+       (save-excursion
+         (org-update-parent-todo-statistics)))
+
+     (add-hook 'org-after-refile-insert-hook #'binarin/update-parent-todo-statistics)
+
+     (advice-add 'org-refile :after #'binarin/update-parent-todo-statistics)
+
+     (advice-add 'org-archive-subtree :after #'binarin/update-parent-todo-statistics)
+   #+END_SRC
+
+** Persistence
+   Synchronization is performed by external process, so try to be in
+   sync with disk.
+   #+BEGIN_SRC emacs-lisp
+     (run-at-time nil 60 'org-save-all-org-buffers)
+     (add-hook 'org-mode-hook (lambda () (auto-revert-mode 1)))
+   #+END_SRC
+** Habits
+   #+BEGIN_SRC emacs-lisp
+     (require 'org-habit)
    #+END_SRC
 * Programming
 ** Perl
