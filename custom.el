@@ -18,5 +18,6 @@
  ;; If there is more than one, they won't work right.
  '(flyspell-incorrect ((t (:inherit nil :underline (:color "orange" :style wave)))))
  '(mode-line ((t :foreground "gray60" :background "black" :box (:line-width -1 :color "Black"))))
- '(mode-line-inactive ((t (:background "Black" :foreground "gray60" :box (:line-width -3 :color "black") :slant italic :height 0.6))))
- '(org-agenda-current-time ((t (:inherit org-time-grid :foreground "green")))))
+ '(mode-line-inactive ((((background dark)) :foreground "gray60" :background "Black" :slant italic :box (:line-width -3 :color "black")) (((background light)) :foreground "gray60" :background "Black" :slant italic :box (:line-width -2 :color "white"))))
+ '(org-agenda-current-time ((t (:inherit org-time-grid :foreground "green"))))
+ '(org-mode-line-clock ((t (:background "black" :foreground "#DCDCCC")))))
