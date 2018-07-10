@@ -18,6 +18,7 @@
     (require 's)
     (require 'dash)
     (require 'anaphora)
+    (require 'hydra)
     (require 'general)
 
     ;; general-setq will also call triggers on customizable setttings,
@@ -103,6 +104,25 @@
    #+BEGIN_SRC emacs-lisp
      (gsetq x-gtk-use-system-tooltips nil)
    #+END_SRC
+** smart-mode-line
+   #+begin_src emacs-lisp
+     (require 'smart-mode-line)
+     (require 'smart-mode-line-powerline-theme)
+
+     (setf sml/theme 'powerline)
+     (setf rm-blacklist '(" hl-p" " Smrt" " Paredit" " Helm" " SliNav" " yas" " MRev" " ARev" " ElDoc" " Undo-Tree" " ^_^" " FS" " Fly" " EditorConfig" " wb" " ez-esc"))
+     (sml/setup)
+     ;; sml loves to reset this faces completely, so lets enforce our settings after initializing sml
+     (set-face-attribute 'mode-line nil :height 0.6)
+     (set-face-attribute 'mode-line-inactive nil :height 0.6)
+   #+end_src
+
+** Line and column numbers
+   #+begin_src emacs-lisp
+     (line-number-mode t)
+     (column-number-mode t)
+   #+end_src
+
 * Behavior
 ** Helm
    :PROPERTIES:
@@ -196,6 +216,10 @@
    #+BEGIN_SRC emacs-lisp
      (add-hook 'dired-mode-hook 'dired-hide-details-mode)
      (binarin/define-key "C-x C-j" 'dired-jump)
+     (gsetq dired-dwim-target t)
+     (gsetq dired-listing-switches "-al --group-directories-first")
+     (eval-after-load "dired"
+       #'(lambda () (require 'dired-x)))
    #+END_SRC
 ** Truncate lines by default
    #+begin_src emacs-lisp
@@ -242,6 +266,323 @@
        (interactive)
        (kill-buffer (current-buffer)))
    #+END_SRC
+** Capture
+   :PROPERTIES:
+   :ID:       4bc78dad-e5f5-40ba-8d98-c57f4261c7a7
+   :END:
+   #+begin_src emacs-lisp
+     (setq org-default-notes-file "~/org/refile.org")
+     (define-key global-map "\C-cr" 'org-capture)
+
+     (defun binarin/hide-drawers-hook ()
+       (save-excursion
+	 (beginning-of-buffer)
+	 (org-cycle-hide-drawers 'children)))
+
+     (defun binarin/capture-remove-guidance-comment ()
+       (save-excursion
+	 (beginning-of-buffer)
+	 (delete-matching-lines "^ \*# J:")))
+
+     (add-hook 'org-capture-mode-hook #'binarin/hide-drawers-hook)
+     (add-hook 'org-capture-mode-hook #'auto-fill-mode)
+     (add-hook 'org-capture-prepare-finalize-hook #'binarin/capture-remove-guidance-comment)
+
+     (setq org-capture-templates
+	   '(("t" "todo" entry
+	      (file "~/org/refile.org")
+	      "* TODO %?\n  :PROPERTIES:\n  :ID: %(org-id-new)\n  :END:\n  %u\n  %a" :prepend t :kill-buffer nil)
+	     ("j" "journal" entry
+	      (file+olp+datetree "~/org/journal.org")
+	      (file "~/.rc/org-journal-template.org")
+	      :tree-type week)
+	     ("n" "comment on clocked" plain
+	      (clock)
+	      "%?")
+	     ("c" "contact" entry
+	      (file "~/org/refile.org")
+	      (file "~/.rc/org-contact-template.org"))
+	     ("w" "org-protocol" entry
+	      "* TODO %c\n\n  :PROPERTIES:\n  :ID: %(org-id-new)\n  :END:  %U" :prepend t :immediate-finish t :kill-buffer nil)
+	     ("l" "Link" entry
+	      (file "~/org/refile.org")
+	      "* TODO %a\n  :PROPERTIES:\n  :ID: %(org-id-new)\n  :END:\n  %U\n\n  %i" :prepend t :immediate-finish t :kill-buffer nil)))
+
+     (defvar binarin/org-protocol-mundane-link-descriptions
+       '(" - binarin@gmail.com - Gmail"
+	 " - Booking.com Ltd"
+	 " - YouTube"
+	 " - Booking.com Mail"))
+
+     (defun binarin/org-protocol-capture-postprocess ()
+       (awhen (re-search-forward (concat (regexp-opt binarin/org-protocol-mundane-link-descriptions t) "]]") nil t)
+	 (replace-match "]]")))
+
+     (add-hook 'org-capture-prepare-finalize-hook #'binarin/org-protocol-capture-postprocess)
+   #+end_src
+
+   #+BEGIN_SRC emacs-lisp
+     (require 'org-protocol)
+     (autoload 'notifications-notify "notifications")
+
+     (defun binarin/display-notify-after-capture (&rest args)
+       (notifications-notify
+        :title "Link captured"
+        :body (cadar org-stored-links)
+        :app-name "emacs"
+        :app-icon (expand-file-name "~/.rc/org.svg")
+        :timeout 3000
+        :urgency 'low))
+
+     (advice-add 'org-protocol-do-capture :after #'binarin/display-notify-after-capture)
+   #+END_SRC
+** server
+  #+begin_src emacs-lisp
+    (defun binarin/server-start ()
+      (require 'server)
+      (unless (server-running-p server-name)
+        (server-start)))
+
+    (add-hook 'after-init-hook #'binarin/server-start)
+
+    (setf server-temp-file-regexp "^/tmp/\\(zsh\\|Re\\)\\|/draft$")
+  #+end_src
+
+** Browser choice
+   #+BEGIN_SRC emacs-lisp
+     (gsetq browse-url-browser-function #'browse-url-xdg-open)
+   #+END_SRC
+** Change "yes or no" to "y or n"
+   :PROPERTIES:
+   :ID:       28aa80f7-9512-43ac-ba91-c45510d86f2c
+   :END:
+
+   #+begin_src emacs-lisp
+     (fset 'yes-or-no-p 'y-or-n-p)
+   #+end_src
+
+
+** Whitespace handling
+*** Tabs and spaces
+    #+BEGIN_SRC emacs-lisp
+      (setf indent-tabs-mode nil)
+      (setf tab-width 8)
+      (setq-default indent-tabs-mode nil)
+    #+END_SRC
+*** ws-butler
+    Trims trailing whitespace, but only on lines that were edited.
+    #+begin_src emacs-lisp
+      (add-hook 'prog-mode-hook 'ws-butler-mode)
+      (add-hook 'text-mode-hook 'ws-butler-mode)
+    #+end_src
+
+** Ctrl-Z map
+   #+BEGIN_SRC emacs-lisp
+     (defvar ctrl-z-map (make-sparse-keymap))
+
+     (binarin/define-key
+      "C-z" ctrl-z-map)
+
+     (binarin/define-key
+      :keymaps 'ctrl-z-map
+      "C-z" 'suspend-frame
+      "C-g" 'keyboard-quit)
+   #+END_SRC
+** Prevent accidental exit
+   Prompt on C-x C-c - no more accidential exits
+   #+begin_src emacs-lisp
+     (setf confirm-kill-emacs #'y-or-n-p)
+   #+end_src
+** Copy/paste
+   #+BEGIN_SRC emacs-lisp
+     (setf select-enable-primary t)
+     (setf select-enable-clipboard t)
+     (setf save-interprogram-paste-before-kill t)
+     (setf x-select-request-type '(UTF8_STRING COMPOUND_TEXT TEXT STRING))
+   #+END_SRC
+** I18n
+*** Russian layout over Programmers Dvorak
+    :PROPERTIES:
+    :ID:       b04b5557-e261-4073-ac6b-93e62e587ed6
+    :END:
+
+    #+begin_src emacs-lisp
+      ;; -*- coding: iso-2022-7bit-unix -*-
+      (quail-define-package
+       "russian-computer-d" "Russian" "RU" nil
+       "ЙЦУКЕН Russian computer layout over Programmers Dvorak"
+       nil t t t t nil nil nil nil nil t)
+
+      ;;  №% "7 ?5 /3 (1 =9 *0 )2 +4 -6 !8 ;:
+      ;;   Й  Ц  У  К  Е  Н  Г  Ш  Щ  З  Х  Ъ
+      ;;    Ф  Ы  В  А  П  Р  О  Л  Д  Ж  Э
+      ;;     Я  Ч  С  М  И  Т  Ь  Б  Ю  .,
+
+      (quail-define-rules
+       ("&" ?№)
+       ("[" ?\")
+       ("{" ??)
+       ("}" ?/)
+       ("(" ?()
+       ("=" ?=)
+       ("*" ?*)
+       (")" ?))
+       ("+" ?+)
+       ("]" ?-)
+       ("!" ?!)
+       ("#" ?\;)
+       ("%" ?%)
+       ("7" ?7)
+       ("5" ?5)
+       ("3" ?3)
+       ("1" ?1)
+       ("9" ?9)
+       ("0" ?0)
+       ("2" ?2)
+       ("4" ?4)
+       ("6" ?6)
+       ("8" ?8)
+       ("`" ?:)
+
+       ("$" ?ё)
+       (";" ?й)
+       ("," ?ц)
+       ("." ?у)
+       ("p" ?к)
+       ("y" ?е)
+       ("f" ?н)
+       ("g" ?г)
+       ("c" ?ш)
+       ("r" ?щ)
+       ("l" ?з)
+       ("/" ?х)
+       ("@" ?ъ)
+       ("a" ?ф)
+       ("o" ?ы)
+       ("e" ?в)
+       ("u" ?а)
+       ("i" ?п)
+       ("d" ?р)
+       ("h" ?о)
+       ("t" ?л)
+       ("n" ?д)
+       ("s" ?ж)
+       ("-" ?э)
+       ("\\" ?\\)
+       ("'" ?я)
+       ("q" ?ч)
+       ("j" ?с)
+       ("k" ?м)
+       ("x" ?и)
+       ("b" ?т)
+       ("m" ?ь)
+       ("w" ?б)
+       ("v" ?ю)
+       ("z" ?.)
+       ("~" ?Ё)
+       (":" ?Й)
+       ("<" ?Ц)
+       (">" ?У)
+       ("P" ?К)
+       ("Y" ?Е)
+       ("F" ?Н)
+       ("G" ?Г)
+       ("C" ?Ш)
+       ("R" ?Щ)
+       ("L" ?З)
+       ("?" ?Х)
+       ("^" ?Ъ)
+       ("A" ?Ф)
+       ("O" ?Ы)
+       ("E" ?В)
+       ("U" ?А)
+       ("I" ?П)
+       ("D" ?Р)
+       ("H" ?О)
+       ("T" ?Л)
+       ("N" ?Д)
+       ("S" ?Ж)
+       ("_" ?Э)
+       ("|" ?|)
+       ("\"" ?Я)
+       ("Q" ?Ч)
+       ("J" ?С)
+       ("K" ?М)
+       ("X" ?И)
+       ("B" ?Т)
+       ("M" ?Ь)
+       ("W" ?Б)
+       ("V" ?Ю)
+       ("Z" ?,))
+    #+end_src
+
+*** Prefer Russian and UTF-8
+#+begin_src emacs-lisp
+  (set-language-environment "Russian")
+  (setq default-input-method "russian-computer-d")
+  (prefer-coding-system 'utf-8-unix)
+#+end_src
+** Autosaving
+
+   Save backups to one place and don't clutter filesystem with files ending in ~.
+   #+begin_src emacs-lisp
+     (setq backup-directory-alist '(("." . "~/.emacs.d/backups")))
+   #+end_src
+
+   As Sacha Chua put it, "Disk space is cheap. Save lots".
+   #+begin_src emacs-lisp
+     (setq delete-old-versions -1)
+     (setq version-control t)
+     (setq vc-make-backup-files t)
+     (setq auto-save-file-name-transforms '((".*" "~/.emacs.d/auto-save-list/" t)))
+   #+end_src
+
+** File locking
+
+   I don't care about preventing simultaneous edits, it still will be
+   detected when saving is made. But disabling it prevents our working
+   dirs from being clobbered with lock-files.
+   #+begin_src emacs-lisp
+     (setf create-lockfiles nil)
+   #+end_src
+
+** Automatically make scripts executable
+   #+BEGIN_SRC emacs-lisp
+     (add-hook 'after-save-hook
+               'executable-make-buffer-file-executable-if-script-p)
+   #+END_SRC
+** Window handling
+   #+BEGIN_SRC emacs-lisp
+     (winner-mode 1)
+   #+END_SRC
+** Improved help buffers
+   #+BEGIN_SRC emacs-lisp
+     (autoload 'helpful-function "helpful")
+     (global-set-key (kbd "C-h f") #'helpful-function)
+   #+END_SRC
+
+** Version control
+   #+BEGIN_SRC emacs-lisp
+     (setf vc-follow-symlinks t)
+   #+END_SRC
+** undo-tree
+   #+begin_src emacs-lisp
+     (require 'undo-tree)
+     (add-hook 'after-init-hook 'global-undo-tree-mode)
+
+     (binarin/define-key
+      (general-chord "jk") 'undo-tree-undo
+      (general-chord "kj") 'undo-tree-undo
+      (general-chord "wm") 'undo-tree-redo
+      (general-chord "mw") 'undo-tree-redo)
+   #+end_src
+
+** Key chords
+#+begin_src emacs-lisp
+  (require 'key-chord)
+  (key-chord-mode t)
+#+end_src
+
 * Org
 ** Agenda files
    Expand filenames so we can later directly compare them with (buffer-file-name)
@@ -468,22 +809,26 @@
      (defconst binarin/agenda-block-separator
        "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
 
+     (defun binarin/context-based-agendas ()
+       (loop for (tag . char) in context-tags
+	     collect (list (concat "l" (char-to-string char))
+			   (concat "Agenda and context " tag)
+			   `((agenda "" ((org-agenda-span 2)))
+			     (tags-todo ,(binarin/todo-filter-for-context tag)
+					((org-agenda-overriding-header ,(concat binarin/agenda-block-separator "\nContext: " tag))
+					 (org-agenda-todo-ignore-scheduled t)
+					 (org-agenda-todo-ignore-deadlines t)
+					 (org-agenda-sorting-strategy '(priority-down user-defined-down category-up))
+					 (org-agenda-cmp-user-defined ',(binarin/agenda-sorter-tag-first tag))))
+			     (tags-todo ,binarin/project-matcher
+					((org-agenda-overriding-header ,(concat binarin/agenda-block-separator "\nProjects: "))
+					 (org-agenda-dim-blocked-tasks t))))
+			   `((org-agenda-dim-blocked-tasks 'invisible)))))
+
      (setq org-agenda-custom-commands
-	   `(("l" . "Context-based agenda")
-	     ,@(loop for (tag . char) in context-tags
-		     collect (list (concat "l" (char-to-string char))
-				   (concat "Agenda and context " tag)
-				   `((agenda "" ((org-agenda-span 2)))
-				     (tags-todo ,(binarin/todo-filter-for-context tag)
-						((org-agenda-overriding-header ,(concat binarin/agenda-block-separator "\nContext: " tag))
-						 (org-agenda-todo-ignore-scheduled t)
-						 (org-agenda-todo-ignore-deadlines t)
-						 (org-agenda-sorting-strategy '(priority-down user-defined-down category-up))
-						 (org-agenda-cmp-user-defined ',(binarin/agenda-sorter-tag-first tag))))
-				     (tags-todo ,binarin/project-matcher
-						((org-agenda-overriding-header ,(concat binarin/agenda-block-separator "\nProjects: "))
-						 (org-agenda-dim-blocked-tasks t))))
-				   `((org-agenda-dim-blocked-tasks 'invisible))))))
+	   `(("r" "Refile New Notes and Tasks" tags "LEVEL=1+REFILE" ,binarin/org-include-scheduled-todos)
+	     ("l" . "Context-based agenda")
+	     ,@(binarin/context-based-agendas)))
 
      (setq org-agenda-tags-todo-honor-ignore-options t)
    #+end_src
@@ -552,6 +897,42 @@
    #+BEGIN_SRC emacs-lisp
      (require 'org-habit)
    #+END_SRC
+** Clocking
+   #+BEGIN_SRC emacs-lisp
+     (defconst binarin/common-tasks-for-clocking
+       '(("internet" . "3762fad1-cf8c-40ae-b010-bacc1cf6b879")
+	 ("daily" . "c7e6c3e1-41a2-4fdc-84ee-d56ca3c8b8e3")
+	 ("weekly" . "6ddefbe6-9130-4707-94f3-2bc4da826bea")))
+
+     (defun binarin/clock-in-predefined (alias)
+       (aand (assoc alias binarin/common-tasks-for-clocking)
+	     (org-id-find (cdr it) t)
+	     (save-current-buffer
+	       (save-excursion
+		 (set-buffer (marker-buffer it))
+		 (goto-char (marker-position it))
+		 (let ((org-clock-in-switch-to-state nil))
+		   (org-clock-in))))))
+
+     (defhydra binarin/org-clock-hydra (:exit t)
+       "org-mode clocking"
+       ("<f11>" org-clock-goto "goto current")
+       ("i" org-clock-in "clock in")
+       ("o" org-clock-out "clock out")
+       ("O" (lambda ()
+	      (interactive)
+	      (binarin/clockout-remove-nagger)
+	      (org-clock-out)
+	      (binarin/clockout-remove-nagger))
+	"clock out no nagger")
+       ("n" (binarin/clock-in-predefined "internet") "Тупление в интернете")
+       ("d" (binarin/clock-in-predefined "daily") "Daily review")
+       ("w" (binarin/clock-in-predefined "weekly") "Weekly review"))
+
+     (binarin/define-key "<f11>" 'binarin/org-clock-hydra/body)
+
+
+   #+END_SRC
 * Programming
 ** Perl
     #+begin_src emacs-lisp
@@ -590,8 +971,6 @@
 	      tags-table-list nil))
 
       (add-hook 'cperl-mode-hook 'binarin/cperl-mode-hook)
-      (add-hook 'cperl-mode-hook 'ws-butler-mode) ;; XXX prog-mode
-
    #+end_src
 
 * File footer
