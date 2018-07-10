@@ -254,6 +254,29 @@
      (add-to-list 'projectile-project-root-files ".edts")
      (add-to-list 'projectile-project-root-files "erlang.mk")
    #+end_src
+
+
+   Eshell in projectile root
+   #+begin_src emacs-lisp
+     (defun binarin/projectile-eshell  ()
+       (interactive)
+       (let* ((height (/ (window-total-height) 3))
+              (default-directory (projectile-project-root))
+              (eshell-buffer-name (concat "*eshell: " (abbreviate-file-name default-directory) "*")))
+         (split-window-vertically (- height))
+         (other-window 1)
+         (eshell)))
+
+     (defun eshell/n ()
+       (if (window-parent)
+           (delete-window)
+         (switch-to-buffer (other-buffer))))
+
+     (binarin/define-key "C-!" #'binarin/projectile-eshell)
+   #+end_src
+
+
+
 ** Keybindings
    #+BEGIN_SRC emacs-lisp
      (binarin/define-key
