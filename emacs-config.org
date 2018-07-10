@@ -675,8 +675,11 @@
      (gsetq org-clock-in-switch-to-state #'bh/clock-in-to-next)
    #+end_src
 
-** Contexts
+** Tags
    #+begin_src emacs-lisp
+     (gsetq org-tags-exclude-from-inheritance '("PROJ"))
+
+
      (setq context-tags
            '(("HOME" . ?h)  ;; home
              ("WORK" . ?w)  ;; office
@@ -705,7 +708,6 @@
      (gsetq org-pretty-entities nil)
      (gsetq org-agenda-dim-blocked-tasks t)
      (gsetq org-ellipsis " ▾")
-     (gsetq org-cycle-separator-lines 0)
    #+end_src
 
    #+begin_src emacs-lisp
@@ -726,7 +728,6 @@
    #+begin_src emacs-lisp
      (gsetq org-reverse-note-order t)
      (gsetq org-outline-path-complete-in-steps nil)
-     (gsetq org-catch-invisible-edits 'smart)
      (gsetq org-return-follows-link t)
      (gsetq org-id-link-to-org-use-id t)
      (gsetq org-fast-tag-selection-include-todo nil)
@@ -764,17 +765,17 @@
    #+begin_src emacs-lisp
      (defun binarin/agenda-sorter-tag-first (tag)
        #'(lambda (a b)
-	   (let ((ta (member (downcase tag) (get-text-property 1 'tags a)))
-		 (tb (member (downcase tag) (get-text-property 1 'tags b))))
-	     (cond
-	      ((and ta tb) nil)
-	      ((not ta) -1)
-	      (t +1)))))
+           (let ((ta (member (downcase tag) (get-text-property 1 'tags a)))
+                 (tb (member (downcase tag) (get-text-property 1 'tags b))))
+             (cond
+              ((and ta tb) nil)
+              ((not ta) -1)
+              (t +1)))))
 
      (defvar binarin/org-include-scheduled-todos
        '((org-agenda-todo-ignore-scheduled nil)
-	 (org-agenda-todo-ignore-deadlines nil)
-	 (org-agenda-todo-ignore-with-date nil))
+         (org-agenda-todo-ignore-deadlines nil)
+         (org-agenda-todo-ignore-with-date nil))
        "Items with scheduling information are usually hidden from
      agendas, but sometimes we want to include everything. This list
      will spliced into org-agenda-custom-commands on such occasions.
@@ -786,19 +787,19 @@
      (defun binarin/todo-filter-for-context (context)
        "Generates tags-todo filter string for a given context"
        (concat (mapconcat 'identity
-			  (list* "-agenda_hide"
-				 (cl-remove-if (lambda (elt)
-						 (member elt (or (assoc context context-tag-includes)
-								 context)))
-					       (mapcar 'car context-tags)))
-			  "-")
-	       "/+NEXT"))
+                          (list* "-agenda_hide"
+                                 (cl-remove-if (lambda (elt)
+                                                 (member elt (or (assoc context context-tag-includes)
+                                                                 context)))
+                                               (mapcar 'car context-tags)))
+                          "-")
+               "/+NEXT"))
 
      (gsetq org-agenda-sorting-strategy '((agenda habit-down time-up priority-down category-keep)
-					  (todo priority-down user-defined-down category-keep)
-					  (tags priority-down category-keep)
-					  (search category-keep))
-	    org-agenda-cmp-user-defined (binarin/agenda-sorter-tag-first "NEXT"))
+                                          (todo priority-down user-defined-down category-keep)
+                                          (tags priority-down category-keep)
+                                          (search category-keep))
+            org-agenda-cmp-user-defined (binarin/agenda-sorter-tag-first "NEXT"))
 
      (defun binarin/shrink-text ()
        (text-scale-increase 0)
@@ -811,24 +812,24 @@
 
      (defun binarin/context-based-agendas ()
        (loop for (tag . char) in context-tags
-	     collect (list (concat "l" (char-to-string char))
-			   (concat "Agenda and context " tag)
-			   `((agenda "" ((org-agenda-span 2)))
-			     (tags-todo ,(binarin/todo-filter-for-context tag)
-					((org-agenda-overriding-header ,(concat binarin/agenda-block-separator "\nContext: " tag))
-					 (org-agenda-todo-ignore-scheduled t)
-					 (org-agenda-todo-ignore-deadlines t)
-					 (org-agenda-sorting-strategy '(priority-down user-defined-down category-up))
-					 (org-agenda-cmp-user-defined ',(binarin/agenda-sorter-tag-first tag))))
-			     (tags-todo ,binarin/project-matcher
-					((org-agenda-overriding-header ,(concat binarin/agenda-block-separator "\nProjects: "))
-					 (org-agenda-dim-blocked-tasks t))))
-			   `((org-agenda-dim-blocked-tasks 'invisible)))))
+             collect (list (concat "l" (char-to-string char))
+                           (concat "Agenda and context " tag)
+                           `((agenda "" ((org-agenda-span 2)))
+                             (tags-todo ,(binarin/todo-filter-for-context tag)
+                                        ((org-agenda-overriding-header ,(concat binarin/agenda-block-separator "\nContext: " tag))
+                                         (org-agenda-todo-ignore-scheduled t)
+                                         (org-agenda-todo-ignore-deadlines t)
+                                         (org-agenda-sorting-strategy '(priority-down user-defined-down category-up))
+                                         (org-agenda-cmp-user-defined ',(binarin/agenda-sorter-tag-first tag))))
+                             (tags-todo ,binarin/project-matcher
+                                        ((org-agenda-overriding-header ,(concat binarin/agenda-block-separator "\nProjects: "))
+                                         (org-agenda-dim-blocked-tasks nil))))
+                           `((org-agenda-dim-blocked-tasks 'invisible)))))
 
      (setq org-agenda-custom-commands
-	   `(("r" "Refile New Notes and Tasks" tags "LEVEL=1+REFILE" ,binarin/org-include-scheduled-todos)
-	     ("l" . "Context-based agenda")
-	     ,@(binarin/context-based-agendas)))
+           `(("r" "Refile New Notes and Tasks" tags "LEVEL=1+REFILE" ,binarin/org-include-scheduled-todos)
+             ("l" . "Context-based agenda")
+             ,@(binarin/context-based-agendas)))
 
      (setq org-agenda-tags-todo-honor-ignore-options t)
    #+end_src
@@ -903,6 +904,8 @@
    :END:
    #+begin_src emacs-lisp
      ;; Yes it's long... but more is better ;)
+
+     (gsetq org-clock-into-drawer "CLOCK")
 
      (set-face-attribute 'org-mode-line-clock nil :background "black")
      (set-face-attribute 'org-mode-line-clock-overrun nil :background "red")
@@ -1018,12 +1021,6 @@
 
      (binarin/define-key "<f11>" 'binarin/org-clock-hydra/body)
    #+END_SRC
-** Drawers
-   #+BEGIN_SRC emacs-lisp
-     (setq org-drawers '("PROPERTIES" "LOGBOOK" "CLOCK" "FILES"))
-     (setq org-clock-into-drawer "CLOCK")
-     (setq org-export-with-drawers t)
-   #+END_SRC
 
 ** Notifications
    #+BEGIN_SRC emacs-lisp
@@ -1064,6 +1061,48 @@
    #+BEGIN_SRC emacs-lisp
      (add-to-list 'org-structure-template-alist '("l"  "#+BEGIN_SRC emacs-lisp\n\n#+END_SRC" "<src lang=\"emacs-lisp\">\n\n</src>"))
    #+END_SRC
+** Outline options
+   #+BEGIN_SRC emacs-lisp
+     (gsetq org-cycle-separator-lines 0
+            org-special-ctrl-a/e t
+            org-ctrl-k-protect-subtree t
+            org-special-ctrl-k t
+            org-catch-invisible-edits 'smart)
+
+
+   #+END_SRC
+** Custom sorting
+
+#+begin_src emacs-lisp
+  (gsetq org-default-priority 68)
+
+
+  (defvar binarin/priority-todos-for-sorting '("NEXT" "WAIT"))
+  (defun binarin/todo-to-started-first-int ()
+    "Default todo order is modified by giving more priority to
+  todo's from binarin/priority-todos-for-sorting and entries
+  without any todo keywords at all."
+    (let* ((props (org-entry-properties))
+           (item-todo (cdr (assoc "TODO" props)))
+           (item-prio (- (aif (cdr (assoc "PRIORITY" props))
+                             (aref it 0)
+                           org-default-priority)
+                         org-highest-priority))
+           (item-tags (cdr (assoc "TAGS" props)))
+           (modified-todo-order
+            (append binarin/priority-todos-for-sorting
+                    (-remove #'(lambda (todo) (member todo binarin/priority-todos-for-sorting)) org-todo-keywords-1)))
+           (todo-idx (if item-todo (1+ (-elem-index item-todo modified-todo-order)) 0))
+           (prio-range (1+ (- org-default-priority org-highest-priority))))
+      (+ (* prio-range todo-idx) item-prio)))
+
+  (defun binarin/org-sort-entries ()
+    (interactive)
+    (org-sort-entries nil ?f #'binarin/todo-to-started-first-int)
+    (org-cycle)
+    (org-cycle))
+#+end_src
+
 * Programming
 ** Perl
     #+begin_src emacs-lisp

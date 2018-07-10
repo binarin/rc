@@ -225,64 +225,11 @@
 
      (setf org-hugo-default-section-directory "post")
    #+END_SRC
-** Custom sorting
-
-#+begin_src emacs-lisp
-  (defvar binarin/priority-todos-for-sorting '("STARTED" "WAITING"))
-  (defun binarin/todo-to-started-first-int ()
-    "Default todo order is modified by giving more priority to
-  todo's from binarin/priority-todos-for-sorting and entries
-  without any todo keywords at all."
-    (let* ((props (org-entry-properties))
-           (item-todo (cdr (assoc "TODO" props)))
-           (item-prio (- (aif (cdr (assoc "PRIORITY" props))
-                             (aref it 0)
-                           org-default-priority)
-                         org-highest-priority))
-           (item-tags (cdr (assoc "TAGS" props)))
-           (tag-next-prio (if (and item-tags
-                                   (string-match ":NEXT:" item-tags))
-                              -10
-                            0))
-           (modified-todo-order
-            (append binarin/priority-todos-for-sorting
-                    (-remove #'(lambda (todo) (member todo binarin/priority-todos-for-sorting)) org-todo-keywords-1)))
-           (todo-idx (if item-todo (1+ (-elem-index item-todo modified-todo-order)) 0))
-           (prio-range (1+ (- org-default-priority org-highest-priority))))
-      (+ (* prio-range todo-idx) item-prio tag-next-prio)))
-
-  (defun binarin/compare-on-next-status-and-tag-priority (a b)
-    (let ((ta (get-text-property 1 'tags a))
-          (tb (get-text-property 1 'tags b))
-          (next-a (member "next" (get-text-property 1 'tags a)))
-          (next-b (member "next" (get-text-property 1 'tags b)))
-          (prio-a (member (get-text-property 1 'todo-state a) binarin/priority-todos-for-sorting))
-          (prio-b (member (get-text-property 1 'todo-state b) binarin/priority-todos-for-sorting)))
-      (cond
-       ((and next-a next-b)
-        (cond
-         ((and prio-a prio-b) nil)
-         ((not prio-a) -1)
-         (t +1)))
-       (next-a 1)
-       (next-b -1)
-       ((and prio-a prio-b) nil)
-       (prio-a 1)
-       (prio-b -1))))
-
-  (defun binarin/org-sort-entries ()
-    (interactive)
-    (org-sort-entries nil ?f #'binarin/todo-to-started-first-int)
-    (org-cycle)
-    (org-cycle))
-#+end_src
-
 ** Agendas
 ** Projects
    #+begin_src emacs-lisp
      (setf org-stuck-projects
            `(,binarin/project-matcher ("WAITING") ("NEXT") ""))
-     (setq org-tags-exclude-from-inheritance '("PROJ"))
    #+end_src
 ** Export
    #+BEGIN_SRC emacs-lisp
@@ -300,10 +247,6 @@
       (setq org-mobile-directory (expand-file-name "~/Dropbox/org/"))
     #+end_src
 
-** Priorities
-   #+BEGIN_SRC emacs-lisp
-     (setq org-default-priority 68)
-   #+END_SRC
 ** Calendar Sync
    #+BEGIN_SRC emacs-lisp
      (require 'org-gcal)
