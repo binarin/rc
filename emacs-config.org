@@ -11,25 +11,44 @@
 
 ** Load helper modules
   #+begin_src emacs-lisp
+    (package-initialize)
+
     (require 'cl-lib)
     (require 'f)
+    (require 's)
+    (require 'dash)
     (require 'anaphora)
     (require 'general)
-    (package-initialize)
+
+    ;; general-setq will also call triggers on customizable setttings,
+    ;; allowing them to be properly changed even after corresponding
+    ;; package was loaded
+    (fset 'gsetq 'general-setq)
   #+end_src
-** Suppress some compiler warnings
-  #+begin_src emacs-lisp
-    (eval-when (compile load)
-      (setf byte-compile-warnings '(not make-local)))
-  #+end_src
+
 ** Use separate lisp file for customizations made through UI
-   Load it here, so any lisp customizations can override customized values.
+   Load it early, so any lisp customizations can override customized values.
   #+begin_src emacs-lisp
     (setf custom-file (concat (file-name-directory binarin/primary-emacs-config) "custom.el"))
     (load-file custom-file)
   #+end_src
 
-* Starting up
+* Startup stages
+** Delay keybindings
+
+   I want my keybindings to be applied late in the initialization
+   process, after all keymaps are already created and packages are
+   loaded.
+
+   #+BEGIN_SRC emacs-lisp
+     (defvar binarin/keybindings nil)
+
+     (defun binarin/define-key (&rest args)
+       (push args binarin/keybindings))
+
+
+   #+END_SRC
+
 * Personal information
   :PROPERTIES:
   :ID:       04b545bf-52b7-412d-9ce5-80ee4bbe10cf
@@ -102,9 +121,13 @@
    #+begin_src emacs-lisp
      (require 'smart-mode-line)
      (require 'smart-mode-line-powerline-theme)
+
      (setf sml/theme 'powerline)
      (setf rm-blacklist '(" hl-p" " Smrt" " Paredit" " Helm" " SliNav" " yas" " MRev" " ARev" " ElDoc" " Undo-Tree" " ^_^" " FS" " Fly" " EditorConfig" " wb" " ez-esc"))
      (sml/setup)
+     ;; sml loves to reset this faces completely, so lets enforce our settings after initializing sml
+     (set-face-attribute 'mode-line nil :height 0.6)
+     (set-face-attribute 'mode-line-inactive nil :height 0.6)
    #+end_src
 ** Truncate lines by default
    #+begin_src emacs-lisp
@@ -668,6 +691,102 @@
      (setf vc-follow-symlinks t)
    #+END_SRC
 * Org
+** Agenda files
+   Expand filenames so we can later directly compare them with (buffer-file-name)
+
+   #+begin_src emacs-lisp
+     (setf org-agenda-files
+           (-map #'f-expand
+                 (-filter #'f-exists?
+                          '("~/org/personal.org"
+                            "~/org/contacts.org"
+                            "~/org/blog.org"
+                            "~/org/refile.org"
+                            "~/org/booking.org"
+                            "~/org/bcal.org"
+                            "~/org/bcal-spd.org"
+                            "~/org/bcal-evts.org"
+                            "~/.rc/emacs-config.org"
+                            "~/org/ference.org"))))
+   #+end_src
+
+** Helpers
+   #+BEGIN_SRC emacs-lisp
+     (defun bh/is-task-p ()
+       "Any task with a todo keyword and no subtask"
+       (save-restriction
+         (widen)
+         (let ((has-subtask)
+               (subtree-end (save-excursion (org-end-of-subtree t)))
+               (is-a-task (member (nth 2 (org-heading-components)) org-todo-keywords-1)))
+           (save-excursion
+             (forward-line 1)
+             (while (and (not has-subtask)
+                         (< (point) subtree-end)
+                         (re-search-forward "^\*+ " subtree-end t))
+               (when (member (org-get-todo-state) org-todo-keywords-1)
+                 (setq has-subtask t))))
+           (and is-a-task (not has-subtask)))))
+
+     (defun bh/is-project-p ()
+       "Any task with a todo keyword subtask"
+       (save-restriction
+         (widen)
+         (let ((has-subtask)
+               (subtree-end (save-excursion (org-end-of-subtree t)))
+               (is-a-task (member (nth 2 (org-heading-components)) org-todo-keywords-1)))
+           (save-excursion
+             (forward-line 1)
+             (while (and (not has-subtask)
+                         (< (point) subtree-end)
+                         (re-search-forward "^\*+ " subtree-end t))
+               (when (member (org-get-todo-state) org-todo-keywords-1)
+                 (setq has-subtask t))))
+           (and is-a-task has-subtask))))
+   #+END_SRC
+
+** Todo states
+   #+begin_src emacs-lisp
+     (setq org-enforce-todo-dependencies t)
+
+     (setq org-use-fast-todo-selection 'prefix)
+     (setq org-fast-tag-selection-single-key t)
+
+     (setq org-todo-keywords
+           '((sequence "TODO(t)" "NEXT(s)" "|" "DONE(d!)")
+             (type "|" "CANCELLED(c)")
+             (type "HOLD(h)" "WAIT(w)" "|")))
+
+     (setq org-todo-keyword-faces
+           '(("TODO" :foreground "red" :weight bold)
+             ("NEXT" :foreground "blue" :weight bold)
+             ("DONE___" :foreground "forest green" :weight bold)
+
+             ("BUY____" :foreground "red" :weight bold)
+             ("BUYING_" :foreground "#93e0e3" :weight bold)
+             ("BOUGHT_" :foreground "forest green" :weight bold)
+
+             ("WAIT" :foreground "orange3" :weight bold)
+             ("HOLD" :foreground "orange3" :weight bold)
+             ("CANCELLED" :foreground "forest green" :weight bold)))
+
+     (defun bh/clock-in-to-next (kw)
+       "Switch a task from TODO to NEXT when clocking in.
+     Skips capture tasks, projects, and subprojects.
+     Switch projects and subprojects from NEXT back to TODO"
+       (when (not (and (boundp 'org-capture-mode) org-capture-mode))
+         (cond
+          ((and (member (org-get-todo-state) (list "TODO"))
+                (bh/is-task-p))
+           "NEXT")
+          ((and (member (org-get-todo-state) (list "NEXT"))
+                (bh/is-project-p))
+           "TODO"))))
+
+     (setq org-clock-in-switch-to-state #'bh/clock-in-to-next)
+   #+end_src
+
+* Org (to clean up)
 ** Hacks
    #+BEGIN_SRC emacs-lisp
      (defun binarin/org-reveal-tags ()
@@ -739,54 +858,6 @@
    #+BEGIN_SRC emacs-lisp
      (require 'org-habit)
    #+END_SRC
-** Todo states
-   #+begin_src emacs-lisp
-     (setq org-enforce-todo-dependencies t)
-
-     (setq org-use-fast-todo-selection 'prefix)
-     (setq org-fast-tag-selection-single-key t)
-
-     (setq org-todo-keywords
-           '((sequence "TODO___(t)" "STARTED(s)" "|" "DONE___(d!)")
-             (sequence "BUY____(b)" "BUYING_(y)" "|" "BOUGHT_(g)")
-             (type "|" "CANCELD(c)")
-             (type "WAITING(w)" "|")
-             (type "PAUSED_(p)" "|")))
-
-     (setq org-todo-keyword-faces
-           '(("TODO___" :foreground "red" :weight bold)
-             ("STARTED" :foreground "red" :weight bold)
-             ("WRITE__" :foreground "red" :weight bold)
-             ("WRITING" :foreground "red" :weight bold)
-             ("PAUSED_" :foreground "red" :weight bold)
-             ("DONE___" :foreground "forest green" :weight bold)
-             ("PUBLISH" :foreground "forest green" :weight bold)
-
-             ("BUY____" :foreground "red" :weight bold)
-             ("BUYING_" :foreground "#93e0e3" :weight bold)
-             ("BOUGHT_" :foreground "forest green" :weight bold)
-
-             ("WAITING" :foreground "orange3" :weight bold)
-             ("CANCELD" :foreground "forest green" :weight bold)
-
-             ;; for ox-hugo
-             ("TODO" :foreground "red" :weight bold)))
-
-     (setq org-todo-state-tags-triggers
-           '(("STARTED" ("NEXT" . t))
-             (done ("NEXT"))
-             ("WAITING" ("NEXT"))
-             ("CANCELD" ("NEXT"))))
-
-     (setq org-clock-in-switch-to-state
-           (lambda (state)
-             (cond
-              ((or (string= state "BUY____")
-                   (string= state "BOUGHT_"))
-               "BUYING_")
-              (t "STARTED"))))
-
-   #+end_src
 ** Contexts
    #+begin_src emacs-lisp
      (setq context-tags
@@ -810,23 +881,6 @@
                            ("PROJ" . ?p)
                            ("NEXT" . ?n)
                            ("HABT" . ?b)))
-   #+end_src
-** Agenda files
-   Expand filenames so we can later directly compare them with (buffer-file-name)
-   #+begin_src emacs-lisp
-     (setf org-agenda-files
-           (-map #'f-expand
-                 (-filter #'f-exists?
-                          '("~/org/personal.org"
-                            "~/org/contacts.org"
-                            "~/org/blog.org"
-                            "~/org/refile.org"
-                            "~/org/booking.org"
-                            "~/org/bcal.org"
-                            "~/org/bcal-spd.org"
-                            "~/org/bcal-evts.org"
-                            "~/.rc/emacs-config.org"
-                            "~/org/ference.org"))))
    #+end_src
 ** Agendas
    #+begin_src emacs-lisp
@@ -902,7 +956,7 @@
        "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
 
      (setq org-agenda-custom-commands
-           `(("s" "Started Tasks" tags-todo "-agenda_hide/+STARTED+PAUSED_" ,binarin/org-include-scheduled-todos)
+           `(("s" "Started Tasks" tags-todo "-agenda_hide/+STARTED" ,binarin/org-include-scheduled-todos)
              ("w" "Tasks waiting on something" tags "TODO=\"WAITING\"" ((org-use-tag-inheritance nil)))
              ("r" "Refile New Notes and Tasks" tags "LEVEL=1+REFILE" ,binarin/org-include-scheduled-todos)
              ("p" "Projects" tags-todo ,binarin/project-matcher nil)
@@ -1051,8 +1105,7 @@
    was inactive for some time. Builtin org-mode supports asking what I
    want to do with such task, but I want to just clock-out
    unconditionally - it makes moving between computers
-   easier. Clocked-out task is moved to a separate to-do state
-   "PAUSED_" so I still can find and fix its timer if I want to.
+   easier.
 
    #+begin_src emacs-lisp
      (setf org-clock-x11idle-program-name "xprintidle-ng")
@@ -1079,8 +1132,7 @@
        (when (org-clocking-p)
          (if (> (org-user-idle-seconds)
                 binarin/idle-clockout-timeout)
-             (let ((org-clock-out-switch-to-state "PAUSED_"))
-               (org-clock-out nil t))
+             (org-clock-out nil t)
            (setf binarin/idle-clockout-repeat-timer
                  (run-with-idle-timer
                   (time-add (current-idle-time) binarin/idle-clockout-recheck-interval)
