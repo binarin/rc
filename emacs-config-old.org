@@ -63,7 +63,7 @@
 ** Tramp
    #+BEGIN_SRC emacs-lisp
      (defun binarin/shell-command-to-string-remote-advice (orig-fun &rest args)
-       (let ((shell-file-name (if (tramp-tramp-file-p default-directory)
+      (let ((shell-file-name (if (tramp-tramp-file-p default-directory)
                                   "/bin/sh"
                                 shell-file-name)))
          (apply orig-fun args)))
@@ -185,11 +185,6 @@
          (define-key company-active-map (kbd "C-p") 'company-select-previous-or-abort)))
    #+END_SRC
 
-** Spell-checking
-   #+BEGIN_SRC emacs-lisp
-     (setf ispell-dictionary "en")
-     (add-hook 'org-mode-hook 'flyspell-mode)
-   #+END_SRC
 * Org (to clean up)
 ** Hacks
    #+BEGIN_SRC emacs-lisp
