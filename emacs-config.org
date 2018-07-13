@@ -807,8 +807,10 @@
 
      (gsetq org-agenda-sorting-strategy '((agenda habit-down time-up priority-down category-keep)
                                           (todo priority-down user-defined-down category-keep)
-                                          (tags priority-down category-keep)
+                                          (tags priority-down user-defined-down category-keep)
                                           (search category-keep)))
+
+     (gsetq org-agenda-cmp-user-defined (binarin/agenda-sorter-tag-first "NEXT"))
 
      (defun binarin/shrink-text ()
        (text-scale-increase 0)
