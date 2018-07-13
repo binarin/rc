@@ -1093,17 +1093,25 @@
                  (let ((org-clock-in-switch-to-state nil))
                    (org-clock-in))))))
 
-     (defhydra binarin/org-clock-hydra (:exit t)
-       "org-mode clocking"
-       ("<f11>" org-clock-goto "goto current")
-       ("i" org-clock-in "clock in")
-       ("o" org-clock-out "clock out")
-       ("p" binarin/punch-in "punch in")
-       ("P" binarin/punch-out "punch out")
-       ("n" (binarin/clock-in-predefined "internet") "Тупление в интернете")
-       ("c" (binarin/clock-in-predefined "cron-master") "CronMaster")
-       ("d" (binarin/clock-in-predefined "daily") "Daily review")
-       ("w" (binarin/clock-in-predefined "weekly") "Weekly review"))
+     (defhydra binarin/org-clock-hydra (:exit t :hint nil :color pink)
+       "
+     ^^Predefined                   ^^Jump                      ^^Clock
+     ^^----------------------       ^^------------------        ^^---
+     _n_ Тупление в интернете      _<f11>_ Current clock        _i_ In
+     _d_ Daily Review               _l_    Last capture         _o_ Out
+     _w_ Weekly Review                                        _p_ Punch-In
+     _c_ CronMaster                                           _P_ Punch-Out
+     "
+       ("<f11>" org-clock-goto)
+       ("i" org-clock-in)
+       ("o" org-clock-out)
+       ("p" binarin/punch-in)
+       ("P" binarin/punch-out)
+       ("n" (binarin/clock-in-predefined "internet"))
+       ("c" (binarin/clock-in-predefined "cron-master"))
+       ("d" (binarin/clock-in-predefined "daily"))
+       ("w" (binarin/clock-in-predefined "weekly"))
+       ("l" org-capture-goto-last-stored))
 
      (binarin/define-key "<f11>" 'binarin/org-clock-hydra/body)
    #+END_SRC
