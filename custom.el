@@ -9,7 +9,8 @@
  '(edts-inhibit-package-check t)
  '(safe-local-variable-values
    (quote
-    ((bug-reference-bug-regexp . "\\(\\(?:[Ii]ssue \\|[Ff]ixe[ds] \\|[Rr]esolve[ds]? \\|[Cc]lose[ds]? \\|[Pp]\\(?:ull [Rr]equest\\|[Rr]\\) \\|(\\)#\\([0-9]+\\))?\\)")
+    ((mangle-whitespace . t)
+     (bug-reference-bug-regexp . "\\(\\(?:[Ii]ssue \\|[Ff]ixe[ds] \\|[Rr]esolve[ds]? \\|[Cc]lose[ds]? \\|[Pp]\\(?:ull [Rr]equest\\|[Rr]\\) \\|(\\)#\\([0-9]+\\))?\\)")
      (allout-layout . t)))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
