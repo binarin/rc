@@ -1119,7 +1119,7 @@
      _d_ Daily Review               _l_    Last capture         _o_ Out
      _w_ Weekly Review                                        _p_ Punch-In
      _c_ CronMaster                                           _P_ Punch-Out
-     _b_ WBSO
+     _b_ WBSO                                                 _r_ Recent
      "
        ("<f11>" org-clock-goto)
        ("i" org-clock-in)
@@ -1131,7 +1131,8 @@
        ("d" (binarin/clock-in-predefined "daily"))
        ("w" (binarin/clock-in-predefined "weekly"))
        ("l" org-capture-goto-last-stored)
-       ("b" binarin/do-wbso))
+       ("b" binarin/do-wbso)
+       ("r" (org-clock-in '(4))))
 
      (binarin/define-key "<f11>" 'binarin/org-clock-hydra/body)
    #+END_SRC
