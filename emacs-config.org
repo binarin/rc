@@ -603,7 +603,6 @@
                  (save-excursion
                    (forward-line 1)
                    (while (and (not has-next) (< (point) subtree-end) (re-search-forward "^\\*+ \\(NEXT\\|WAIT\\) " subtree-end t))
-                     (message "Found something")
                      (setq has-next t)))
                  (if has-next
                      next-headline
@@ -1220,6 +1219,34 @@
 #+end_src
 
 * Programming
+** Share source position
+   #+BEGIN_SRC emacs-lisp
+     (defun binarin/get-git-remote-urls ()
+       (with-temp-buffer
+         (magit-git-insert "remote" "-v")
+         (-remove #'null (-map #'(lambda (a) (nth 1 (s-split "[ \t]+" a))) (s-lines (buffer-string))))))
+
+     (defun binarin/get-head-commit-sha ()
+       (with-temp-buffer
+         (magit-git-insert "rev-parse" "HEAD")
+         (s-trim (buffer-string))))
+
+     (defun binarin/make-gitlab-link (base project)
+       (let ((commit-sha (binarin/get-head-commit-sha))
+             (filename-relative (car (projectile-make-relative-to-root (list (buffer-file-name)))))
+             (line-number (string-to-number (format-mode-line "%l"))))
+         (format "https://%s/%s/blob/%s/%s#L%d" base project commit-sha filename-relative line-number)))
+
+     (defun binarin/open-web-link-to-source-code ()
+       (interactive)
+       (aif (block loop
+                (dolist (url (binarin/get-git-remote-urls))
+                  (anaphoric-cond
+                   ((s-match "\\(gitlab\\.[^:]+\\):\\(.*\\)\\.git" url)
+                    (return (binarin/make-gitlab-link (nth 1 it) (nth 2 it)))))))
+           (browse-url it)
+         (message "Failed to generate a link from that file")))
+   #+END_SRC
 ** Perl
     #+begin_src emacs-lisp
       (fset 'perl-mode 'cperl-mode)
