@@ -1075,7 +1075,10 @@
        (interactive)
        (setf binarin/keep-clock-running nil)
        (when (org-clock-is-active)
-         (org-clock-out)))
+         (org-clock-out))
+       (org-save-all-org-buffers)
+       (let ((default-directory "~/org/"))
+         (shell-command "./push.sh")))
 
      (defun binarin/clock-in-default-task ()
        (save-excursion
