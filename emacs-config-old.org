@@ -216,17 +216,6 @@
       (setq org-mobile-directory (expand-file-name "~/Dropbox/org/"))
     #+end_src
 
-** Calendar Sync
-   #+BEGIN_SRC emacs-lisp
-     (require 'org-gcal)
-     (setq org-gcal-client-id (awhen (auth-source-search :host "booking-gcal" :max 1)
-                                (plist-get (car it) :user))
-           org-gcal-client-secret (awhen (auth-source-search :host "booking-gcal" :max 1)
-                                    (funcall (plist-get (car it) :secret)))
-           org-gcal-file-alist '(("alexey.lebedeff@booking.com" .  "~/org/bcal.org")
-                                 ("booking.com_m7nonokhet6ua0s6iflvat1g1o@group.calendar.google.com" .  "~/org/bcal-spd.org")
-                                 ("7pgunlpa0t36dtkhpcuhhhmddcnt9b8d@import.calendar.google.com" . "~/org/bcal-evts.org")))
-   #+END_SRC
 * Communication
 ** Email
 *** Load custom-built mu4e
