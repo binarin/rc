@@ -617,7 +617,7 @@
      (gsetq org-fast-tag-selection-single-key t)
 
      (gsetq org-todo-keywords
-           '((sequence "TODO(t)" "NEXT(s)" "|" "DONE(d!)")
+           '((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d!)")
              (type "|" "CANCELLED(c)")
              (type "HOLD(h)" "WAIT(w)" "|")))
 
