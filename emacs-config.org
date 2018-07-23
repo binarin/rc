@@ -540,6 +540,13 @@
      (add-hook 'org-mode-hook 'flyspell-mode)
    #+END_SRC
 * Org
+** Blogging
+   #+BEGIN_SRC emacs-lisp
+     (with-eval-after-load 'ox
+       (require 'ox-hugo))
+
+     (setf org-hugo-default-section-directory "post")
+   #+END_SRC
 ** Agenda files
    Expand filenames so we can later directly compare them with (buffer-file-name)
 
