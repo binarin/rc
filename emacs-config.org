@@ -834,7 +834,7 @@
              collect (list (concat "l" (char-to-string char))
                            (concat "Agenda and context " tag)
                            `((agenda "" nil)
-                             (tags-todo "-CANCELLED+PROJ"
+                             (tags-todo "TODO/-CANCELLED+PROJ"
                                         ((org-agenda-overriding-header "Stuck Projects")
                                          (org-agenda-skip-function 'bh/skip-non-stuck-projects)
                                          (org-agenda-sorting-strategy '(category-keep))))
