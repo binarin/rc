@@ -1070,6 +1070,11 @@
 
      (defun binarin/punch-in ()
        (interactive)
+       (org-save-all-org-buffers)
+       (let ((default-directory "~/org/"))
+         (shell-command "./push.sh"))
+       (cl-letf (((symbol-function 'yes-or-no-p) (lambda (&rest rest) t)))
+         (org-revert-all-org-buffers))
        (setf binarin/keep-clock-running t)
        (org-with-point-at (org-id-find (cdr (assoc "organization" binarin/common-tasks-for-clocking)) 'marker)
          (org-clock-in '(16))))
