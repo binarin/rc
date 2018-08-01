@@ -944,7 +944,7 @@
      (setq org-capture-templates
            '(("t" "todo" entry
               (file "~/org/refile.org")
-              "* TODO %?\n  :PROPERTIES:\n  :ID: %(org-id-new)\n  :END:\n  %u\n  %a"
+              "* %?\n  :PROPERTIES:\n  :ID: %(org-id-new)\n  :END:\n  %u\n  %a"
               :clock-in t :clock-resume t)
              ("j" "journal" entry
               (file+olp+datetree "~/org/journal.org")
