@@ -605,7 +605,7 @@
          (let ((next-headline (save-excursion (or (outline-next-heading) (point-max)))))
            (if (bh/is-project-p)
                (let* ((subtree-end (save-excursion (org-end-of-subtree t)))
-                      (has-next ))
+                      (has-next))
                  (save-excursion
                    (forward-line 1)
                    (while (and (not has-next) (< (point) subtree-end) (re-search-forward "^\\*+ \\(NEXT\\|WAIT\\) " subtree-end t))
@@ -836,7 +836,7 @@
              collect (list (concat "l" (char-to-string char))
                            (concat "Agenda and context " tag)
                            `((agenda "" nil)
-                             (tags-todo "TODO/-CANCELLED+PROJ"
+                             (tags-todo "PROJ+TODO=\"TODO\""
                                         ((org-agenda-overriding-header "Stuck Projects")
                                          (org-agenda-skip-function 'bh/skip-non-stuck-projects)
                                          (org-agenda-sorting-strategy '(category-keep))))
