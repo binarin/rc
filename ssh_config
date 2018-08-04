@@ -1,8 +1,12 @@
 Include ~/org/ssh_config
 
+Host bitbucket.org
+     AddressFamily inet
+
 Host *
      ControlMaster auto
      ControlPath /tmp/ssh_mux_%h_%p_%r
      ControlPersist 5m
      ServerAliveInterval 30
      TCPKeepAlive yes
+
