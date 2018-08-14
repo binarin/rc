@@ -1068,7 +1068,8 @@
          ("weekly" . "6ddefbe6-9130-4707-94f3-2bc4da826bea")
          ("organization" . "ece10822-11d9-4939-b3e2-2d660c0a29ad")
          ("cron-master" . "4e63061d-976e-4038-93f6-657d5622eeeb")
-         ("wbso" . "06985e72-2048-4199-95fd-5dd0722098be")))
+         ("wbso" . "06985e72-2048-4199-95fd-5dd0722098be")
+         ("break" . "cb2267ea-5143-4601-b409-6f7ac2deee85")))
 
      (defun binarin/punch-in ()
        (interactive)
@@ -1134,12 +1135,14 @@
      _w_ Weekly Review                                        _p_ Punch-In
      _c_ CronMaster                                           _P_ Punch-Out
      _b_ WBSO                                                 _r_ Recent
+     _k_ Break
      "
        ("<f11>" org-clock-goto)
        ("i" org-clock-in)
        ("o" org-clock-out)
        ("p" binarin/punch-in)
        ("P" binarin/punch-out)
+       ("k" (binarin/clock-in-predefined "break"))
        ("n" (binarin/clock-in-predefined "internet"))
        ("c" (binarin/clock-in-predefined "cron-master" t))
        ("d" (binarin/clock-in-predefined "daily" t))
