@@ -810,7 +810,7 @@
      (defun binarin/todo-filter-for-context (context)
        "Generates tags-todo filter string for a given context"
        (concat (mapconcat 'identity
-                          (list* "-agenda_hide"
+                          (list* "-agenda_hide-HOLD"
                                  (cl-remove-if (lambda (elt)
                                                  (member elt (or (assoc context context-tag-includes)
                                                                  context)))
