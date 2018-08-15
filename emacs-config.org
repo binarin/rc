@@ -332,8 +332,7 @@
    #+BEGIN_SRC emacs-lisp
      (defvar ctrl-z-map (make-sparse-keymap))
 
-     (binarin/define-key
-      "C-z" ctrl-z-map)
+     (general-define-key "C-z" ctrl-z-map)
 
      (binarin/define-key
       :keymaps 'ctrl-z-map
