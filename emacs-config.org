@@ -902,8 +902,8 @@
    #+BEGIN_SRC emacs-lisp
      ;; Targets include this file and any file contributing to the agenda - up to 5 levels deep
      (gsetq org-refile-targets
-           '((org-agenda-files :maxlevel . 5)
-             (nil :maxlevel . 5)))
+            '((org-agenda-files :maxlevel . 5)
+              (nil :maxlevel . 5)))
 
      ;; Targets start with the file name - allows creating level 1 tasks
      (gsetq org-refile-use-outline-path 'file)
@@ -917,6 +917,33 @@
      (advice-add 'org-refile :after #'binarin/update-parent-todo-statistics)
 
      (advice-add 'org-archive-subtree :after #'binarin/update-parent-todo-statistics)
+
+     (defconst binarin/common-tasks-for-refiling
+       '(("personal-next" . "ece10822-11d9-4939-b3e2-2d660c0a29ad")))
+
+     (defun binarin/refile-to-predefined (name)
+       (interactive)
+       (aand (assoc name binarin/common-tasks-for-refiling)
+             (org-id-find (cdr it) t)
+             (let ((pos (save-current-buffer
+                          (save-excursion
+                            (set-buffer (marker-buffer it))
+                            (goto-char (marker-position it))
+                            (let* ((heading-comps (org-heading-components))
+                                   (heading (nth 4 (org-heading-components))))
+
+                              (list heading (buffer-file-name) nil it))))))
+               (org-refile nil nil pos))))
+
+     (defhydra binarin/org-refile-hydra (:exit t :hint nil :color pink)
+       "
+     ^^Personal
+     ^^--------------
+     _n_ Next Actions
+     "
+       ("n" (binarin/refile-to-predefined "personal-next")))
+
+     (binarin/define-key "C-z C-w" 'binarin/org-refile-hydra/body)
    #+END_SRC
 
 ** Capture
