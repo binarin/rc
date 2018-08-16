@@ -918,7 +918,8 @@
      (advice-add 'org-archive-subtree :after #'binarin/update-parent-todo-statistics)
 
      (defconst binarin/common-tasks-for-refiling
-       '(("personal-next" . "ece10822-11d9-4939-b3e2-2d660c0a29ad")))
+       '(("personal-next" . "ece10822-11d9-4939-b3e2-2d660c0a29ad")
+         ("personal-projects" . "f43d2ba5-e840-4382-85da-ff2bf10ff9de")))
 
      (defun binarin/refile-to-predefined (name)
        (interactive)
@@ -939,8 +940,10 @@
      ^^Personal
      ^^--------------
      _n_ Next Actions
+     _p_ Projects
      "
-       ("n" (binarin/refile-to-predefined "personal-next")))
+       ("n" (binarin/refile-to-predefined "personal-next"))
+       ("p" (binarin/refile-to-predefined "personal-projects")))
 
      (binarin/define-key "C-z C-w" 'binarin/org-refile-hydra/body)
    #+END_SRC
