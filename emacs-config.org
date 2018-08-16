@@ -1105,7 +1105,9 @@
          ("organization" . "ece10822-11d9-4939-b3e2-2d660c0a29ad")
          ("cron-master" . "4e63061d-976e-4038-93f6-657d5622eeeb")
          ("wbso" . "06985e72-2048-4199-95fd-5dd0722098be")
-         ("break" . "cb2267ea-5143-4601-b409-6f7ac2deee85")))
+         ("break" . "cb2267ea-5143-4601-b409-6f7ac2deee85")
+         ("standup" . "5af61d72-a35d-4951-b6e5-7fd2fc3f7c1f")
+         ("lunch" . "7efa80d2-2cf4-43ab-b201-3bb2b022fc8a")))
 
      (defun binarin/punch-in ()
        (interactive)
@@ -1172,6 +1174,8 @@
      _c_ CronMaster                                           _P_ Punch-Out
      _b_ WBSO                                                 _r_ Recent
      _k_ Break
+     _s_ Standup
+     _u_ Lunch
      "
        ("<f11>" org-clock-goto)
        ("i" org-clock-in)
@@ -1180,6 +1184,8 @@
        ("P" binarin/punch-out)
        ("k" (binarin/clock-in-predefined "break"))
        ("n" (binarin/clock-in-predefined "internet"))
+       ("s" (binarin/clock-in-predefined "standup"))
+       ("u" (binarin/clock-in-predefined "lunch"))
        ("c" (binarin/clock-in-predefined "cron-master" t))
        ("d" (binarin/clock-in-predefined "daily" t))
        ("w" (binarin/clock-in-predefined "weekly" t))
