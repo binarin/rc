@@ -919,7 +919,10 @@
 
      (defconst binarin/common-tasks-for-refiling
        '(("personal-next" . "ece10822-11d9-4939-b3e2-2d660c0a29ad")
-         ("personal-projects" . "f43d2ba5-e840-4382-85da-ff2bf10ff9de")))
+         ("personal-projects" . "f43d2ba5-e840-4382-85da-ff2bf10ff9de")
+         ("personal-scheduled" . "13d7a494-3f80-4ffe-a7b4-bded42335342")
+         ("booking-next" . "b24815d0-c63e-4525-8fc2-bd64b7319db9")
+         ("booking-scheduled" . "ed90c020-04fc-41e4-af5f-256307111d1a")))
 
      (defun binarin/refile-to-predefined (name)
        (interactive)
@@ -937,13 +940,17 @@
 
      (defhydra binarin/org-refile-hydra (:exit t :hint nil :color pink)
        "
-     ^^Personal
-     ^^--------------
-     _n_ Next Actions
-     _p_ Projects
+     ^^Personal                    ^^Booking
+     ^^------------------------    ^^-----------------------
+     _n_ Next Actions              _b_ Next Actions
+     _p_ Projects                  _w_ Scheduled and waiting
+     _s_ Scheduled and waiting
      "
        ("n" (binarin/refile-to-predefined "personal-next"))
-       ("p" (binarin/refile-to-predefined "personal-projects")))
+       ("p" (binarin/refile-to-predefined "personal-projects"))
+       ("b" (binarin/refile-to-predefined "booking-next"))
+       ("s" (binarin/refile-to-predefined "personal-scheduled"))
+       ("w" (binarin/refile-to-predefined "booking-scheduled")))
 
      (binarin/define-key "C-z C-w" 'binarin/org-refile-hydra/body)
    #+END_SRC
