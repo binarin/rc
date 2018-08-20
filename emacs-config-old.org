@@ -60,22 +60,6 @@
    #+BEGIN_SRC emacs-lisp
      (put 'narrow-to-region 'disabled nil)
    #+END_SRC
-** Tramp
-   #+BEGIN_SRC emacs-lisp
-     (defun binarin/shell-command-to-string-remote-advice (orig-fun &rest args)
-      (let ((shell-file-name (if (tramp-tramp-file-p default-directory)
-                                  "/bin/sh"
-                                shell-file-name)))
-         (apply orig-fun args)))
-
-     (advice-add 'shell-command-to-string :around #'binarin/shell-command-to-string-remote-advice)
-
-     (setq vc-ignore-dir-regexp
-           (format "\\(%s\\)\\|\\(%s\\)"
-                   vc-ignore-dir-regexp
-                   tramp-file-name-regexp))
-
-   #+END_SRC
 ** Eshell
    :PROPERTIES:
    :ID:       712d9d5a-4541-43ba-b73a-963b86cd511c
