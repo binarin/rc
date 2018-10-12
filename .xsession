@@ -15,11 +15,9 @@ start-programs() {
     fg-run insync start
     fg-run yandex-disc start
 
-    bg-run status-notifier-watcher
     bg-run xscreensaver -nosplash
     bg-run dunst
     bg-run workrave
-    bg-run nm-applet
 }
 
 xmonad-loop() {
