@@ -3,6 +3,10 @@ Include ~/org/ssh_config
 Host bitbucket.org
      AddressFamily inet
 
+Host hass
+    Hostname 192.168.2.15
+    ProxyJump binarin@amon.binarin.ru
+
 Host *
      ControlMaster auto
      ControlPath /tmp/ssh_mux_%h_%p_%r
