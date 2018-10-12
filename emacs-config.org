@@ -829,7 +829,7 @@
                           (list* "-agenda_hide-HOLD-REFILE"
                                  (cl-remove-if (lambda (elt)
                                                  (member elt (or (assoc context context-tag-includes)
-                                                                 context)))
+                                                                 (list context))))
                                                (mapcar 'car context-tags)))
                           "-")
                "/+NEXT"))
