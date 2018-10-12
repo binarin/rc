@@ -10,13 +10,6 @@ bg-run() {
     fg-run "$@" &
 }
 
-load-custom-xresources() {
-    CUSTOM_XRESOURCES_FILE="~/.rc/.Xresources.$HOST"
-    if [[ -f $CUSTOM_XRESOURCES_FILE ]]; then
-        xrdb -merge $CUSTOM_XRESOURCES_FILE
-    fi
-}
-
 start-programs() {
     fg-run drobpox start
     fg-run insync start
@@ -29,12 +22,6 @@ start-programs() {
     bg-run nm-applet
 }
 
-setup-agents() {
-    # gpg agent from 2.1 works fine without any keychain magic
-    which gpg-agent > /dev/null && gpg-agent --daemon
-    which keychain > /dev/null && eval $(keychain --eval --quiet) || eval $(ssh-agent)
-}
-
 xmonad-loop() {
     rm -f $HOME/.xmonad/xmonad.state
     while true; do 
@@ -42,8 +29,6 @@ xmonad-loop() {
     done
 }
 
-load-custom-xresources
-setup-agents
 start-programs
 
 systemctl --user stop compton.service
