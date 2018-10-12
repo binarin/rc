@@ -17,7 +17,7 @@ import           Data.Ratio ((%))
 import           Data.Set (Set)
 import qualified Data.Set as Set
 import           System.Exit
-import           System.Taffybar.Hooks.PagerHints (pagerHints)
+import           System.Taffybar.Support.PagerHints (pagerHints)
 
 import           Graphics.X11.ExtraTypes.XF86
 import           XMonad
