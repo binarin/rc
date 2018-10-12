@@ -29,6 +29,9 @@ xmonad-loop() {
 
 start-programs
 
+systemctl --user stop nm-applet.service
+systemctl --user start nm-applet.service
+
 systemctl --user stop compton.service
 systemctl --user stop taffybar.service
 fg-run xrandr-auto configure
