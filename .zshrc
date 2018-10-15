@@ -130,17 +130,17 @@ function sudoedit() {
 }
 
 kp() {
-    kubectl get pods --namespace=demo  | tail -n +2 | fzf | awk '{print $1}'
+    kubectl get pods | tail -n +2 | fzf | awk '{print $1}'
 }
 
 kl() {
-    kubectl logs $(kp) --namespace=demo "$@"
+    kubectl logs $(kp) "$@"
 }
 
 ke() {
     local cmd="${1:-bash}"
     shift
-    kubectl exec $(kp) --namespace=demo -i -t -- "$cmd" "$@"
+    kubectl exec $(kp) -i -t -- "$cmd" "$@"
 }
 
 man() {
