@@ -82,7 +82,7 @@ main = do
           ]
         , barPosition = Top
         , barPadding = 0
-        , barHeight = 50
+        , barHeight = 30
         , widgetSpacing = 0
         , monitorsAction = pure [0]
         }

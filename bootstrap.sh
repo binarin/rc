@@ -34,7 +34,7 @@ fi
 
 mkdir -p ~/bin
 cd ~/bin
-cp -sn ~/.rc/{workrave-break.sh,xmobar-clock-monitor.sh,xmobar-workrave-monitor.sh,zsh-remote-setup,conkeror,toggle-touchpad,volume.sh,sshmenu} .
+cp -sn ~/.rc/{toggle-touchpad,volume.sh} .
 
 mkdir -p ~/.xmonad
 cd ~/.xmonad
@@ -42,7 +42,7 @@ cp -sn ~/.rc/.xmonad/xmonad.hs .
 
 mkdir -p ~/.config/taffybar
 cd ~/.config/taffybar
-cp -sn ~/.rc/taffybar/taffybar.hs .
+cp -sn ~/.rc/taffybar/taffybar.{hs,css} .
 
 if [ ! -e ~/.xmonad/lib ]; then
     ln -s ~/.rc/.xmonad/lib ~/.xmonad/lib
@@ -106,7 +106,6 @@ if [[ ! -f ~/.config/pulse/default.pa ]]; then
 fi
 
 mkdir -p ~/personal-workspace/ ~/booking-workspace/
-
 
 # hack to disable dropbox updates
 rm -rf ~/.dropbox-dist
