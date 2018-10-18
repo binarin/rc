@@ -119,10 +119,10 @@
 
 ** Line and column numbers
    #+begin_src emacs-lisp
+     (setq line-number-display-limit-width 2000000) ;; prevent '??' instead of line number for files with moderately long lines
      (line-number-mode t)
      (column-number-mode t)
    #+end_src
-
 * Behavior
 ** Helm
    :PROPERTIES:

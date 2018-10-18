@@ -114,7 +114,13 @@ e() {
     if [[ ! -z "$emacs_desktop_num" ]]; then
         wmctrl -s "$emacs_desktop_num"
     fi
-    emacsclient --no-wait "$@"
+
+    if [[ $1 =~ ^(.*):([0-9]+)$ ]]; then
+        emacsclient --no-wait +${match[2]} "${match[1]}"
+    else
+        emacsclient --no-wait "$@"
+    fi
+
 }
 
 rr() {
