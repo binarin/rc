@@ -4,7 +4,7 @@ Host bitbucket.org
      AddressFamily inet
 
 Host hass
-    Hostname 192.168.2.15
+    Hostname 192.168.2.21
     ProxyJump binarin@amon.binarin.ru
 
 Host *
