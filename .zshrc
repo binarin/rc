@@ -136,17 +136,22 @@ function sudoedit() {
 }
 
 kp() {
-    kubectl get pods | tail -n +2 | fzf | awk '{print $1}'
+    local cluster=$(bkcloud get installations | grep '^\*' | awk '{print $6}' | tr ',' '\n' | grep -v -- '-m$' | fzf -1)
+    bkcloud use cluster "$cluster"
+    kubectl get pods | tail -n +2 | fzf -1 | awk '{print $1}'
 }
 
 kl() {
-    kubectl logs $(kp) "$@"
+    local pod="$(kp)"
+    local container=$(kubectl get pod $pod -o=jsonpath='{.spec.containers[*].name}' | tr ' ' '\n' | fzf -1)
+    kubectl logs "$pod" -c "$container" "$@"
 }
 
 ke() {
     local cmd="${1:-bash}"
-    shift
-    kubectl exec $(kp) -i -t -- "$cmd" "$@"
+    local pod="$(kp)"
+    local container=$(kubectl get pod $pod -o=jsonpath='{.spec.containers[*].name}' | tr ' ' '\n' | fzf -1)
+    kubectl exec "$pod" -c "$container" -i -t -- "$cmd" "$@"
 }
 
 man() {

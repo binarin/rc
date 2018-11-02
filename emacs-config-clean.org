@@ -1,0 +1,246 @@
+* File header
+** Early load of installed packages autoloads
+  #+BEGIN_SRC emacs-lisp
+    (package-initialize)
+  #+END_SRC
+
+** Customization helpers
+   #+BEGIN_SRC emacs-lisp
+     (require 'general)
+   #+END_SRC
+
+   ~general-setq~ will also call triggers on customizable setttings,
+   allowing them to be properly changed even after corresponding
+   package was loaded:
+
+   #+BEGIN_SRC emacs-lisp
+     (fset 'gsetq 'general-setq)
+   #+END_SRC
+* Appearance
+** No toolbars/scrollbars
+   #+BEGIN_SRC emacs-lisp
+     (when (window-system)
+       (toggle-scroll-bar -1)
+       (tool-bar-mode -1)
+       (menu-bar-mode -1))
+   #+END_SRC
+
+** Font
+   #+BEGIN_SRC emacs-lisp
+     (add-to-list 'default-frame-alist
+                  '(font . "Iosevka-22"))
+   #+END_SRC
+
+** Theme
+   #+begin_src emacs-lisp
+     (require 'zenburn-theme)
+   #+end_src
+
+** Smart mode line
+   #+BEGIN_SRC emacs-lisp
+     (require 'smart-mode-line)
+
+     (defconst binarin/mode-line-scale-factor 0.6)
+
+     (defun binarin/advise-sml/fill-width-available (orig-fun)
+       (let ((estimated-total-width (floor (/ (window-width) binarin/mode-line-scale-factor))))
+         (cl-letf (((symbol-function 'window-total-width) (lambda () estimated-total-width)))
+           (funcall orig-fun))))
+
+     (advice-add 'sml/fill-width-available :around #'binarin/advise-sml/fill-width-available)
+
+     (gsetq sml/no-confirm-load-theme t)
+     (gsetq sml/theme 'powerline)
+
+     (sml/setup)
+
+     (set-face-attribute 'mode-line nil :height binarin/mode-line-scale-factor)
+     (set-face-attribute 'mode-line-inactive nil :height binarin/mode-line-scale-factor)
+     (set-face-attribute 'sml/folder nil :foreground "#aaaaaa")
+
+     (defface binarin/sml-modes-red '((t :inherit sml/minor-modes :foreground "red")) "")
+
+     (gsetq rm-blacklist
+            (format "^ \\(%s\\)$"
+                    (mapconcat #'identity
+                               '("Projectile.*" "Undo-Tree" "ivy" "ElDoc" "Paredit")
+                               "\\|"))
+            rm-text-properties
+            '(("\\` Ovwrt\\'" 'face 'binarin/sml-modes-red)
+              ("\\` Wrap\\'" 'face 'default-face)))
+
+
+     (rich-minority-mode +1)
+
+ #+END_SRC
+** Column numbers in modeline
+   #+BEGIN_SRC emacs-lisp
+     (column-number-mode 1)
+   #+END_SRC
+** Truncate long lines by default
+   #+BEGIN_SRC emacs-lisp
+     (setq-default truncate-lines t)
+   #+END_SRC
+* Behaviour
+** Disable startup screen
+   #+BEGIN_SRC emacs-lisp
+     (gsetq inhibit-startup-screen t)
+   #+END_SRC
+** Change "yes or no" to "y or n"
+   #+begin_src emacs-lisp
+     (fset 'yes-or-no-p 'y-or-n-p)
+   #+end_src
+
+** Ctrl-Z map
+   #+BEGIN_SRC emacs-lisp
+     (defvar ctrl-z-map (make-sparse-keymap))
+
+     (general-define-key "C-z" ctrl-z-map)
+
+     (general-define-key
+      :keymaps 'ctrl-z-map
+      "C-z" 'suspend-frame
+      "C-g" 'keyboard-quit)
+
+   #+END_SRC
+
+** Prevent accidental exit
+   Prompt on C-x C-c - no more accidential exits
+   #+begin_src emacs-lisp
+     (gsetq confirm-kill-emacs #'y-or-n-p
+            confirm-kill-processes nil)
+   #+end_src
+** Keeping a lot of history
+   #+BEGIN_SRC emacs-lisp
+     (gsetq history-length 1000
+            history-delete-duplicates t
+            savehist-file "~/.emacs.d/savehist-clean"
+            savehist-additional-variables '(savehist-minibuffer-history-variables
+                                            read-expression-history
+                                            minibuffer-history
+                                            file-name-history
+                                            mark-ring
+                                            search-ring
+                                            extended-command-history
+                                            kill-ring
+                                            search-ring
+                                            regexp-search-ring
+                                            compile-history
+                                            command-history)
+            recentf-max-saved-items 1000)
+
+     (savehist-mode 1)
+     (recentf-mode 1)
+   #+END_SRC
+** execute-extended-command
+   ~amx~ also needs to be installed, it's used for sorting according
+   to recently used and persisting. counsel automatically detects
+   this. ~amx~ is not used directly with ivy completion because
+   ~counsel-M-x~ is a bit prettier, with keybindings shown in
+   different font.
+
+   #+BEGIN_SRC emacs-lisp
+     (general-define-key "M-x" 'counsel-M-x)
+   #+END_SRC
+
+** Completion everywhere
+   #+BEGIN_SRC emacs-lisp
+     (ivy-mode 1)
+
+     (gsetq ivy-use-virtual-buffers t
+            ivy-count-format "(%d/%d) "
+            ivy-virtual-abbreviate 'abbreviate)
+
+     (set-face-attribute 'ivy-virtual nil :foreground "yellow")
+
+     (defun binarin/ivy-switch-buffer-shortener (orig-fun str)
+       (let ((result (funcall orig-fun str)))
+         (replace-regexp-in-string "^/nix/store/.\\{33\\}" "[NIX]" result)))
+
+     (advice-add 'ivy-switch-buffer-transformer :around #'binarin/ivy-switch-buffer-shortener)
+   #+END_SRC
+** External shell
+   #+BEGIN_SRC emacs-lisp
+     (gsetq shell-file-name "/bin/sh") ;; mostly for TRAMP, should work everywhere
+   #+END_SRC
+
+** Dired
+   #+BEGIN_SRC emacs-lisp
+     (general-define-key "C-x C-j" 'dired-jump)
+     (add-hook 'dired-mode-hook 'dired-hide-details-mode)
+   #+END_SRC
+** Undo
+   #+BEGIN_SRC emacs-lisp
+     (global-undo-tree-mode +1)
+   #+END_SRC
+** Magit
+   #+BEGIN_SRC emacs-lisp
+     (general-define-key "C-x g" 'magit-status)
+   #+END_SRC
+** Autosave and backups
+   Save backups to one place and don't clutter filesystem with files ending in ~\~~.
+   #+BEGIN_SRC emacs-lisp
+     (setq backup-directory-alist '(("." . "~/.emacs.d/backups-clean")))
+   #+END_SRC
+
+   As Sacha Chua put it, "Disk space is cheap. Save lots".
+   #+BEGIN_SRC emacs-lisp
+     (setq delete-old-versions -1)
+     (setq version-control t)
+     (setq vc-make-backup-files t)
+     (setq auto-save-file-name-transforms '((".*" "~/.emacs.d/auto-save-list-clean/" t)))
+   #+END_SRC
+* Programming
+** Projects
+   #+BEGIN_SRC emacs-lisp
+     (projectile-mode +1)
+
+     (gsetq projectile-enable-caching t
+            projectile-completion-system 'ivy)
+
+     (general-define-key
+      :keymaps 'projectile-mode-map
+      "C-c p" 'projectile-command-map)
+   #+END_SRC
+
+   For my projects I usually don't want to include submodules in file
+   list. And anyway, this is broken for some of the things I work on
+   (e.g. it fails on submodules without url).
+   #+BEGIN_SRC emacs-lisp
+     (gsetq projectile-git-submodule-command nil)
+   #+END_SRC
+
+** Vue
+   #+BEGIN_SRC emacs-lisp
+     (defun binarin/vue-mode-hook ()
+       (setq-local mmm-submode-decoration-level 0)
+       (lsp-vue-mmm-enable)
+       (lsp-ui-flycheck-enable t)
+       (flycheck-mode))
+
+     (add-hook 'vue-mode-hook #'binarin/vue-mode-hook)
+
+     (eval-after-load "vue-mode"
+       (lambda ()
+         (require 'lsp-vue)
+         (require 'lsp-ui)))
+   #+END_SRC
+** Perl
+   #+BEGIN_SRC emacs-lisp
+     (defalias 'perl-mode 'cperl-mode)
+     (gsetq cperl-hairy t)
+   #+END_SRC
+** Lisp
+   #+BEGIN_SRC emacs-lisp
+     (add-hook 'emacs-lisp-mode-hook       #'enable-paredit-mode)
+     (add-hook 'eval-expression-minibuffer-setup-hook #'enable-paredit-mode)
+     (add-hook 'ielm-mode-hook             #'enable-paredit-mode)
+     (add-hook 'lisp-mode-hook             #'enable-paredit-mode)
+     (add-hook 'lisp-interaction-mode-hook #'enable-paredit-mode)
+     (add-hook 'scheme-mode-hook           #'enable-paredit-mode)
+   #+END_SRC
+** Nix
+   #+BEGIN_SRC emacs-lisp
+     (gsetq nix-indent-function 'nix-indent-line)
+     (add-to-list 'auto-mode-alist '("\\.nix\\'" . nix-mode)) ;; fixed by https://github.com/NixOS/nix-mode/commit/f1973ceb4b89e52eec35829722d0dbdcc39fb2ff, should go away soon
+   #+END_SRC
