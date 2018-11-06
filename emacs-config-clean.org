@@ -20,8 +20,8 @@
    #+BEGIN_SRC emacs-lisp
      (when (window-system)
        (toggle-scroll-bar -1)
-       (tool-bar-mode -1)
-       (menu-bar-mode -1))
+       (tool-bar-mode -1))
+     (menu-bar-mode -1)
    #+END_SRC
 ** Font
    #+BEGIN_SRC emacs-lisp
