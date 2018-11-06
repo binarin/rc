@@ -129,3 +129,6 @@ if [[ ! -L ~/.local/share/applications/mimeapps.list ]] ;then
 fi
 
 ln -sf /run/current-system/sw/bin/gopass ~/bin/pass
+
+mkdir -p ~/.config/alacritty
+ln -sf ~/.rc/alacritty.yml ~/.config/alacritty/alacritty.yml
