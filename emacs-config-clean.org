@@ -30,27 +30,9 @@
    #+END_SRC
 ** Theme
    #+begin_src emacs-lisp
-     (gsetq solarized-distinct-fringe-background t
-	    solarized-use-variable-pitch nil
-	    solarized-high-contrast-mode-line t
-	    solarized-use-less-bold nil
-	    solarized-use-more-italic t
-	    solarized-emphasize-indicators t
-	    solarized-scale-org-headlines nil
-	    solarized-height-minus-1 1.0
-	    solarized-height-plus-1 1.0
-	    solarized-height-plus-2 1.0
-	    solarized-height-plus-3 1.0
-	    solarized-height-plus-4 1.0)
-
-
-     (load-theme 'solarized-light t)
+     (load-theme 'zenburn t)
    #+end_src
 ** Smart mode line
-
-   #+BEGIN_SRC emacs-lisp
-   
-   #+END_SRC
 
    #+BEGIN_SRC emacs-lisp
      (require 'smart-mode-line)
@@ -58,14 +40,16 @@
      (defconst binarin/mode-line-scale-factor 0.6)
 
      (defun binarin/advise-sml/fill-width-available (orig-fun)
-       (let ((estimated-total-width (floor (/ (window-width) binarin/mode-line-scale-factor))))
-	 (cl-letf (((symbol-function 'window-total-width) (lambda () estimated-total-width)))
-	   (funcall orig-fun))))
+       (if (display-graphic-p)
+	   (let ((estimated-total-width (floor (/ (window-width) binarin/mode-line-scale-factor))))
+	     (cl-letf (((symbol-function 'window-total-width) (lambda () estimated-total-width)))
+	       (funcall orig-fun)))
+	 (funcall orig-fun)))
 
      (advice-add 'sml/fill-width-available :around #'binarin/advise-sml/fill-width-available)
 
      (gsetq sml/no-confirm-load-theme t)
-     (gsetq sml/theme 'light)
+     (gsetq sml/theme 'powerline)
 
      (sml/setup)
 
