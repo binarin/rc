@@ -31,6 +31,7 @@
 ** Theme
    #+begin_src emacs-lisp
      (load-theme 'zenburn t)
+     (set-face-attribute 'lazy-highlight nil :background "red")
    #+end_src
 ** Smart mode line
 
@@ -112,21 +113,21 @@
 ** Keeping a lot of history
    #+BEGIN_SRC emacs-lisp
      (gsetq history-length 1000
-            history-delete-duplicates t
-            savehist-file "~/.emacs.d/savehist-clean"
-            savehist-additional-variables '(savehist-minibuffer-history-variables
-                                            read-expression-history
-                                            minibuffer-history
-                                            file-name-history
-                                            mark-ring
-                                            search-ring
-                                            extended-command-history
-                                            kill-ring
-                                            search-ring
-                                            regexp-search-ring
-                                            compile-history
-                                            command-history)
-            recentf-max-saved-items 1000)
+	    history-delete-duplicates t
+	    savehist-file "~/.emacs.d/savehist-clean"
+	    savehist-additional-variables '(savehist-minibuffer-history-variables
+					    read-expression-history
+					    minibuffer-history
+					    file-name-history
+					    mark-ring
+					    search-ring
+					    extended-command-history
+					    kill-ring
+					    search-ring
+					    regexp-search-ring
+					    compile-history
+					    command-history)
+	    recentf-max-saved-items 1000)
 
      (savehist-mode 1)
      (recentf-mode 1)
@@ -147,16 +148,19 @@
      (ivy-mode 1)
 
      (gsetq ivy-use-virtual-buffers t
-	    ivy-count-format "(%d/%d) "
-	    ivy-virtual-abbreviate 'abbreviate)
+            ivy-count-format "(%d/%d) "
+            ivy-virtual-abbreviate 'abbreviate)
 
      (set-face-attribute 'ivy-virtual nil :foreground "red")
 
      (defun binarin/ivy-switch-buffer-shortener (orig-fun str)
        (let ((result (funcall orig-fun str)))
-	 (replace-regexp-in-string "^/nix/store/.\\{33\\}" "[NIX]" result)))
+         (replace-regexp-in-string "^/nix/store/.\\{33\\}" "[NIX]" result)))
 
      (advice-add 'ivy-switch-buffer-transformer :around #'binarin/ivy-switch-buffer-shortener)
+
+     (general-define-key :keymaps 'ivy-minibuffer-map
+                         "C-l" 'ivy-backward-kill-word)
    #+END_SRC
 ** External shell
    #+BEGIN_SRC emacs-lisp
@@ -211,7 +215,10 @@
 ** Whitespace handling
    #+BEGIN_SRC emacs-lisp
      (general-define-key "M-SPC" 'cycle-spacing)
-     (gsetq indent-tabs-mode nil)
+     (setq-default indent-tabs-mode nil
+                   show-trailing-whitespace t)
+     (ws-butler-global-mode +1)
+     (gsetq require-final-newline t)
    #+END_SRC
 ** Killing
    #+BEGIN_SRC emacs-lisp
@@ -230,6 +237,42 @@
 ** Narrowing
    #+BEGIN_SRC emacs-lisp
      (put 'narrow-to-region 'disabled nil)
+   #+END_SRC
+** Line numbers
+   #+BEGIN_SRC emacs-lisp
+     (gsetq line-number-display-limit-width 1000)
+   #+END_SRC
+** Search
+   #+BEGIN_SRC emacs-lisp
+     (gsetq isearch-allow-scroll t
+	    search-ring-max 128
+	    regexp-search-ring-max 128)
+     (general-define-key
+      :keymaps 'isearch-mode-map
+      "M-s M-s" 'swiper-from-isearch)
+   #+END_SRC
+
+   #+BEGIN_SRC emacs-lisp
+     (defun binarin/search-words ()
+       (interactive)
+       (when (use-region-p)
+	 (browse-url
+	  (concat "https://duckduckgo.com/html/?q="
+		  (url-hexify-string (buffer-substring (region-beginning) (region-end)))))))
+
+     (general-define-key "M-s M-w" 'binarin/search-words)
+   #+END_SRC
+
+** Automatically make scripts executable
+   #+BEGIN_SRC emacs-lisp
+     (add-hook 'after-save-hook
+	       'executable-make-buffer-file-executable-if-script-p)
+   #+END_SRC
+** Window handling
+
+   Prefer horizontal splits:
+   #+BEGIN_SRC emacs-lisp
+     (gsetq split-width-threshold 100)
    #+END_SRC
 * Programming
 ** Projects
@@ -283,6 +326,13 @@
      (add-hook 'lisp-mode-hook             #'enable-paredit-mode)
      (add-hook 'lisp-interaction-mode-hook #'enable-paredit-mode)
      (add-hook 'scheme-mode-hook           #'enable-paredit-mode)
+   #+END_SRC
+
+   Prevent ~paredit~ from replacing standard search-related binding:
+   #+BEGIN_SRC emacs-lisp
+     (eval-after-load "paredit"
+       (lambda ()
+	 (general-define-key :keymaps 'paredit-mode-map "M-s" nil)))
    #+END_SRC
 ** Nix
    #+BEGIN_SRC emacs-lisp
