@@ -464,6 +464,5 @@ onRescreen _ _ = return (All True)
 getPassword = passPrompt def { font = "xft:Arial:size=20"
                              , height = 40
                              , searchPredicate = \input variant -> input `isInfixOf` variant
-                             , autoComplete = Just 1000000
                              , position = Top
                              }
