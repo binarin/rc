@@ -222,7 +222,7 @@
      (setq-default indent-tabs-mode nil
                    show-trailing-whitespace t)
      (ws-butler-global-mode +1)
-     (gsetq require-final-newline t)
+     (gsetq require-final-newline 'ask-me)
    #+END_SRC
 ** Killing
    #+BEGIN_SRC emacs-lisp
