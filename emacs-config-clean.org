@@ -180,7 +180,7 @@
    #+BEGIN_SRC emacs-lisp
      (general-define-key "C-x g" 'magit-status)
    #+END_SRC
-** Autosave and backups
+** Saving and backups
    Save backups to one place and don't clutter filesystem with files ending in ~\~~ or ~#~.
    #+BEGIN_SRC emacs-lisp
      (defvar binarin/backups-directory "~/.emacs.d/backups-clean")
@@ -204,6 +204,10 @@
    it from this backup scheme (hello again, ~git reset --hard~):
    #+BEGIN_SRC emacs-lisp
      (setq vc-make-backup-files t)
+   #+END_SRC
+
+   #+BEGIN_SRC emacs-lisp
+     (global-auto-revert-mode +1)
    #+END_SRC
 
 ** Mark
