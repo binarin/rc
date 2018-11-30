@@ -173,6 +173,8 @@ if type -p fzf-share > /dev/null ; then
     test -f "$fzf_share/key-bindings.zsh" && . "$fzf_share/key-bindings.zsh"
 fi
 
+export PERL5LIB=/run/current-system/sw/lib/perl5/site_perl:~/.nix-profile/lib/perl5/site_perl${PERL5LIB:+:}$PERL5LIB
+
 nixops() {
     NIXOPS_STATE=~/org/deployments.nixops $(whence -p nixops) "$@" --option extra-builtins-file /etc/nixos/nixops/extra-builtins.nix
 }
