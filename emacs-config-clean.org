@@ -42,10 +42,10 @@
 
      (defun binarin/advise-sml/fill-width-available (orig-fun)
        (if (display-graphic-p)
-	   (let ((estimated-total-width (floor (/ (window-width) binarin/mode-line-scale-factor))))
-	     (cl-letf (((symbol-function 'window-total-width) (lambda () estimated-total-width)))
-	       (funcall orig-fun)))
-	 (funcall orig-fun)))
+           (let ((estimated-total-width (floor (/ (window-width) binarin/mode-line-scale-factor))))
+             (cl-letf (((symbol-function 'window-total-width) (lambda () estimated-total-width)))
+               (funcall orig-fun)))
+         (funcall orig-fun)))
 
      (advice-add 'sml/fill-width-available :around #'binarin/advise-sml/fill-width-available)
 
@@ -61,13 +61,13 @@
      (defface binarin/sml-modes-red '((t :inherit sml/minor-modes :foreground "red")) "")
 
      (gsetq rm-blacklist
-	    (format "^ \\(%s\\)$"
-		    (mapconcat #'identity
-			       '("Projectile.*" "Undo-Tree" "ivy" "ElDoc" "Paredit" "ARev")
-			       "\\|"))
-	    rm-text-properties
-	    '(("\\` Ovwrt\\'" 'face 'binarin/sml-modes-red)
-	      ("\\` Wrap\\'" 'face 'default-face)))
+            (format "^ \\(%s\\)$"
+                    (mapconcat #'identity
+                               '("Projectile.*" "Undo-Tree" "ivy" "ElDoc" "Paredit" "ARev" "wb")
+                               "\\|"))
+            rm-text-properties
+            '(("\\` Ovwrt\\'" 'face 'binarin/sml-modes-red)
+              ("\\` Wrap\\'" 'face 'default-face)))
 
 
      (rich-minority-mode +1)
