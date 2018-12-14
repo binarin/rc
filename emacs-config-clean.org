@@ -7,6 +7,8 @@
 ** Customization helpers
    #+BEGIN_SRC emacs-lisp
      (require 'general)
+     (require 'dash)
+     (require 'f)
    #+END_SRC
 
    ~general-setq~ will also call triggers on customizable setttings,
@@ -77,10 +79,18 @@
    #+BEGIN_SRC emacs-lisp
      (column-number-mode 1)
    #+END_SRC
-** Truncate long lines by default
+** Long lines handling
+
+   Truncate long lines by default:
    #+BEGIN_SRC emacs-lisp
      (setq-default truncate-lines t)
    #+END_SRC
+
+   Use fringe when ~visual-line-mode~ is in effect:
+   #+BEGIN_SRC emacs-lisp
+     (setq visual-line-fringe-indicators '(left-curly-arrow right-curly-arrow))
+   #+END_SRC
+
 * Behaviour
 ** Disable startup screen
    #+BEGIN_SRC emacs-lisp
@@ -219,8 +229,10 @@
 ** Whitespace handling
    #+BEGIN_SRC emacs-lisp
      (general-define-key "M-SPC" 'cycle-spacing)
-     (setq-default indent-tabs-mode nil
-                   show-trailing-whitespace t)
+     (setq-default indent-tabs-mode nil)
+     (defun binarin/show-trailing-whitespace ()
+       (setq show-trailing-whitespace t))
+     (add-hook 'prog-mode-hook #'binarin/show-trailing-whitespace)
      (ws-butler-global-mode +1)
      (gsetq require-final-newline 'ask-me)
    #+END_SRC
@@ -273,10 +285,13 @@
 	       'executable-make-buffer-file-executable-if-script-p)
    #+END_SRC
 ** Window handling
-
    Prefer horizontal splits:
    #+BEGIN_SRC emacs-lisp
      (gsetq split-width-threshold 100)
+   #+END_SRC
+
+   #+BEGIN_SRC emacs-lisp
+     (winner-mode)
    #+END_SRC
 * Programming
 ** Projects
@@ -344,9 +359,262 @@
      (add-to-list 'auto-mode-alist '("\\.nix\\'" . nix-mode)) ;; fixed by https://github.com/NixOS/nix-mode/commit/f1973ceb4b89e52eec35829722d0dbdcc39fb2ff, should go away soon
    #+END_SRC
 * Org mode
+** Todo keywords
+   #+BEGIN_SRC emacs-lisp
+     (gsetq org-todo-keywords
+            '((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d!)")
+              (type "|" "CANCELLED(c@/!)")
+              (type "HOLD(h!/!)" "WAIT(w@/!)" "|")))
+
+     (gsetq org-todo-keyword-faces
+            '(("TODO" :foreground "red" :weight bold)
+              ("NEXT" :foreground "cyan3" :weight bold)
+              ("DONE" :foreground "green4" :weight bold)
+
+              ("WAIT" :foreground "orange3" :weight bold)
+              ("HOLD" :foreground "orange3" :weight bold)
+              ("CANCELLED" :foreground "forest green" :weight bold)))
+
+     (gsetq org-enforce-todo-dependencies t)
+     (gsetq org-log-done 'time)
+
+     (gsetq org-log-into-drawer t)
+   #+END_SRC
+** Tags
+   #+BEGIN_SRC emacs-lisp
+     (gsetq org-fast-tag-selection-single-key 't)
+   #+END_SRC
+
+   #+BEGIN_SRC emacs-lisp
+     (gsetq org-tags-exclude-from-inheritance '("PROJ"))
+
+     (defconst binarin/context-tags
+       '(("@home" :hotkey ?h :includes ("@comp" "@phone"))
+         ("@work" :hotkey ?w :includes ("@comp" "@phone"))
+         ("@comp" :hotkey ?c :includes ("@phone"))
+         ("@errand" :hotkey ?e :includes ("@phone"))
+         ("@phone" :hotkey ?p)))
+
+     (gsetq org-tag-alist `((:startgroup . nil)
+                            ,@(mapcar (cl-function (lambda ((tag &key hotkey includes)) (cons tag hotkey))) binarin/context-tags)
+                            (:endgroup . nil)
+                            (:startgroup . nil)
+                            ("WAITING" . ?W)
+                            ("HOLD" . ?H)
+                            ("CANCELLED" . ?C)
+                            (:endgroup . nil)
+                            ("no-agenda" . ?N)))
+
+     (gsetq org-todo-state-tags-triggers
+            '(("CANCELLED" ("CANCELLED" . t))
+              ("WAIT" ("WAITING" . t))
+              ("HOLD" ("HOLD" . t))
+              ("TODO" ("WAITING") ("CANCELLED") ("HOLD"))
+              ("NEXT" ("WAITING") ("CANCELLED") ("HOLD"))
+              ("DONE" ("WAITING") ("CANCELLED") ("HOLD"))))
+
+   #+END_SRC
+** Outline
+   #+BEGIN_SRC emacs-lisp
+     (gsetq org-cycle-separator-lines 0)
+     (gsetq org-catch-invisible-edits 'error)
+   #+END_SRC
+** Agenda
+   #+BEGIN_SRC emacs-lisp
+     (gsetq org-agenda-files
+            (-map #'f-expand
+                  (-filter #'f-exists?
+                           '("~/org/personal.org"
+                             "~/org/contacts.org"
+                             "~/org/blog.org"
+                             "~/org/refile.org"
+                             "~/org/booking.org"
+                             "~/org/bcal.org"
+                             "~/org/bcal-evts.org"
+                             "~/.rc/emacs-config-clean.org"
+                             "~/org/ference.org"))))
+
+     (gsetq org-agenda-include-diary nil
+            org-agenda-span 'day
+            org-agenda-start-on-weekday 1
+            org-agenda-window-setup 'current-window
+            org-agenda-dim-blocked-tasks nil
+            org-agenda-compact-blocks t
+            org-agenda-block-separator nil)
+
+     (cl-defun binarin/refile-tasks-custom-agenda ()
+       '(tags "REFILE"
+              ((org-agenda-overriding-header "Task to Refile")
+               (org-tags-match-list-sublevels nil))))
+
+     (cl-defun binarin/next-tasks-for-context-agenda (primary includes)
+       `(tags-todo "-CANCELLED-agenda_hide/!NEXT"
+                   ((org-agenda-overriding-header "Next Tasks"))))
+
+     (cl-defun binarin/custom-agenda-for-context ((tag &key hotkey includes))
+       `(,(concat "l" (char-to-string hotkey))
+         ,(concat "Agenda for " tag)
+         ((agenda "" nil)
+          ,(binarin/refile-tasks-custom-agenda)
+          ,(binarin/next-tasks-for-context-agenda tag includes))))
+
+     (gsetq org-agenda-custom-commands
+            `((" " "Agenda"
+               ((agenda "" nil)
+                (tags "REFILE"
+                      ((org-agenda-overriding-header "Task to Refile")
+                       (org-tags-match-list-sublevels nil)))
+                (tags-todo "-CANCELLED-agenda_hide/!NEXT"
+                           ((org-agenda-overriding-header "Next Tasks")))))
+              ("l" . "Context-based agendas")
+              ,@(mapcar #'binarin/custom-agenda-for-context binarin/context-tags)))
+   #+END_SRC
+
+   #+BEGIN_SRC emacs-lisp
+     (defun binarin/shrink-text ()
+       (text-scale-increase 0)
+       (text-scale-increase -1))
+
+     (add-hook 'org-agenda-mode-hook #'binarin/shrink-text)
+
+     (gsetq org-agenda-tags-column -158
+            org-tags-column -124)
+   #+END_SRC
+** Global keybindings
+   #+BEGIN_SRC emacs-lisp
+     (general-define-key
+      "C-c a" 'org-agenda
+      "C-c c" 'org-capture)
+   #+END_SRC
 ** Templates
    #+BEGIN_SRC emacs-lisp
      (eval-after-load "org"
        (lambda ()
 	 (add-to-list 'org-structure-template-alist '("m" "#+BEGIN_SRC emacs-lisp\n?\n#+END_SRC"))))
    #+END_SRC
+** Habits
+   #+BEGIN_SRC emacs-lisp
+     (require 'org-habit)
+     (gsetq org-habit-graph-column 50
+            org-habit-preceding-days 35)
+   #+END_SRC
+** Priorities
+   #+BEGIN_SRC emacs-lisp
+     (gsetq org-highest-priority ?A
+            org-lowest-priority ?D
+            org-default-priority ?C)
+
+   #+END_SRC
+** Contacts
+   #+BEGIN_SRC emacs-lisp
+     (require 'org-contacts)
+     (gsetq org-contacts-files '("~/org/contacts.org"))
+   #+END_SRC
+** Appearance
+   #+BEGIN_SRC emacs-lisp
+     (gsetq org-pretty-entities nil)
+     (gsetq org-agenda-dim-blocked-tasks nil)
+     (gsetq org-ellipsis " ▾")
+     ;; Always highlight the current agenda line
+     (add-hook 'org-agenda-mode-hook
+               '(lambda () (hl-line-mode 1))
+               'append)
+   #+END_SRC
+** Capture
+   #+BEGIN_SRC emacs-lisp
+     (setq org-capture-templates
+                '(("t" "todo" entry
+                   (file "~/org/refile.org")
+                   "* %?\n  :PROPERTIES:\n  :ID: %(org-id-new)\n  :END:\n  %u\n  %a"
+                   :clock-in t :clock-resume t)
+                  ("l" "Link" entry
+                   (file "~/org/refile.org")
+                   "* TODO %a\n  :PROPERTIES:\n  :ID: %(org-id-new)\n  :END:\n  %U\n\n  %i" :immediate-finish t)))
+     (setq org-default-notes-file "~/org/refile.org")
+   #+END_SRC
+
+   #+BEGIN_SRC emacs-lisp
+     (require 'org-protocol)
+     (autoload 'notifications-notify "notifications")
+
+     (defun binarin/display-notify-after-capture (&rest args)
+       (notifications-notify
+        :title "Link captured"
+        :body (cadar org-stored-links)
+        :app-name "emacs"
+        :app-icon (expand-file-name "~/.rc/org.svg")
+        :timeout 3000
+        :urgency 'low))
+
+     (advice-add 'org-protocol-do-capture :after #'binarin/display-notify-after-capture)
+   #+END_SRC
+** Refile
+   #+BEGIN_SRC emacs-lisp
+     ; Targets include this file and any file contributing to the agenda - up to 9 levels deep
+     (setq org-refile-targets '((org-agenda-files :maxlevel . 9)
+                                (nil :maxlevel . 9)))
+
+     ; Use full outline paths for refile targets - we file directly with IDO
+     (setq org-refile-use-outline-path 'file)
+
+     ; Targets complete directly with IDO
+     (setq org-outline-path-complete-in-steps nil)
+
+     ; Allow refile to create parent tasks with confirmation
+     (setq org-refile-allow-creating-parent-nodes 'confirm)
+   #+END_SRC
+
+   #+BEGIN_SRC emacs-lisp
+     (defun binarin/update-parent-todo-statistics (&rest rest)
+       (save-excursion
+         (org-update-parent-todo-statistics)))
+
+     (add-hook 'org-after-refile-insert-hook #'binarin/update-parent-todo-statistics)
+
+     (advice-add 'org-refile :after #'binarin/update-parent-todo-statistics)
+
+     (advice-add 'org-archive-subtree :after #'binarin/update-parent-todo-statistics)
+   #+END_SRC
+
+   #+BEGIN_SRC emacs-lisp
+     (defconst binarin/common-tasks-for-refiling
+       '(("personal-next" . "ece10822-11d9-4939-b3e2-2d660c0a29ad")
+         ("personal-projects" . "f43d2ba5-e840-4382-85da-ff2bf10ff9de")
+         ("personal-scheduled" . "13d7a494-3f80-4ffe-a7b4-bded42335342")
+         ("booking-next" . "b24815d0-c63e-4525-8fc2-bd64b7319db9")
+         ("booking-scheduled" . "ed90c020-04fc-41e4-af5f-256307111d1a")))
+
+     (defun binarin/refile-to-predefined (name)
+       (interactive)
+       (aand (assoc name binarin/common-tasks-for-refiling)
+             (org-id-find (cdr it) t)
+             (let ((pos (save-current-buffer
+                          (save-excursion
+                            (set-buffer (marker-buffer it))
+                            (goto-char (marker-position it))
+                            (let* ((heading-comps (org-heading-components))
+                                   (heading (nth 4 (org-heading-components))))
+
+                              (list heading (buffer-file-name) nil it))))))
+               (if (derived-mode-p 'org-agenda-mode)
+                   (org-agenda-refile nil pos)
+                   (org-refile nil nil pos)))))
+
+     (defhydra binarin/org-refile-hydra (:exit t :hint nil :color pink)
+       "
+     ^^Personal                    ^^Booking
+     ^^------------------------    ^^-----------------------
+     _n_ Next Actions              _b_ Next Actions
+     _p_ Projects                  _w_ Scheduled and waiting
+     _s_ Scheduled and waiting
+     "
+       ("n" (binarin/refile-to-predefined "personal-next"))
+       ("p" (binarin/refile-to-predefined "personal-projects"))
+       ("b" (binarin/refile-to-predefined "booking-next"))
+       ("s" (binarin/refile-to-predefined "personal-scheduled"))
+       ("w" (binarin/refile-to-predefined "booking-scheduled")))
+
+     (general-define-key "C-z C-w" 'binarin/org-refile-hydra/body)
+   #+END_SRC
+
+* Test space
