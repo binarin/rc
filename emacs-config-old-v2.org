@@ -289,18 +289,6 @@
        (interactive)
        (kill-buffer (current-buffer)))
    #+END_SRC
-** server
-  #+begin_src emacs-lisp
-    (defun binarin/server-start ()
-      (require 'server)
-      (unless (server-running-p server-name)
-        (server-start)))
-
-    (add-hook 'after-init-hook #'binarin/server-start)
-
-    (setf server-temp-file-regexp "^/tmp/\\(zsh\\|Re\\)\\|/draft$")
-  #+end_src
-
 ** Browser choice
    #+BEGIN_SRC emacs-lisp
      (gsetq browse-url-browser-function #'browse-url-xdg-open)

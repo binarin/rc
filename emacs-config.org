@@ -128,7 +128,7 @@
    #+BEGIN_SRC emacs-lisp
      (gsetq history-length 1000
 	    history-delete-duplicates t
-	    savehist-file "~/.emacs.d/savehist-clean"
+	    savehist-file "~/.emacs.d/savehist"
 	    savehist-additional-variables '(savehist-minibuffer-history-variables
 					    read-expression-history
 					    minibuffer-history
@@ -197,11 +197,11 @@
 ** Saving and backups
    Save backups to one place and don't clutter filesystem with files ending in ~\~~ or ~#~.
    #+BEGIN_SRC emacs-lisp
-     (defvar binarin/backups-directory "~/.emacs.d/backups-clean")
+     (defvar binarin/backups-directory "~/.emacs.d/backups")
      (make-directory binarin/backups-directory t)
      (setq backup-directory-alist `(("." . ,binarin/backups-directory)))
 
-     (defvar binarin/auto-save-directory "~/.emacs.d/auto-save-list-clean/")
+     (defvar binarin/auto-save-directory "~/.emacs.d/auto-save-list/")
      (make-directory binarin/auto-save-directory t)
      (setq auto-save-file-name-transforms `((".*" ,binarin/auto-save-directory t)))
    #+END_SRC
@@ -420,6 +420,18 @@
   (prefer-coding-system 'utf-8-unix)
 #+end_src
 
+** Server
+  #+begin_src emacs-lisp
+    (defun binarin/server-start ()
+      (require 'server)
+      (unless (server-running-p server-name)
+        (server-start)))
+
+    (add-hook 'after-init-hook #'binarin/server-start)
+
+    (setf server-temp-file-regexp "^/tmp/\\(zsh\\|Re\\)\\|/draft$")
+  #+end_src
+
 * Programming
 ** Projects
    #+BEGIN_SRC emacs-lisp
@@ -572,7 +584,7 @@
                              "~/org/booking.org"
                              "~/org/bcal.org"
                              "~/org/bcal-evts.org"
-                             "~/.rc/emacs-config-clean.org"
+                             "~/.rc/emacs-config.org"
                              "~/org/ference.org"))))
 
      (gsetq org-agenda-include-diary nil
