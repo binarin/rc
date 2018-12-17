@@ -1,4 +1,8 @@
 * File header
+** Enable lexical bindings
+  #+begin_src emacs-lisp
+    ;; -*- lexical-binding: t -*-
+  #+end_src
 ** Early load of installed packages autoloads
   #+BEGIN_SRC emacs-lisp
     (package-initialize)
@@ -543,6 +547,20 @@
      (gsetq org-catch-invisible-edits 'error)
    #+END_SRC
 ** Agenda
+   Separate block for functions that absolutely require lexical
+   scope. I can't make ~eval-buffer~ to respect this setting in
+   org-mode source code editors.
+   #+BEGIN_SRC emacs-lisp :lexical yes
+     (defun binarin/agenda-sorter-tag-first (tag)
+       #'(lambda (a b)
+           (let ((ta (member (downcase tag) (get-text-property 1 'tags a)))
+                 (tb (member (downcase tag) (get-text-property 1 'tags b))))
+             (cond
+              ((and ta tb) nil)
+              ((not ta) -1)
+              (t +1)))))
+   #+END_SRC
+
    #+BEGIN_SRC emacs-lisp
      (gsetq org-agenda-files
             (-map #'f-expand
@@ -568,11 +586,28 @@
      (cl-defun binarin/refile-tasks-custom-agenda ()
        '(tags "REFILE"
               ((org-agenda-overriding-header "Task to Refile")
-               (org-tags-match-list-sublevels nil))))
+               (org-tags-match-list-sublevels nil)
+               (org-agenda-hide-tags-regexp "REFILE\\|CANCELLED\\|WAITING\\|HOLD"))))
+
+     (cl-defun binarin/todo-filter-other-context (primary)
+       (let ((includes (plist-get (cdr (assoc primary binarin/context-tags))
+                                  :includes)))
+         (string-join
+          (mapcar
+           (lambda (tag) (concat "-" tag))
+           (-difference (mapcar #'car binarin/context-tags)
+                        (list* primary includes))))))
 
      (cl-defun binarin/next-tasks-for-context-agenda (primary includes)
-       `(tags-todo "-CANCELLED-agenda_hide/!NEXT"
-                   ((org-agenda-overriding-header "Next Tasks"))))
+       `(tags-todo ,(concat
+                     (binarin/todo-filter-other-context primary)
+                     "-CANCELLED-HOLD-WAIT-agenda_hide/!NEXT")
+                   ((org-agenda-overriding-header ,(format "Next Tasks for %s (minus %s)" primary (binarin/todo-filter-other-context primary)))
+                    (org-agenda-sorting-strategy '(priority-down user-defined-down category-up))
+                    (org-agenda-cmp-user-defined ',(binarin/agenda-sorter-tag-first primary))
+                    (org-agenda-todo-ignore-scheduled t)
+                    (org-agenda-todo-ignore-deadlines t)
+                    (org-agenda-todo-ignore-with-date t))))
 
      (cl-defun binarin/custom-agenda-for-context ((tag &key hotkey includes))
        `(,(concat "l" (char-to-string hotkey))
@@ -740,4 +775,8 @@
      (general-define-key "C-z C-w" 'binarin/org-refile-hydra/body)
    #+END_SRC
 
+** Babel
+   #+BEGIN_SRC emacs-lisp
+     (gsetq org-babel-default-header-args:emacs-lisp '((:lexical . "yes")))
+   #+END_SRC
 * Test space
