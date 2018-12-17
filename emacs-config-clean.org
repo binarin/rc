@@ -293,6 +293,129 @@
    #+BEGIN_SRC emacs-lisp
      (winner-mode)
    #+END_SRC
+** I18n
+*** Russian layout over Programmers Dvorak
+    :PROPERTIES:
+    :ID:       b04b5557-e261-4073-ac6b-93e62e587ed6
+    :END:
+
+    #+begin_src emacs-lisp
+      ;; -*- coding: iso-2022-7bit-unix -*-
+      (quail-define-package
+       "russian-computer-d" "Russian" "RU" nil
+       "ЙЦУКЕН Russian computer layout over Programmers Dvorak"
+       nil t t t t nil nil nil nil nil t)
+
+      ;;  №% "7 ?5 /3 (1 =9 *0 )2 +4 -6 !8 ;:
+      ;;   Й  Ц  У  К  Е  Н  Г  Ш  Щ  З  Х  Ъ
+      ;;    Ф  Ы  В  А  П  Р  О  Л  Д  Ж  Э
+      ;;     Я  Ч  С  М  И  Т  Ь  Б  Ю  .,
+
+      (quail-define-rules
+       ("&" ?№)
+       ("[" ?\")
+       ("{" ??)
+       ("}" ?/)
+       ("(" ?()
+       ("=" ?=)
+       ("*" ?*)
+       (")" ?))
+       ("+" ?+)
+       ("]" ?-)
+       ("!" ?!)
+       ("#" ?\;)
+       ("%" ?%)
+       ("7" ?7)
+       ("5" ?5)
+       ("3" ?3)
+       ("1" ?1)
+       ("9" ?9)
+       ("0" ?0)
+       ("2" ?2)
+       ("4" ?4)
+       ("6" ?6)
+       ("8" ?8)
+       ("`" ?:)
+
+       ("$" ?ё)
+       (";" ?й)
+       ("," ?ц)
+       ("." ?у)
+       ("p" ?к)
+       ("y" ?е)
+       ("f" ?н)
+       ("g" ?г)
+       ("c" ?ш)
+       ("r" ?щ)
+       ("l" ?з)
+       ("/" ?х)
+       ("@" ?ъ)
+       ("a" ?ф)
+       ("o" ?ы)
+       ("e" ?в)
+       ("u" ?а)
+       ("i" ?п)
+       ("d" ?р)
+       ("h" ?о)
+       ("t" ?л)
+       ("n" ?д)
+       ("s" ?ж)
+       ("-" ?э)
+       ("\\" ?\\)
+       ("'" ?я)
+       ("q" ?ч)
+       ("j" ?с)
+       ("k" ?м)
+       ("x" ?и)
+       ("b" ?т)
+       ("m" ?ь)
+       ("w" ?б)
+       ("v" ?ю)
+       ("z" ?.)
+       ("~" ?Ё)
+       (":" ?Й)
+       ("<" ?Ц)
+       (">" ?У)
+       ("P" ?К)
+       ("Y" ?Е)
+       ("F" ?Н)
+       ("G" ?Г)
+       ("C" ?Ш)
+       ("R" ?Щ)
+       ("L" ?З)
+       ("?" ?Х)
+       ("^" ?Ъ)
+       ("A" ?Ф)
+       ("O" ?Ы)
+       ("E" ?В)
+       ("U" ?А)
+       ("I" ?П)
+       ("D" ?Р)
+       ("H" ?О)
+       ("T" ?Л)
+       ("N" ?Д)
+       ("S" ?Ж)
+       ("_" ?Э)
+       ("|" ?|)
+       ("\"" ?Я)
+       ("Q" ?Ч)
+       ("J" ?С)
+       ("K" ?М)
+       ("X" ?И)
+       ("B" ?Т)
+       ("M" ?Ь)
+       ("W" ?Б)
+       ("V" ?Ю)
+       ("Z" ?,))
+    #+end_src
+
+*** Prefer Russian and UTF-8
+#+begin_src emacs-lisp
+  (set-language-environment "Russian")
+  (setq default-input-method "russian-computer-d")
+  (prefer-coding-system 'utf-8-unix)
+#+end_src
+
 * Programming
 ** Projects
    #+BEGIN_SRC emacs-lisp
