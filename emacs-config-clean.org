@@ -642,7 +642,7 @@
    #+BEGIN_SRC emacs-lisp
      (general-define-key
       "C-c a" 'org-agenda
-      "C-c c" 'org-capture)
+      "C-c r" 'org-capture)
    #+END_SRC
 ** Templates
    #+BEGIN_SRC emacs-lisp
