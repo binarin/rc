@@ -72,8 +72,7 @@ main = do
         { startWidgets =
             workspaces : map (>>= buildContentsBox) [ layout, windows ]
         , endWidgets = map (>>= buildContentsBox)
-          [ batteryIconNew
-          , clock
+          [ clock
           , tray
           , cpu
           , mem
@@ -86,5 +85,5 @@ main = do
         , widgetSpacing = 0
         , monitorsAction = pure [0]
         }
-  dyreTaffybar $ withBatteryRefresh $ withLogServer $ withToggleServer $
+  dyreTaffybar $ withLogServer $ withToggleServer $
                toTaffyConfig myConfig
