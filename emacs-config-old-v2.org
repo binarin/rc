@@ -828,24 +828,6 @@
               (file "~/org/refile.org")
               "* TODO %a\n  :PROPERTIES:\n  :ID: %(org-id-new)\n  :END:\n  %U\n\n  %i" :immediate-finish t)))
 
-     (defvar binarin/org-protocol-mundane-link-descriptions
-       '(" - binarin@gmail.com - Gmail"
-         " - binarin@binarin.ru - Mail"
-         " - Booking.com Ltd"
-         " - YouTube"
-         " - alexey.lebedeff@booking.com - Booking.com Mail"))
-
-     (defun binarin/org-protocol-capture-postprocess ()
-       (save-excursion
-         (beginning-of-buffer))
-       (awhen (s-match "binarin@binarin.ru - Mail\\]\\]" (buffer-string))
-         (replace-regexp "https://mail\\.google\\.com/mail/u/[0-9]/" "https://mail.google.com/mail/u/?authuser=binarin@binarin.ru"))
-       (awhen (s-match "alexey.lebedeff@booking.com - Booking.com Mail\\]\\]" (buffer-string))
-         (replace-regexp "https://mail\\.google\\.com/mail/u/[0-9]/" "https://mail.google.com/mail/u/?authuser=alexey.lebedeff@booking.com"))
-       (awhen (re-search-forward (concat (regexp-opt binarin/org-protocol-mundane-link-descriptions t) "]]") nil t)
-         (replace-match "]]")))
-
-     (add-hook 'org-capture-prepare-finalize-hook #'binarin/org-protocol-capture-postprocess)
    #+end_src
 
    #+BEGIN_SRC emacs-lisp
