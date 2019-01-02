@@ -169,6 +169,9 @@
 
      (set-face-attribute 'ivy-virtual nil :foreground "red")
 
+     (gsetq ivy-switch-buffer-faces-alist
+            (remove-if #'(lambda (it) (eq (car it) 'org-mode)) ivy-switch-buffer-faces-alist))
+
      (defun binarin/ivy-switch-buffer-shortener (orig-fun str)
        (let ((result (funcall orig-fun str)))
          (replace-regexp-in-string "^/nix/store/.\\{33\\}" "[NIX]" result)))
