@@ -533,11 +533,12 @@
      (gsetq org-tags-exclude-from-inheritance '("PROJ"))
 
      (defconst binarin/context-tags
-       '(("@home" :hotkey ?h :includes ("@comp" "@phone"))
-         ("@work" :hotkey ?w :includes ("@comp" "@phone"))
+       '(("@home" :hotkey ?h :includes ("@comp" "@phone" "@inet"))
+         ("@work" :hotkey ?w :includes ("@comp" "@phone" "@inet"))
          ("@comp" :hotkey ?c :includes ("@phone"))
          ("@errand" :hotkey ?e :includes ("@phone"))
-         ("@phone" :hotkey ?o)))
+         ("@inet" :hotkey ?i)
+         ("@phone" :hotkey ?o :includes ("@inet"))))
 
      (gsetq org-tag-alist `((:startgroup . nil)
                             ,@(mapcar (cl-function (lambda ((tag &key hotkey includes)) (cons tag hotkey))) binarin/context-tags)

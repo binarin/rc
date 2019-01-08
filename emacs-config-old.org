@@ -757,6 +757,9 @@
    #+END_SRC
 * Keybindings
 ** Other keybindings
+   :PROPERTIES:
+   :ID:       fe486346-9be0-4866-b0bc-155030c7bea5
+   :END:
    #+BEGIN_SRC emacs-lisp
      (general-define-key "M-SPC" 'cycle-spacing)
    #+END_SRC
