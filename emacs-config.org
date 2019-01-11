@@ -1,3 +1,4 @@
+#+PROPERTY: header-args:emacs-lisp :results silent :lexical yes
 * File header
 ** Enable lexical bindings
   #+begin_src emacs-lisp
@@ -168,6 +169,8 @@
             ivy-virtual-abbreviate 'abbreviate)
 
      (set-face-attribute 'ivy-virtual nil :foreground "red")
+     (set-face-attribute 'ivy-modified-buffer nil :inherit nil :slant 'italic)
+     (set-face-attribute 'ivy-modified-outside-buffer nil :inherit nil :slant 'italic)
 
      (gsetq ivy-switch-buffer-faces-alist
             (remove-if #'(lambda (it) (eq (car it) 'org-mode)) ivy-switch-buffer-faces-alist))
@@ -570,7 +573,7 @@
    Separate block for functions that absolutely require lexical
    scope. I can't make ~eval-buffer~ to respect this setting in
    org-mode source code editors.
-   #+BEGIN_SRC emacs-lisp :lexical yes
+   #+BEGIN_SRC emacs-lisp :lexical yes :results silent
      (defun binarin/agenda-sorter-tag-first (tag)
        #'(lambda (a b)
            (let ((ta (member (downcase tag) (get-text-property 1 'tags a)))

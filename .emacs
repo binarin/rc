@@ -38,3 +38,17 @@
 (unless init-file-user (setf init-file-user "")) ;; I'm testing with '-q', fake it (for amx mostly)
 
 (load-file binarin/tangled-emacs-config)
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(gnus-select-method
+   (quote
+    (nnmaildir "/home/binarin/.mail/binarin@binarin.ru"))))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
