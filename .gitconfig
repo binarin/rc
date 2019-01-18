@@ -13,6 +13,9 @@
      insteadOf = fi:
      pushInsteadOf = fi:
 
+[url "ssh://git@gitlab.booking.com"]
+        insteadOf = https://gitlab.booking.com
+
 [core]
 	autocrlf = false
 

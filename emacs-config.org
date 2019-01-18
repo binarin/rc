@@ -505,6 +505,19 @@
      (gsetq nix-indent-function 'nix-indent-line)
      (add-to-list 'auto-mode-alist '("\\.nix\\'" . nix-mode)) ;; fixed by https://github.com/NixOS/nix-mode/commit/f1973ceb4b89e52eec35829722d0dbdcc39fb2ff, should go away soon
    #+END_SRC
+** Go
+   #+BEGIN_SRC emacs-lisp
+     (defun binarin/go-mode-hook ()
+       (set (make-local-variable 'company-backends) '(company-go))
+       (company-mode)
+       (flycheck-mode))
+
+     (add-hook 'go-mode-hook #'binarin/go-mode-hook)
+
+     ;; (eval-after-load "go-mode"
+     ;;   (lambda () (flycheck-gometalinter-setup)))
+   #+END_SRC
+
 * Org mode
 ** Todo keywords
    #+BEGIN_SRC emacs-lisp
