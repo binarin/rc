@@ -677,7 +677,8 @@
        (text-scale-increase 0)
        (text-scale-increase -1))
 
-     (add-hook 'org-agenda-mode-hook #'binarin/shrink-text)
+     (when (window-system)
+       (add-hook 'org-agenda-mode-hook #'binarin/shrink-text))
 
      (gsetq org-agenda-tags-column -158
             org-tags-column -124)
