@@ -1084,4 +1084,11 @@
                                  ("7pgunlpa0t36dtkhpcuhhhmddcnt9b8d@import.calendar.google.com" . "~/org/bcal-evts.org")))
    #+END_SRC
 
+** Blogging
+   #+BEGIN_SRC emacs-lisp
+     (with-eval-after-load 'ox
+       (require 'ox-hugo))
+
+     (setf org-hugo-default-section-directory "post")
+   #+END_SRC
 * Test space
