@@ -518,6 +518,42 @@
      ;;   (lambda () (flycheck-gometalinter-setup)))
    #+END_SRC
 
+** Share source position
+   #+BEGIN_SRC emacs-lisp
+     (defun binarin/get-git-remote-urls ()
+       (with-temp-buffer
+         (magit-git-insert "remote" "-v")
+         (-remove #'null (-map #'(lambda (a) (nth 1 (s-split "[ \t]+" a))) (s-lines (buffer-string))))))
+
+     (defun binarin/get-head-commit-sha ()
+       (with-temp-buffer
+         (magit-git-insert "rev-parse" "HEAD")
+         (s-trim (buffer-string))))
+
+     (defun binarin/make-gitlab-link (base project)
+       (let ((commit-sha (binarin/get-head-commit-sha))
+             (filename-relative (car (projectile-make-relative-to-root (list (buffer-file-name)))))
+             (line-number (string-to-number (format-mode-line "%l"))))
+         (format "https://%s/%s/blob/%s/%s#L%d" base project commit-sha filename-relative line-number)))
+
+     (defun binarin/make-github-link (project)
+       (let ((commit-sha (binarin/get-head-commit-sha))
+             (filename-relative (car (projectile-make-relative-to-root (list (buffer-file-name)))))
+             (line-number (string-to-number (format-mode-line "%l"))))
+         (format "https://%s/%s/blob/%s/%s#L%d" "github.com" project commit-sha filename-relative line-number)))
+
+     (defun binarin/open-web-link-to-source-code ()
+       (interactive)
+       (aif (block loop
+                (dolist (url (binarin/get-git-remote-urls))
+                  (anaphoric-cond
+                   ((s-match "\\(gitlab\\.[^:]+\\):\\(.*\\)\\.git" url)
+                    (return (binarin/make-gitlab-link (nth 1 it) (nth 2 it))))
+                   ((s-match "https://github.com/\\(.*\\)" url)
+                    (return (binarin/make-github-link (nth 1 it)))))))
+           (browse-url it)
+         (message "Failed to generate a link from that file")))
+   #+END_SRC
 * Org mode
 ** Todo keywords
    #+BEGIN_SRC emacs-lisp
