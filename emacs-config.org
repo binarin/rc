@@ -713,7 +713,7 @@
           (stuck "" nil)
           ,(binarin/next-tasks-for-context-agenda tag includes))
          nil
-         (,(concat "/var/www/org/c-" tag ".html"))))
+         (,(concat "~/tmp/agenda-gen/c-" tag ".html"))))
 
      (gsetq org-agenda-custom-commands
             `((" " "Agenda"
@@ -728,7 +728,7 @@
               ("d" "All TODO" tags-todo "-PROJ-agenda_hide-HOLD-WAITING"
                ((org-agenda-sorting-strategy '(category-keep priority-down user-defined-down))
                 (org-agenda-cmp-user-defined #'binarin/sort-by-todo))
-               ("/var/www/org/all.html"))))
+               ("~/tmp/agenda-gen/all.html"))))
    #+END_SRC
 
    #+BEGIN_SRC emacs-lisp
