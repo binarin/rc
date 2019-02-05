@@ -733,8 +733,10 @@
 
    #+BEGIN_SRC emacs-lisp
      (defun binarin/shrink-text ()
-       (text-scale-increase 0)
-       (text-scale-increase -1))
+       (when (or (not (boundp 'text-scale-mode))
+                 (not text-scale-mode))
+         (text-scale-increase 0)
+         (text-scale-increase -1)))
 
      (when (window-system)
        (add-hook 'org-agenda-mode-hook #'binarin/shrink-text))
