@@ -813,7 +813,7 @@
         :timeout 3000
         :urgency 'low))
 
-     (advice-add 'org-protocol-do-capture :after #'binarin/display-notify-after-capture)
+     (advice-add 'org-protocol-capture :after #'binarin/display-notify-after-capture)
    #+END_SRC
 
    #+BEGIN_SRC emacs-lisp
