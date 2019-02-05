@@ -1129,4 +1129,38 @@
 
      (setf org-hugo-default-section-directory "post")
    #+END_SRC
+** Notifications
+   :PROPERTIES:
+   :ID:       c70f16f4-6678-423c-896d-fe4b73e9c819
+   :END:
+   #+BEGIN_SRC emacs-lisp
+     (require 'appt)
+
+     (defun binarin/refresh-appts ()
+       (setq appt-time-msg-list nil)
+       (org-agenda-to-appt t))
+
+     ;; Run once, activate and schedule refresh
+     (binarin/refresh-appts)
+     (appt-activate t)
+     (run-at-time "24:01" nil #'binarin/refresh-appts)
+
+     ; Update appt each time agenda opened.
+     (add-hook 'org-finalize-agenda-hook #'binarin/refresh-appts)
+
+     (defvar binarin/last-appt-notify-id nil)
+
+     (defun binarin/appt-notify (min-to-app new-time msg)
+       (setf binarin/last-appt-notify-id
+             (notifications-notify
+              :title "Appointment"
+              :body (if (listp msg) (string-join msg "\\n") msg)
+              :timeout 5000
+              :urgency 'normal)))
+
+     (setf appt-display-format 'window)
+     (setf appt-disp-window-function #'binarin/appt-notify)
+     (setf appt-message-warning-time 10)
+   #+END_SRC
+
 * Test space
