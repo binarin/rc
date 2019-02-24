@@ -45,7 +45,10 @@
  ;; If there is more than one, they won't work right.
  '(gnus-select-method
    (quote
-    (nnmaildir "/home/binarin/.mail/binarin@binarin.ru"))))
+    (nnmaildir "/home/binarin/.mail/binarin@binarin.ru")))
+ '(safe-local-variable-values
+   (quote
+    ((intero-targets "haskell-restish-todo:lib" "haskell-restish-todo:exe:haskell-restish-todo-exe" "haskell-restish-todo:test:unit")))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.

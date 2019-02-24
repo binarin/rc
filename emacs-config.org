@@ -760,7 +760,8 @@
    #+BEGIN_SRC emacs-lisp
      (eval-after-load "org"
        (lambda ()
-	 (add-to-list 'org-structure-template-alist '("m" "#+BEGIN_SRC emacs-lisp\n?\n#+END_SRC"))))
+         (require 'org-tempo)
+         (add-to-list 'org-structure-template-alist '("m" . "src emacs-lisp"))))
    #+END_SRC
 ** Habits
    #+BEGIN_SRC emacs-lisp
@@ -1168,5 +1169,35 @@
      (setf appt-disp-window-function #'binarin/appt-notify)
      (setf appt-message-warning-time 10)
    #+END_SRC
+
+** Sorting
+   #+begin_src emacs-lisp
+     (defvar binarin/priority-todos-for-sorting '("NEXT" "WAIT"))
+
+     (defun binarin/todo-to-started-first-int ()
+       "Default todo order is modified by giving more priority to
+     todo's from binarin/priority-todos-for-sorting and entries
+     without any todo keywords at all."
+       (let* ((props (org-entry-properties))
+              (item-todo (cdr (assoc "TODO" props)))
+              (item-prio (- (aif (cdr (assoc "PRIORITY" props))
+                                (aref it 0)
+                              org-default-priority)
+                            org-highest-priority))
+              (item-tags (cdr (assoc "TAGS" props)))
+              (modified-todo-order
+               (append binarin/priority-todos-for-sorting
+                       (-remove #'(lambda (todo) (member todo binarin/priority-todos-for-sorting)) org-todo-keywords-1)))
+              (todo-idx (if item-todo (1+ (-elem-index item-todo modified-todo-order)) 0))
+              (prio-range (1+ (- org-default-priority org-highest-priority))))
+         (+ (* prio-range todo-idx) item-prio)))
+
+     (defun binarin/org-sort-entries ()
+       (interactive)
+       (org-sort-entries nil ?f #'binarin/todo-to-started-first-int)
+       (org-cycle)
+       (org-cycle)
+       (org-cycle-hide-drawers 'subtree))
+   #+end_src
 
 * Test space
