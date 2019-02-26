@@ -940,7 +940,7 @@
     :ID:       52d239a4-9b17-4ff1-8b1a-97996370862e
     :END:
    #+BEGIN_SRC emacs-lisp
-     (defvar binarin/keep-clock-running)
+     (defvar binarin/keep-clock-running nil "")
 
      (defun binarin/punch-in ()
        (interactive)
