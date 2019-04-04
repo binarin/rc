@@ -46,6 +46,7 @@
  '(gnus-select-method
    (quote
     (nnmaildir "/home/binarin/.mail/binarin@binarin.ru")))
+ '(package-selected-packages (quote (php-mode)))
  '(safe-local-variable-values
    (quote
     ((intero-targets "haskell-restish-todo:lib" "haskell-restish-todo:exe:haskell-restish-todo-exe" "haskell-restish-todo:test:component" "haskell-restish-todo:test:unit")
