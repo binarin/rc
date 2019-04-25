@@ -8,6 +8,7 @@ import System.Taffybar.Information.CPU
 import System.Taffybar.Information.Memory
 import System.Taffybar.SimpleConfig
 import System.Taffybar.Widget
+import System.Taffybar.Widget.Battery
 import System.Taffybar.Widget.Generic.PollingGraph
 import System.Taffybar.Widget.Generic.PollingLabel
 import System.Taffybar.Widget.SNITray
@@ -68,12 +69,14 @@ main = do
       layout = layoutNew defaultLayoutConfig
       windows = windowsNew defaultWindowsConfig
       tray = sniTrayNew
+      battery = batteryIconNew
       myConfig = defaultSimpleTaffyConfig
         { startWidgets =
             workspaces : map (>>= buildContentsBox) [ layout, windows ]
         , endWidgets = map (>>= buildContentsBox)
           [ clock
           , tray
+          , battery
           , cpu
           , mem
           , net
