@@ -744,6 +744,8 @@
    #+END_SRC
 
    #+BEGIN_SRC emacs-lisp
+     (require 'face-remap)
+
      (defun binarin/shrink-text ()
        (when (or (not (boundp 'text-scale-mode))
                  (not text-scale-mode))
