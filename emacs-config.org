@@ -1107,8 +1107,7 @@
             (while (org-up-heading-safe)
               (when (member (org-get-todo-state) (list "NEXT" "TODO"))
                 (org-todo "TODO")
-                (org-set-tags-to (-union (list "PROJ") (org-get-tags)))
-                (org-set-tags nil 'align))))))
+                (org-set-tags-to (-union (list "PROJ") (org-get-tags))))))))
 
       (add-hook 'org-after-todo-state-change-hook 'binarin/mark-next-parent-tasks-todo)
       (add-hook 'org-clock-in-hook 'binarin/mark-next-parent-tasks-todo)
