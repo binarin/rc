@@ -484,49 +484,6 @@
    #+end_src
 
 ** Jabber
-   #+BEGIN_SRC emacs-lisp
-     (setf jabber-account-list '(("alexey.lebedeff@booking.com")))
-     (setf jabber-activity-make-strings #'jabber-activity-make-strings-shorten)
-
-     (setf jabber-auto-reconnect t)
-     (setf jabber-history-enabled t)
-     (setf jabber-groupchat-buffer-format "#%n")
-     (setf jabber-chat-fill-long-lines t)
-     (setf jabber-alert-muc-hooks nil
-           jabber-alert-presence-hooks nil)
-
-     (defun binarin/jabber-hook ()
-       (emojify-mode)
-       (flyspell-mode)
-       (setf fill-column 80))
-     (add-hook 'jabber-chat-mode-hook #'binarin/jabber-hook)
-
-     (setf jabber-muc-colorize-local t
-           jabber-muc-colorize-foreign t)
-
-     ;; use this if you don't like all those notices about people joining/leaving
-     (defun binarin/jabber-muc-process-presence-remove-notices (jc presence)
-       (let* ((from (jabber-xml-get-attribute presence 'from))
-              (group (jabber-jid-user from))
-              (buffer (get-buffer (jabber-muc-get-buffer group))))
-         (if buffer
-             (with-current-buffer buffer
-               (ewoc-filter jabber-chat-ewoc (lambda (elt) (not (eq (car elt) :muc-notice))))))))
-
-     (advice-add 'jabber-muc-process-presence :after #'binarin/jabber-muc-process-presence-remove-notices)
-
-     ;; 1st time fix it after autoloads
-     (eval-after-load "jabber-autoloads"
-       #'(lambda ()
-           ;; (global-set-key (kbd "<f8>") #'jabber-activity-switch-to)
-           (global-set-key (kbd "C-z C-j") jabber-global-keymap)
-           (global-set-key (kbd "C-x C-j") #'dired-jump)))
-
-     ;; 2nd - after actually loading jabber
-     (eval-after-load "jabber-keymap"
-       #'(lambda ()
-           (global-set-key (kbd "C-x C-j") #'dired-jumpo)))
-   #+END_SRC
 * Programming
 ** helm-dash for documentation
    #+BEGIN_SRC emacs-lisp

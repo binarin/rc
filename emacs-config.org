@@ -1107,7 +1107,7 @@
             (while (org-up-heading-safe)
               (when (member (org-get-todo-state) (list "NEXT" "TODO"))
                 (org-todo "TODO")
-                (org-set-tags-to (-union (list "PROJ") (org-get-tags))))))))
+                (org-set-tags-to (-union (list "PROJ") (org-get-tags t))))))))
 
       (add-hook 'org-after-todo-state-change-hook 'binarin/mark-next-parent-tasks-todo)
       (add-hook 'org-clock-in-hook 'binarin/mark-next-parent-tasks-todo)
@@ -1207,4 +1207,68 @@
        (org-cycle-hide-drawers 'subtree))
    #+end_src
 
+* Communication
+** IRC
+   #+begin_src emacs-lisp
+     (defun binarin/get-bitlbee-password ()
+       (awhen (auth-source-search :host "bitlbee" :max 1)
+         (funcall (plist-get (car it) :secret))))
+
+     (irc-handler-add (circe-irc-handler-table) "nickserv.identified" #'binarin/bitlbee-oper-auth)
+     (defun binarin/bitlbee-oper-auth (conn event)
+       (irc-send-raw conn (concat "OPER alebedeff " (binarin/get-bitlbee-password))))
+
+     (setf circe-network-options `(("Freenode"
+                                    :channels ("#erlang" "#erlounge" "#rabbitmq" "#nixos" "#haskell" "#reflex-frp"))
+                                   ("my bitlbee"
+                                    :nick "alebedeff"
+                                    :realname "Alexey Lebedeff"
+                                    :channels ("#spdata" "#live" "#hackers" "#spcron")
+                                    :nickserv-mask "\\(bitlbee\\|root\\)!\\(bitlbee\\|root\\)@"
+                                    :nickserv-identify-challenge "If you already have an account on this server, just use the"
+                                    :nickserv-identify-command "PRIVMSG &bitlbee :identify"
+                                    :nickserv-identify-confirmation "About to identify, use /OPER"
+                                    :nickserv-nick "alebedeff"
+                                    :nickserv-password "dummy"
+                                    :host "bitlbee.booking.com"
+                                    :port 9997
+                                    :tls t)))
+
+     (setf circe-reduce-lurker-spam t)
+
+     (eval-after-load "circe"
+       (lambda ()
+         (require 'circe-color-nicks)
+         (enable-circe-color-nicks)
+         (load "lui-logging" nil t)
+         (enable-lui-logging-globally)))
+
+     (global-set-key (kbd "<f8>") #'tracking-next-buffer)
+
+     (defun irc ()
+       (interactive)
+       (circe "Freenode")
+       (circe "my bitlbee"))
+
+
+     (defun binarin/circe-chat-mode-hook ()
+       (emojify-mode)
+       (lui-set-prompt
+        (concat (propertize (concat (buffer-name) ">")
+                            'face 'circe-prompt-face)
+                " ")))
+
+     (add-hook 'circe-chat-mode-hook #'binarin/circe-chat-mode-hook)
+
+     (setq lui-flyspell-p t
+           lui-flyspell-alist '((".*" "american")))
+
+     (setq
+      lui-time-stamp-position 'right-margin
+      lui-time-stamp-format "%H:%M")
+
+     (add-hook 'lui-mode-hook 'my-circe-set-margin)
+     (defun my-circe-set-margin ()
+       (setq right-margin-width 5))
+   #+end_src
 * Test space
