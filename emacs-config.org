@@ -1214,9 +1214,12 @@
        (awhen (auth-source-search :host "bitlbee" :max 1)
          (funcall (plist-get (car it) :secret))))
 
-     (irc-handler-add (circe-irc-handler-table) "nickserv.identified" #'binarin/bitlbee-oper-auth)
      (defun binarin/bitlbee-oper-auth (conn event)
        (irc-send-raw conn (concat "OPER alebedeff " (binarin/get-bitlbee-password))))
+
+     (eval-after-load "circe"
+       #'(lambda ()
+           (irc-handler-add (circe-irc-handler-table) "nickserv.identified" #'binarin/bitlbee-oper-auth)))
 
      (setf circe-network-options `(("Freenode"
                                     :channels ("#erlang" "#erlounge" "#rabbitmq" "#nixos" "#haskell" "#reflex-frp"))
