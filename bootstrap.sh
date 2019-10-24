@@ -123,6 +123,12 @@ if [[ ! -f ~/.local/share/applications/smart-browser-chooser.desktop ]]; then
     update-desktop-database ~/.local/share/applications
 fi
 
+if [[ ! -f ~/.local/share/applications/org-protocol.desktop ]]; then
+    mkdir -p ~/.local/share/applications
+    ln -s ~/.rc/org-protocol.desktop ~/.local/share/applications/
+    update-desktop-database ~/.local/share/applications
+fi
+
 if [[ ! -L ~/.local/share/applications/mimeapps.list ]] ;then
     rm -f ~/.local/share/applications/mimeapps.list
     ln -s ~/.config/mimeapps.list ~/.local/share/applications/mimeapps.list
