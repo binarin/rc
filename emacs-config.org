@@ -15,6 +15,7 @@
      (require 'general)
      (require 'dash)
      (require 'f)
+     (require 'subr-x)
    #+END_SRC
 
    ~general-setq~ will also call triggers on customizable setttings,
@@ -471,15 +472,12 @@
    #+BEGIN_SRC emacs-lisp
      (defun binarin/vue-mode-hook ()
        (setq-local mmm-submode-decoration-level 0)
-       (lsp-vue-mmm-enable)
-       (lsp-ui-flycheck-enable t)
-       (flycheck-mode))
+       (lsp))
 
      (add-hook 'vue-mode-hook #'binarin/vue-mode-hook)
 
      (eval-after-load "vue-mode"
        (lambda ()
-         (require 'lsp-vue)
          (require 'lsp-ui)))
    #+END_SRC
 ** Perl
@@ -527,6 +525,9 @@
 
 ** Haskell
    #+begin_src emacs-lisp
+     ;; (gsetq intero-blacklist '("/")
+     ;;        intero-whitelist '("~/personal-workspace/soe"))
+     ;; (intero-global-mode)
    #+end_src
 ** Share source position
    #+BEGIN_SRC emacs-lisp
@@ -555,9 +556,9 @@
      (defun binarin/open-web-link-to-source-code ()
        (interactive)
        (aif (block loop
-                (dolist (url (binarin/get-git-remote-urls))
-                  (anaphoric-cond
-                   ((s-match "\\(gitlab\\.[^:]+\\):\\(.*\\)\\.git" url)
+              (dolist (url (binarin/get-git-remote-urls))
+                (anaphoric-cond
+                   ((s-match  "\\(gitlab\\.[^/:]+\\)[:/]\\(.*?\\)\\(\\.git\\)?$" url)
                     (return (binarin/make-gitlab-link (nth 1 it) (nth 2 it))))
                    ((s-match "https://github.com/\\(.*\\)" url)
                     (return (binarin/make-github-link (nth 1 it)))))))

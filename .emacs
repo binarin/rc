@@ -49,11 +49,16 @@
  '(package-selected-packages (quote (php-mode)))
  '(safe-local-variable-values
    (quote
-    ((intero-targets "haskell-restish-todo:lib" "haskell-restish-todo:exe:haskell-restish-todo-exe" "haskell-restish-todo:test:component" "haskell-restish-todo:test:unit")
+    ((cperl-indent-subs-specially)
+     (cperl-close-paren-offset . -2)
+     (intero-targets "haskell-restish-todo:lib" "haskell-restish-todo:exe:haskell-restish-todo-exe" "haskell-restish-todo:test:component" "haskell-restish-todo:test:unit")
      (intero-targets "haskell-restish-todo:lib" "haskell-restish-todo:exe:haskell-restish-todo-exe" "haskell-restish-todo:test:unit")))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- )
+ '(lsp-face-highlight-textual ((t (:inherit highlight))))
+ '(lsp-ui-sideline-code-action ((t (:foreground "yellow"))))
+ '(lsp-ui-sideline-current-symbol ((t (:foreground "white" :box (:line-width -1 :color "white") :weight ultra-bold))))
+ '(lsp-ui-sideline-global ((t (:background "gray21")))))

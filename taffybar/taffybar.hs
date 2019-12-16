@@ -60,6 +60,7 @@ main = do
         { minIcons = 1
         , widgetGap = 0
         , showWorkspaceFn = hideEmpty
+        , iconSort = return . id
         }
       workspaces = workspacesNew myWorkspacesConfig
       cpu = pollingGraphNew cpuCfg 0.5 cpuCallback
