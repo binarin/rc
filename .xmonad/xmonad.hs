@@ -103,7 +103,6 @@ myLayoutHook =
   onWorkspace "coins" Grid $
   onWorkspace "passwd" (noBorders Grid) $
   onWorkspace "secondary" simpleFloat $
-  onWorkspace "msg" (withIM (1%5) (Title "binarin - Skype™") Grid) $
   myLayout
 
 myNavigation :: TwoD a (Maybe a)
