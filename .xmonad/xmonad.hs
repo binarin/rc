@@ -6,6 +6,8 @@
 {-# LANGUAGE RecordWildCards #-}
 {-# OPTIONS_GHC -fno-warn-missing-signatures #-}
 
+
+
 import           Control.Lens
 import           Control.Monad (when, join, void)
 import           Data.Default
@@ -29,8 +31,8 @@ import           XMonad.Core (withWindowSet, fromMessage)
 import           XMonad.Hooks.CurrentWorkspaceOnTop (currentWorkspaceOnTop)
 import           XMonad.Hooks.EwmhDesktops (ewmh, fullscreenEventHook, ewmhDesktopsStartup, ewmhDesktopsLogHook)
 import           XMonad.Hooks.ManageDocks (docks, avoidStruts)
-import           XMonad.Hooks.ManageHelpers (doFullFloat, isFullscreen, doCenterFloat)
-import           XMonad.Hooks.Place (smart, withGaps, inBounds, placeHook)
+import           XMonad.Hooks.ManageHelpers (doFullFloat, isFullscreen, doCenterFloat, Side(..), doSideFloat, doFloatAt, composeOne)
+import           XMonad.Hooks.Place (smart, withGaps, inBounds, placeHook, simpleSmart)
 import           XMonad.Hooks.UrgencyHook (withUrgencyHookC, NoUrgencyHook(NoUrgencyHook), focusUrgent, urgencyConfig)
 import qualified XMonad.Hooks.UrgencyHook as Urgency
 import           XMonad.Layout.Grid
@@ -87,6 +89,9 @@ myManageHook = composeAll
     , className =? "Wine"           --> doFloat
     , className =? "Skype"          --> doF (W.shift "msg")
     , className =? "Viber"          --> doF (W.shift "msg")
+    , className =? "Workrave"       --> do
+        doFloat
+        doF (W.shift "scratch")
     , title     =? "FAST_CHOICE"    --> doCenterFloat
     ]
 
@@ -239,7 +244,12 @@ myConfig =  configModifiers def
          , ("M-S-,", screenWorkspace 0 >>= flip whenJust (windows . W.shift))
          , ("M-S-.", screenWorkspace 1 >>= flip whenJust (windows . W.shift))
          , ("M-S-p", screenWorkspace 2 >>= flip whenJust (windows . W.shift))
-         , ("M-k", kill)
+         , ("M-k", withFocused $ \w -> do
+               withDisplay $ \dpy -> do
+                 classHint <- io $ getClassHint dpy w
+                 when (resClass classHint /= "Workrave") $ do
+                   killWindow w
+               )
          , ("M-<Backspace>", cycleRecentWindows [xK_Super_L, xK_Super_R] xK_BackSpace xK_Delete)
          , ("C-\\", sendMessage (XkbToggle Nothing))
          , ("M-g", focusUrgent)
