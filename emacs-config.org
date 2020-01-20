@@ -774,6 +774,7 @@
    #+BEGIN_SRC emacs-lisp
      (require 'org-habit)
      (gsetq org-habit-graph-column 50
+            org-habit-show-all-today t
             org-habit-preceding-days 35)
    #+END_SRC
 ** Priorities
