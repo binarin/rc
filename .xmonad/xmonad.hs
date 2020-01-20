@@ -35,6 +35,7 @@ import           XMonad.Hooks.ManageHelpers (doFullFloat, isFullscreen, doCenter
 import           XMonad.Hooks.Place (smart, withGaps, inBounds, placeHook, simpleSmart)
 import           XMonad.Hooks.UrgencyHook (withUrgencyHookC, NoUrgencyHook(NoUrgencyHook), focusUrgent, urgencyConfig)
 import qualified XMonad.Hooks.UrgencyHook as Urgency
+import           XMonad.Hooks.ManageDebug (debugManageHookOn)
 import           XMonad.Layout.Grid
 import           XMonad.Layout.IM
 import           XMonad.Layout.LayoutModifier (LayoutModifier, handleMess, ModifiedLayout(..))
@@ -139,7 +140,7 @@ gsconfig1 = def
 
 main :: IO ()
 main = do
-  xmonad $ myConfig
+  xmonad $ debugManageHookOn "M-u" myConfig
 
 myManageFloats :: ManageHook
 myManageFloats = placeHook $ inBounds $ withGaps (16,0,16,0) (smart (0.5,0.5))
