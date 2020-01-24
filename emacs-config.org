@@ -702,11 +702,17 @@
            (-difference (mapcar #'car binarin/context-tags)
                         (list* primary includes))))))
 
-     (cl-defun binarin/sort-habits-alphabetically (a b)
-       (let ((ha (get-text-property 1 'org-habit-p a))
-             (hb (get-text-property 1 'org-habit-p b)))
+     (cl-defun binarin/sort-habits (a b)
+       (let* ((ha (get-text-property 1 'org-habit-p a))
+             (hb (get-text-property 1 'org-habit-p b))
+             (ma (get-text-property 1 'org-marker a))
+             (mb (get-text-property 1 'org-marker b))
+             (ia (string-to-number (or (org-entry-get ma "IMPORTANCE") "1000")))
+             (ib (string-to-number (or (org-entry-get mb "IMPORTANCE") "1000"))))
          (when (and ha hb)
-           (org-cmp-alpha a b))))
+           (cond ((> ia ib) +1)
+                 ((< ia ib) -1)
+                 (t (org-cmp-alpha a b))))))
 
      (cl-defun binarin/next-tasks-for-context-agenda (primary includes)
        `(tags-todo ,(concat
@@ -730,7 +736,7 @@
          ((agenda
            ""
            ((org-agenda-sorting-strategy '(habit-down user-defined-up time-up priority-down category-keep))
-            (org-agenda-cmp-user-defined #'binarin/sort-habits-alphabetically)))
+            (org-agenda-cmp-user-defined #'binarin/sort-habits)))
           ,(binarin/refile-tasks-custom-agenda)
           (stuck "" nil)
           ,(binarin/next-tasks-for-context-agenda tag includes))
