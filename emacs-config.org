@@ -877,7 +877,7 @@
                    (progn
                      (setq face 'org-habit-overdue-face)
                      (aset graph index org-habit-today-glyph))
-                 (progn
+                 (when last-done-date
                    (setq face 'org-habit-alert-face)
                    (aset graph index binarin/org-habit-missed-day-glyph))))
              (put-text-property index (1+ index) 'face face graph))
