@@ -96,7 +96,9 @@ myManageHook = composeAll
     , title     =? "FAST_CHOICE"    --> doCenterFloat
     ]
 
-myLayout = smartBorders Full ||| Mirror tiled ||| tiled
+myBordersMod = smartBorders
+
+myLayout = myBordersMod (Full ||| Mirror tiled ||| tiled)
   where
     tiled = Tall nmaster delta ratio
     nmaster = 1
@@ -153,7 +155,7 @@ configModifiers =
 
 myEwmh :: XConfig l -> XConfig l
 myEwmh xc = xc { startupHook = startupHook xc <> ewmhDesktopsStartup  <> addEWMHFullscreen
-               , handleEventHook = handleEventHook xc <> myEwmhDesktopsEventHook
+               , handleEventHook = handleEventHook xc <> myEwmhDesktopsEventHook <> borderEventHook
                , logHook = logHook xc <> ewmhDesktopsLogHook
                }
 
@@ -234,6 +236,8 @@ myConfig =  configModifiers def
          , ("M-S-h", windows W.swapDown)
          , ("M-S-t", windows W.swapUp)
          , ("M-d", sendMessage Shrink)
+         , ("M-b", withFocused $ \w ->  sendMessage (HasBorder False w))
+         , ("M-S-b", withFocused $ \w ->  sendMessage (ResetBorder w))
          , ("M-n", sendMessage Expand)
          , ("M-w", sendMessage (IncMasterN 1))
          , ("M-v", sendMessage (IncMasterN (-1)))
