@@ -669,8 +669,6 @@
             org-agenda-skip-deadline-if-done t
             org-agenda-skip-timestamp-if-done t)
 
-
-
      (defconst binarin/todo-sort-order '("NEXT" "TODO" "WAIT" "HOLD"))
 
      (cl-defun binarin/sort-by-todo (a b)
@@ -704,6 +702,12 @@
            (-difference (mapcar #'car binarin/context-tags)
                         (list* primary includes))))))
 
+     (cl-defun binarin/sort-habits-alphabetically (a b)
+       (let ((ha (get-text-property 1 'org-habit-p a))
+             (hb (get-text-property 1 'org-habit-p b)))
+         (when (and ha hb)
+           (org-cmp-alpha a b))))
+
      (cl-defun binarin/next-tasks-for-context-agenda (primary includes)
        `(tags-todo ,(concat
                      (binarin/todo-filter-other-context primary)
@@ -716,10 +720,17 @@
                     (org-agenda-todo-ignore-with-date t)
                     (org-agenda-tags-todo-honor-ignore-options t))))
 
+
+     ;; (setf (alist-get 'agenda org-agenda-sorting-strategy) '(habit-down user-defined-up time-up priority-down category-keep))
+     ;; (setf org-agenda-cmp-user-defined #'binarin/sort-habits-alphabetically)
+
      (cl-defun binarin/custom-agenda-for-context ((tag &key hotkey includes))
        `(,(concat "l" (char-to-string hotkey))
          ,(concat "Agenda for " tag)
-         ((agenda "" nil)
+         ((agenda
+           ""
+           ((org-agenda-sorting-strategy '(habit-down user-defined-up time-up priority-down category-keep))
+            (org-agenda-cmp-user-defined #'binarin/sort-habits-alphabetically)))
           ,(binarin/refile-tasks-custom-agenda)
           (stuck "" nil)
           ,(binarin/next-tasks-for-context-agenda tag includes))
