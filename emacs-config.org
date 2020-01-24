@@ -775,7 +775,102 @@
      (require 'org-habit)
      (gsetq org-habit-graph-column 50
             org-habit-show-all-today t
-            org-habit-preceding-days 35)
+            org-habit-completed-glyph  ?✓
+            org-habit-today-glyph  ??
+            binarin/org-habit-missed-day-glyph ?✗
+            org-habit-preceding-days 35
+            org-habit-following-days 1)
+
+     ;; "CANCELLED" shouldn't be considered 'done', but only for habits calculation
+     (defun binarin/advise-org-habit-parse-todo (orig-fun &optional pom)
+       (let ((org-done-keywords (--remove (string= it "CANCELLED") org-done-keywords)))
+         (funcall orig-fun pom)))
+
+     (defun binarin/advise-org-habit-get-faces (orig-fun habit &optional now-days scheduled-days donep)
+       (let* ((m-days (or now-days (time-to-days nil)))
+              (today-days (time-to-days nil))
+              (s-repeat (org-habit-scheduled-repeat habit))
+              (d-repeat (org-habit-deadline-repeat habit)))
+         (if (not (= 1 s-repeat d-repeat))
+             (funcall orig-fun habit now-days scheduled-days donep)
+           (cond
+            (donep '(org-habit-ready-face . org-habit-ready-future-face))
+            ((< m-days today-days) '(org-habit-overdue-face . org-habit-overdue-future-face))
+            (t '(org-habit-clear-face . org-habit-clear-future-face))))))
+
+
+     (set-face-attribute 'org-habit-clear-face nil
+                         :background "cyan4")
+     (set-face-attribute 'org-habit-ready-face nil
+                         :background "cyan4"
+                         :foreground "green")
+     (set-face-attribute 'org-habit-alert-face nil
+                         :background "cyan4"
+                         :foreground "pink2")
+     (set-face-attribute 'org-habit-overdue-face nil
+                         :background "cyan4"
+                         :foreground "yellow")
+
+     (defun binarin/org-habit-build-graph (orig-fun habit starting current ending)
+       "Very simplified replacement for org-habit-build-graph,
+     supporting only daily habits and using different visual style:
+
+     - Pink crosses for days when thing wasn't done
+     - Green check-mares for days when thing was done
+     - Yellow question marks for today's undone tasks
+
+     Original function uses complicated color coding for habits with
+     irregular intervals - but for daily habits it's kinda impossible
+     to interpret with one glance.
+     "
+       (let* ((all-done-dates (sort (org-habit-done-dates habit) #'<))
+              (done-dates all-done-dates)
+              (scheduled (org-habit-scheduled habit))
+              (s-repeat (org-habit-scheduled-repeat habit))
+              (start (time-to-days starting))
+              (now (time-to-days current))
+              (end (time-to-days ending))
+              (graph (make-string (1+ (- end start)) ?\s))
+              (index 0)
+              last-done-date)
+         (while (and done-dates (< (car done-dates) start))
+           (setq last-done-date (car done-dates)
+                 done-dates (cdr done-dates)))
+         (while (< start end)
+           (let* ((in-the-past-p (< start now))
+                  (todayp (= start now))
+                  (donep (and done-dates (= start (car done-dates))))
+                  (face 'org-habit-clear-face))
+             (if donep
+                 (let ((done-time (time-add
+                                   starting
+                                   (days-to-time
+                                    (- start (time-to-days starting))))))
+
+                   (aset graph index org-habit-completed-glyph)
+                   (setq face 'org-habit-ready-face)
+                   (put-text-property
+                    index (1+ index) 'help-echo
+                    (format-time-string (org-time-stamp-format) done-time) graph)
+                   (while (and done-dates
+                               (= start (car done-dates)))
+                     (setq last-done-date (car done-dates)
+                           done-dates (cdr done-dates))))
+               (if todayp
+                   (progn
+                     (setq face 'org-habit-overdue-face)
+                     (aset graph index org-habit-today-glyph))
+                 (progn
+                   (setq face 'org-habit-alert-face)
+                   (aset graph index binarin/org-habit-missed-day-glyph))))
+             (put-text-property index (1+ index) 'face face graph))
+           (setq start (1+ start)
+                 index (1+ index)))
+         graph))
+
+     (advice-add 'org-habit-parse-todo :around #'binarin/advise-org-habit-parse-todo)
+     (advice-add 'org-habit-get-faces :around #'binarin/advise-org-habit-get-faces)
+     (advice-add 'org-habit-build-graph :around #'binarin/org-habit-build-graph)
    #+END_SRC
 ** Priorities
    #+BEGIN_SRC emacs-lisp
