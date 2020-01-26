@@ -6,22 +6,21 @@
 {-# LANGUAGE RecordWildCards #-}
 {-# OPTIONS_GHC -fno-warn-missing-signatures #-}
 
-
-
 import           Control.Lens
 import           Control.Monad (when, join, void)
 import           Data.Default
 import           Data.List (sortBy, find, isInfixOf)
-import qualified Data.Map as M
 import           Data.Maybe (maybeToList, fromMaybe)
 import           Data.Monoid (All(..), (<>))
 import           Data.Ratio ((%))
 import           Data.Set (Set)
-import qualified Data.Set as Set
+import           Debug.Trace (traceShow)
 import           System.Exit
-import           System.Taffybar.Support.PagerHints (pagerHints)
+import qualified Data.Map as M
+import qualified Data.Set as Set
 
 import           Graphics.X11.ExtraTypes.XF86
+import           System.Taffybar.Support.PagerHints (pagerHints)
 import           XMonad
 import           XMonad.Actions.CycleWS
 import           XMonad.Actions.CycleWindows
@@ -30,12 +29,11 @@ import           XMonad.Actions.OnScreen
 import           XMonad.Core (withWindowSet, fromMessage)
 import           XMonad.Hooks.CurrentWorkspaceOnTop (currentWorkspaceOnTop)
 import           XMonad.Hooks.EwmhDesktops (ewmh, fullscreenEventHook, ewmhDesktopsStartup, ewmhDesktopsLogHook)
+import           XMonad.Hooks.ManageDebug (debugManageHookOn)
 import           XMonad.Hooks.ManageDocks (docks, avoidStruts)
 import           XMonad.Hooks.ManageHelpers (doFullFloat, isFullscreen, doCenterFloat, Side(..), doSideFloat, doFloatAt, composeOne)
 import           XMonad.Hooks.Place (smart, withGaps, inBounds, placeHook, simpleSmart)
 import           XMonad.Hooks.UrgencyHook (withUrgencyHookC, NoUrgencyHook(NoUrgencyHook), focusUrgent, urgencyConfig)
-import qualified XMonad.Hooks.UrgencyHook as Urgency
-import           XMonad.Hooks.ManageDebug (debugManageHookOn)
 import           XMonad.Layout.Grid
 import           XMonad.Layout.IM
 import           XMonad.Layout.LayoutModifier (LayoutModifier, handleMess, ModifiedLayout(..))
@@ -44,12 +42,14 @@ import           XMonad.Layout.PerWorkspace
 import           XMonad.Layout.SimpleFloat (simpleFloat)
 import           XMonad.Prompt
 import           XMonad.Prompt.Pass (passPrompt)
-import qualified XMonad.StackSet as W
 import           XMonad.Util.EZConfig
-import qualified XMonad.Util.ExtensibleState as ES
 import           XMonad.Util.WorkspaceCompare (getSortByIndex)
 import           XMonad.Util.XUtils (fi)
+import qualified XMonad.Hooks.UrgencyHook as Urgency
+import qualified XMonad.StackSet as W
+import qualified XMonad.Util.ExtensibleState as ES
 
+-- from local lib/
 import           Xkb
 
 primaryWorkspaces :: [(String, String)]
@@ -75,15 +75,10 @@ secondaryWorkspaces =
 scratchpadWorkspace :: (String, String)
 scratchpadWorkspace = ("scratch", "<Esc>")
 
-myWorkspaces :: [(String, String)]
-myWorkspaces = (p:s:scratchpadWorkspace:ps) ++ ss
-  where p:ps = primaryWorkspaces
-        s:ss = secondaryWorkspaces
-
 myManageHook :: ManageHook
 myManageHook = composeAll
     [ className =? "Sshmenu"        --> doFloat
-    , isFullscreen                  --> doFullFloat
+    -- , isFullscreen                  --> doFullFloat
     , resource  =? "desktop_window" --> doIgnore
     , resource  =? "kdesktop"       --> doIgnore
     , className =? "Xfce4-notifyd"  --> doIgnore
@@ -96,7 +91,17 @@ myManageHook = composeAll
     , title     =? "FAST_CHOICE"    --> doCenterFloat
     ]
 
-myBordersMod = smartBorders
+myBordersMod = lessBorders (NoFullscreenBorders Never)
+
+data NoFullscreenBorders = NoFullscreenBorders Ambiguity deriving (Read, Show)
+
+instance SetsAmbiguous NoFullscreenBorders where
+  hiddens (NoFullscreenBorders amb) ws parentRect maybeStack wrs =
+    (fst <$> fullFloats) ++ hiddens amb ws parentRect maybeStack wrs
+    where
+      floats = M.toList $ W.floating ws
+      fullRect = W.RationalRect (0 % 1) (0 % 1) (1 % 1) (1 % 1)
+      fullFloats = filter (\(_, r) -> r == fullRect) floats
 
 myLayout = myBordersMod (Full ||| Mirror tiled ||| tiled)
   where
@@ -203,10 +208,9 @@ showWSOnProperScreen ws = case classifyWorkspace ws of
   Secondary -> switchToSecondary ws
   Tertiary -> switchToTertiary ws
 
-
 myConfig =  configModifiers def
   { modMask = mod4Mask
-  , workspaces = map fst myWorkspaces
+  , workspaces = map fst (primaryWorkspaces ++ secondaryWorkspaces ++ [scratchpadWorkspace])
   , terminal           = "urxvt"
   , borderWidth        = 3
   , normalBorderColor  = "#cccccc"
@@ -412,17 +416,6 @@ workspaceOnScreen sid = do
   W.StackSet{current = currentScreen, visible = visibleScreens} <- gets windowset
   let allScreens = currentScreen:visibleScreens
   pure $ W.tag $ W.workspace $ head $ filter (\x -> W.screen x == sid) allScreens
-
-enforceWorkspaceToMonitors :: X ()
-enforceWorkspaceToMonitors = do
-  actual <- getActualWorkspaceChoice
-  choice <- ES.get
-  let fixed = fixWorkspaceChoice choice actual
-  when (fixed /= actual) $ do
-    liftIO $ appendFile "/tmp/xm.log" $ show choice <> " -> " <> show actual <> " -> " <> show fixed <> "\n"
-    -- ES.put fixed
-    -- placeWorkplaces
-  pure ()
 
 data WorkspaceType = Primary | Secondary | Tertiary deriving (Eq)
 classifyWorkspace :: WorkspaceId -> WorkspaceType
