@@ -560,7 +560,9 @@
                 (anaphoric-cond
                    ((s-match  "\\(gitlab\\.[^/:]+\\)[:/]\\(.*?\\)\\(\\.git\\)?$" url)
                     (return (binarin/make-gitlab-link (nth 1 it) (nth 2 it))))
-                   ((s-match "https://github.com/\\(.*\\)" url)
+                   ((or
+                     (s-match "https://github.com/\\(.*\\)" url)
+                     (s-match "git@github.com:\\(.*\\)" url))
                     (return (binarin/make-github-link (nth 1 it)))))))
            (browse-url it)
          (message "Failed to generate a link from that file")))
