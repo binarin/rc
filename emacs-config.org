@@ -448,6 +448,11 @@
     (setf server-temp-file-regexp "^/tmp/\\(zsh\\|Re\\)\\|/draft$")
   #+end_src
 
+** TRAMP
+   #+begin_src emacs-lisp
+     (gsetq tramp-login-prompt-regexp
+            ".*\\(user\\|login\\|2FA Token\\)\\( .*\\)?: *")
+   #+end_src
 * Programming
 ** Projects
    #+BEGIN_SRC emacs-lisp
@@ -1100,6 +1105,9 @@
    #+END_SRC
 
 *** Predefined tasks
+    :PROPERTIES:
+    :ID:       fc4ca434-7f87-48fd-9a94-9d22b2875ae8
+    :END:
    #+BEGIN_SRC emacs-lisp
      (defconst binarin/common-tasks-for-clocking
        '(("internet" . "3762fad1-cf8c-40ae-b010-bacc1cf6b879")
