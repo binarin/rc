@@ -85,9 +85,7 @@ myManageHook = composeAll
     , className =? "Wine"           --> doFloat
     , className =? "Skype"          --> doF (W.shift "msg")
     , className =? "Viber"          --> doF (W.shift "msg")
-    , className =? "Workrave"       --> do
-        doFloat
-        doF (W.shift "scratch")
+    , className =? "Workrave"       --> doFloat
     , title     =? "FAST_CHOICE"    --> doCenterFloat
     ]
 
