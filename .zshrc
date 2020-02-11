@@ -182,3 +182,23 @@ export PERL5LIB=/run/current-system/sw/lib/perl5/site_perl:~/.nix-profile/lib/pe
 nixops() {
     NIXOPS_STATE=~/org/deployments.nixops $(whence -p nixops) "$@" --option extra-builtins-file /etc/nixos/nixops/extra-builtins.nix
 }
+
+function br {
+    f=$(mktemp)
+    (
+	set +e
+	broot --outcmd "$f" "$@"
+	code=$?
+	if [ "$code" != 0 ]; then
+	    rm -f "$f"
+	    exit "$code"
+	fi
+    )
+    code=$?
+    if [ "$code" != 0 ]; then
+	return "$code"
+    fi
+    d=$(<"$f")
+    rm -f "$f"
+    eval "$d"
+}

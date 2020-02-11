@@ -138,3 +138,6 @@ ln -sf /run/current-system/sw/bin/gopass ~/bin/pass
 
 mkdir -p ~/.config/alacritty
 ln -sf ~/.rc/alacritty.yml ~/.config/alacritty/alacritty.yml
+
+mkdir -p ~/.config/broot
+ln -sf ~/.rc/broot-conf.toml ~/.config/broot/conf.toml
