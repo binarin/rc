@@ -169,8 +169,11 @@
      (setf (alist-get 't ivy-re-builders-alist) 'ivy--regex-ignore-order
            (alist-get 'org-refile ivy-initial-inputs-alist) ""
            (alist-get 'org-agenda-refile ivy-initial-inputs-alist) ""
-           (alist-get 'org-capture-refile ivy-initial-inputs-alist) ""
-           (alist-get 'counsel-M-x ivy-initial-inputs-alist) "")
+           (alist-get 'org-capture-refile ivy-initial-inputs-alist) "")
+
+     (eval-after-load "counsel"
+       (lambda ()
+         (setf (alist-get 'counsel-M-x ivy-initial-inputs-alist) "")))
 
      (gsetq ivy-use-virtual-buffers t
             ivy-count-format "(%d/%d) "
