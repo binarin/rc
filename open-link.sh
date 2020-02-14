@@ -5,7 +5,7 @@ if [[ $url =~ 'booking\.com'
        || $url =~ 'booking\.facebook\.com'
        || $url =~ '#label/Lists%2Fsp\.data\.cron'
    ]]; then
-    exec chromium "$@"
+    exec google-chrome-stable "$@"
 else
     exec firefox "$@"
 fi
