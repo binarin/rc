@@ -28,12 +28,13 @@ import           XMonad.Actions.GridSelect
 import           XMonad.Actions.OnScreen
 import           XMonad.Core (withWindowSet, fromMessage)
 import           XMonad.Hooks.CurrentWorkspaceOnTop (currentWorkspaceOnTop)
-import           XMonad.Hooks.EwmhDesktops (ewmh, fullscreenEventHook, ewmhDesktopsStartup, ewmhDesktopsLogHook)
+import           XMonad.Hooks.EwmhDesktops (ewmhDesktopsStartup, ewmhDesktopsLogHook)
 import           XMonad.Hooks.ManageDebug (debugManageHookOn)
 import           XMonad.Hooks.ManageDocks (docks, avoidStruts)
 import           XMonad.Hooks.ManageHelpers (doFullFloat, isFullscreen, doCenterFloat, Side(..), doSideFloat, doFloatAt, composeOne)
 import           XMonad.Hooks.Place (smart, withGaps, inBounds, placeHook, simpleSmart)
 import           XMonad.Hooks.UrgencyHook (withUrgencyHookC, NoUrgencyHook(NoUrgencyHook), focusUrgent, urgencyConfig)
+import           XMonad.Layout.Fullscreen (FullscreenMessage(..), fullscreenSupport, fullscreenFull)
 import           XMonad.Layout.Grid
 import           XMonad.Layout.IM
 import           XMonad.Layout.LayoutModifier (LayoutModifier, handleMess, ModifiedLayout(..))
@@ -51,6 +52,7 @@ import qualified XMonad.Util.ExtensibleState as ES
 
 -- from local lib/
 import           Xkb
+import           FullscreenScreensaverInhibitor (disableScreensaverWhenFullscreen)
 
 primaryWorkspaces :: [(String, String)]
 primaryWorkspaces =
@@ -109,11 +111,13 @@ myLayout = myBordersMod (Full ||| Mirror tiled ||| tiled)
     delta = 5/100
 
 myLayoutHook =
+  fullscreenFull $
   xkbLayout $
   avoidStruts $
   onWorkspace "coins" Grid $
   onWorkspace "passwd" (noBorders Grid) $
   onWorkspace "secondary" simpleFloat $
+  disableScreensaverWhenFullscreen $
   myLayout
 
 myNavigation :: TwoD a (Maybe a)
@@ -153,6 +157,7 @@ myManageFloats = placeHook $ inBounds $ withGaps (16,0,16,0) (smart (0.5,0.5))
 configModifiers =
       withUrgencyHookC NoUrgencyHook urgencyConfig {Urgency.suppressWhen = Urgency.Never}
     . myEwmh
+    . fullscreenSupport
     . pagerHints
     . docks
 
@@ -216,7 +221,6 @@ myConfig =  configModifiers def
   , manageHook = myManageFloats <+> myManageHook <+> manageHook def
   , handleEventHook = mconcat $
                       [ handleEventHook def
-                      , fullscreenEventHook
                       , onRescreen placeWorkplaces
                       ]
   , layoutHook = myLayoutHook
