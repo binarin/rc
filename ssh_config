@@ -1,8 +1,5 @@
 Include ~/org/ssh_config
 
-Host bitbucket.org
-     AddressFamily inet
-
 Host hass
     Hostname 192.168.2.21
     ProxyJump binarin@amon.binarin.ru

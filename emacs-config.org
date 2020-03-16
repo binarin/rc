@@ -435,7 +435,7 @@
 *** Prefer Russian and UTF-8
 #+begin_src emacs-lisp
   (set-language-environment "Russian")
-  (setq default-input-method "russian-computer-d")
+  (setq default-input-method "russian-computer")
   (prefer-coding-system 'utf-8-unix)
 #+end_src
 

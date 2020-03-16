@@ -56,22 +56,22 @@ import           FullscreenScreensaverInhibitor (disableScreensaverWhenFullscree
 
 primaryWorkspaces :: [(String, String)]
 primaryWorkspaces =
-  [ ("term", "[")
-  , ("misc", "&")
-  , ("emacs", "{")
-  , ("web", "}")
-  , ("msg", "(")
-  , ("jabber", "=")
+  [ ("term", "1")
+  , ("emacs", "2")
+  , ("web", "3")
+  , ("msg", "4")
+  , ("jabber", "5")
+  , ("misc", "`")
   ]
 
 secondaryWorkspaces :: [(String, String)]
 secondaryWorkspaces =
-  [ ("secondary", "*")
-  , ("coins", ")")
-  , ("passwd", "+")
-  , ("secondary2", "]")
-  , ("secondary3", "!")
-  , ("secondary4", "#")
+  [ ("secondary", "6")
+  , ("coins", "7")
+  , ("passwd", "8")
+  , ("secondary2", "9")
+  , ("secondary3", "0")
+  , ("secondary4", "-")
   ]
 
 scratchpadWorkspace :: (String, String)
@@ -117,7 +117,7 @@ myLayoutHook =
   onWorkspace "coins" Grid $
   onWorkspace "passwd" (noBorders Grid) $
   onWorkspace "secondary" simpleFloat $
-  disableScreensaverWhenFullscreen $
+  -- disableScreensaverWhenFullscreen $
   myLayout
 
 myNavigation :: TwoD a (Maybe a)
@@ -230,12 +230,12 @@ myConfig =  configModifiers def
         `additionalKeysP`
         ([ ("M-y", spawn "urxvt")
          , ("M-i", getPassword)
-         , ("M-;", spawn "sshmenu")
+         , ("M-q", spawn "sshmenu")
          , ("M-l", spawn "exe=$(yeganesh -x) && exec $exe")
          , ("M-S-l", spawn "gmrun")
          , ("M-<Print>", spawn "shutter -w")
-         , ("M-q", spawn "xmonad --recompile && xmonad --restart")
-         , ("M-S-q", io (exitWith ExitSuccess))
+         -- , ("M-q", spawn "xmonad --recompile && xmonad --restart")
+         -- , ("M-S-q", io (exitWith ExitSuccess))
          , ("M-h", windows W.focusDown)
          , ("M-t", windows W.focusUp)
          , ("M-m", windows W.focusMaster)
