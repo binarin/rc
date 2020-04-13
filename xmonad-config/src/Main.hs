@@ -1,9 +1,3 @@
-{-# LANGUAGE FlexibleInstances #-}
-{-# LANGUAGE LambdaCase #-}
-{-# LANGUAGE MultiParamTypeClasses #-}
-{-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE RankNTypes #-}
-{-# LANGUAGE RecordWildCards #-}
 {-# OPTIONS_GHC -fno-warn-missing-signatures #-}
 
 import           Control.Lens
@@ -59,6 +53,7 @@ import           XMonad.Util.XUtils (fi)
 -- from local lib/
 import           Xkb
 import           FullscreenScreensaverInhibitor (disableScreensaverWhenFullscreen)
+import           XMonad.Layout.Ultrawide (Ultrawide(..))
 
 primaryWorkspaces :: [(String, String)]
 primaryWorkspaces =
@@ -109,10 +104,11 @@ instance SetsAmbiguous NoFullscreenBorders where
       fullRect = W.RationalRect (0 % 1) (0 % 1) (1 % 1) (1 % 1)
       fullFloats = filter (\(_, r) -> r == fullRect) floats
 
-myLayout = myBordersMod (Full ||| threeCol ||| Mirror tiled ||| tiled)
+myLayout = myBordersMod (Full ||| threeCol ||| ultrawide ||| Mirror tiled ||| tiled)
   where
     tiled = Tall nmaster delta ratio
     threeCol = ThreeColMid 1 (5/100) (1/3)
+    ultrawide = Ultrawide 1 (5/100) (1/3)
     nmaster = 1
     ratio = 1/2
     delta = 5/100
@@ -489,3 +485,4 @@ getPassword = passPrompt def { font = "xft:Arial:size=20"
                              , searchPredicate = \input variant -> input `isInfixOf` variant
                              , position = Top
                              }
+

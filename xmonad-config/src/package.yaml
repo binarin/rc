@@ -1,6 +1,15 @@
 name: xmonad-config
 version: 0.1.0.0
 
+default-extensions:
+  - FlexibleInstances
+  - ScopedTypeVariables
+  - LambdaCase
+  - MultiParamTypeClasses
+  - OverloadedStrings
+  - RankNTypes
+  - RecordWildCards
+
 dependencies:
   - base >=4.12 && <4.13
   - xmonad

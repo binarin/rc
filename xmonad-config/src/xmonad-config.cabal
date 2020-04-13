@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 9fc671ef9656679dfc4333abd6f7380087999d3493116aa18bd0f444ca7bc2c5
+-- hash: 2e264bd559c9dc1e7debf4b2e1f979c45ce431668697afb9c76677d5bdc56cb8
 
 name:                xmonad-config
 version:             0.1.0.0
@@ -15,9 +15,11 @@ executable xmonad-config
   other-modules:
       FullscreenScreensaverInhibitor
       Xkb
+      XMonad.Layout.Ultrawide
       Paths_xmonad_config
   hs-source-dirs:
       ./.
+  default-extensions: FlexibleInstances ScopedTypeVariables LambdaCase MultiParamTypeClasses OverloadedStrings RankNTypes RecordWildCards
   build-depends:
       X11
     , base >=4.12 && <4.13
