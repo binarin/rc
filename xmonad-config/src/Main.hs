@@ -41,7 +41,6 @@ import           XMonad.Layout.NoBorders
 import           XMonad.Layout.PerWorkspace
 import           XMonad.Layout.SimpleFloat (simpleFloat)
 import           XMonad.Layout.Tabbed
-import           XMonad.Layout.ThreeColumns
 import           XMonad.Prompt
 import           XMonad.Prompt.Pass (passPrompt)
 import qualified XMonad.StackSet as W
@@ -104,10 +103,9 @@ instance SetsAmbiguous NoFullscreenBorders where
       fullRect = W.RationalRect (0 % 1) (0 % 1) (1 % 1) (1 % 1)
       fullFloats = filter (\(_, r) -> r == fullRect) floats
 
-myLayout = myBordersMod (Full ||| threeCol ||| ultrawide ||| Mirror tiled ||| tiled)
+myLayout = myBordersMod (ultrawide ||| Full ||| Mirror tiled ||| tiled)
   where
     tiled = Tall nmaster delta ratio
-    threeCol = ThreeColMid 1 (5/100) (1/3)
     ultrawide = Ultrawide 1 (5/100) (1/3)
     nmaster = 1
     ratio = 1/2

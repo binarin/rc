@@ -32,7 +32,7 @@ uwTiles :: Rational -> Rectangle -> Int -> Int -> [Rectangle]
 uwTiles frac rect nMaster n
   | n <= nMaster = masterRects
   | n <= nMaster + 1 = masterRects ++ rightRects
-  | otherwise = masterRects ++ rightRects ++ leftRects
+  | otherwise = masterRects ++ leftRects ++ rightRects
   where
     (leftRect, masterRect, rightRect) = split3 frac rect
     masterRects = splitVertically nMaster masterRect
