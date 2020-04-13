@@ -1,5 +1,7 @@
 module XMonad.Layout.Ultrawide (Ultrawide(..)) where
 
+import Control.Monad (msum)
+
 import XMonad
 import XMonad.StackSet as W
 import XMonad.Util.XUtils (fi)
@@ -15,6 +17,15 @@ instance LayoutClass Ultrawide a where
     where
       ws = W.integrate stack
       rects = uwTiles frac rt nm (length ws)
+
+  pureMessage uw@(Ultrawide nm dt frac) m = msum [ resize <$> fromMessage m
+                                                 , changeMaster <$> fromMessage m
+                                                 ]
+    where
+      resize Shrink = uw { uwFrac = max (1/4) (frac - dt) }
+      resize Expand = uw { uwFrac = min 1 (frac + dt) }
+      changeMaster (IncMasterN x) = uw { uwNMaster = max 1 (min 3 (nm + x)) }
+
   description _ = "UW"
 
 uwTiles :: Rational -> Rectangle -> Int -> Int -> [Rectangle]
