@@ -11,3 +11,4 @@ modules/
 .stack-work
 TAGS
 .xmonad/dist-newstyle/
+dist-newstyle

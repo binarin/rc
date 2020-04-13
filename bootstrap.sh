@@ -38,15 +38,11 @@ cp -sn ~/.rc/{toggle-touchpad,volume.sh} .
 
 mkdir -p ~/.xmonad
 cd ~/.xmonad
-cp -sn ~/.rc/.xmonad/xmonad.hs .
+cp -sn ~/.rc/xmonad-config/build .
 
 mkdir -p ~/.config/taffybar
 cd ~/.config/taffybar
 cp -sn ~/.rc/taffybar/taffybar.{hs,css} .
-
-if [ ! -e ~/.xmonad/lib ]; then
-    ln -s ~/.rc/.xmonad/lib ~/.xmonad/lib
-fi
 
 mkdir -p ~/.ghc
 if [[ ! -e ~/.ghc/ghci.conf ]] ; then

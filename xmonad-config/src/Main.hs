@@ -7,6 +7,7 @@
 {-# OPTIONS_GHC -fno-warn-missing-signatures #-}
 
 import           Control.Lens
+
 import           Control.Monad (when, join, void)
 import           Data.Default
 import           Data.List (sortBy, find, isInfixOf)
@@ -19,12 +20,14 @@ import           System.Exit
 import qualified Data.Map as M
 import qualified Data.Set as Set
 
+import XMonad.Actions.RotSlaves
 import           Graphics.X11.ExtraTypes.XF86
 import           System.Taffybar.Support.PagerHints (pagerHints)
 import           XMonad
 import           XMonad.Actions.CycleWS
 import           XMonad.Actions.CycleWindows
 import           XMonad.Actions.GridSelect
+import           XMonad.Actions.Navigation2D
 import           XMonad.Actions.OnScreen
 import           XMonad.Core (withWindowSet, fromMessage)
 import           XMonad.Hooks.CurrentWorkspaceOnTop (currentWorkspaceOnTop)
@@ -32,8 +35,10 @@ import           XMonad.Hooks.EwmhDesktops (ewmhDesktopsStartup, ewmhDesktopsLog
 import           XMonad.Hooks.ManageDebug (debugManageHookOn)
 import           XMonad.Hooks.ManageDocks (docks, avoidStruts)
 import           XMonad.Hooks.ManageHelpers (doFullFloat, isFullscreen, doCenterFloat, Side(..), doSideFloat, doFloatAt, composeOne)
-import           XMonad.Hooks.Place (smart, withGaps, inBounds, placeHook, simpleSmart)
+import           XMonad.Hooks.Place (smart, fixed, withGaps, inBounds, placeHook, simpleSmart)
 import           XMonad.Hooks.UrgencyHook (withUrgencyHookC, NoUrgencyHook(NoUrgencyHook), focusUrgent, urgencyConfig)
+import qualified XMonad.Hooks.UrgencyHook as Urgency
+import           XMonad.Layout.Accordion
 import           XMonad.Layout.Fullscreen (FullscreenMessage(..), fullscreenSupport, fullscreenFull)
 import           XMonad.Layout.Grid
 import           XMonad.Layout.IM
@@ -41,14 +46,15 @@ import           XMonad.Layout.LayoutModifier (LayoutModifier, handleMess, Modif
 import           XMonad.Layout.NoBorders
 import           XMonad.Layout.PerWorkspace
 import           XMonad.Layout.SimpleFloat (simpleFloat)
+import           XMonad.Layout.Tabbed
+import           XMonad.Layout.ThreeColumns
 import           XMonad.Prompt
 import           XMonad.Prompt.Pass (passPrompt)
+import qualified XMonad.StackSet as W
 import           XMonad.Util.EZConfig
+import qualified XMonad.Util.ExtensibleState as ES
 import           XMonad.Util.WorkspaceCompare (getSortByIndex)
 import           XMonad.Util.XUtils (fi)
-import qualified XMonad.Hooks.UrgencyHook as Urgency
-import qualified XMonad.StackSet as W
-import qualified XMonad.Util.ExtensibleState as ES
 
 -- from local lib/
 import           Xkb
@@ -103,9 +109,10 @@ instance SetsAmbiguous NoFullscreenBorders where
       fullRect = W.RationalRect (0 % 1) (0 % 1) (1 % 1) (1 % 1)
       fullFloats = filter (\(_, r) -> r == fullRect) floats
 
-myLayout = myBordersMod (Full ||| Mirror tiled ||| tiled)
+myLayout = myBordersMod (Full ||| threeCol ||| Mirror tiled ||| tiled)
   where
     tiled = Tall nmaster delta ratio
+    threeCol = ThreeColMid 1 (5/100) (1/3)
     nmaster = 1
     ratio = 1/2
     delta = 5/100
@@ -114,10 +121,6 @@ myLayoutHook =
   fullscreenFull $
   xkbLayout $
   avoidStruts $
-  onWorkspace "coins" Grid $
-  onWorkspace "passwd" (noBorders Grid) $
-  onWorkspace "secondary" simpleFloat $
-  -- disableScreensaverWhenFullscreen $
   myLayout
 
 myNavigation :: TwoD a (Maybe a)
@@ -152,14 +155,22 @@ main = do
   xmonad $ debugManageHookOn "M-u" myConfig
 
 myManageFloats :: ManageHook
-myManageFloats = placeHook $ inBounds $ withGaps (16,0,16,0) (smart (0.5,0.5))
+myManageFloats = placeHook $ inBounds $ withGaps (16,0,16,0) (fixed (0.5,0.5))
+
 
 configModifiers =
       withUrgencyHookC NoUrgencyHook urgencyConfig {Urgency.suppressWhen = Urgency.Never}
     . myEwmh
     . fullscreenSupport
     . pagerHints
+    . arrowNavigation
     . docks
+  where
+    arrowNavigation =
+      navigation2DP def ("<Up>", "<Left>", "<Down>", "<Right>")
+        [("M-",   windowGo  ),
+         ("M-S-", windowSwap)]
+        True
 
 myEwmh :: XConfig l -> XConfig l
 myEwmh xc = xc { startupHook = startupHook xc <> ewmhDesktopsStartup  <> addEWMHFullscreen
@@ -228,42 +239,45 @@ myConfig =  configModifiers def
   , startupHook = startupHook def >> placeWorkplaces
   }
         `additionalKeysP`
-        ([ ("M-y", spawn "urxvt")
-         , ("M-i", getPassword)
-         , ("M-q", spawn "sshmenu")
-         , ("M-l", spawn "exe=$(yeganesh -x) && exec $exe")
-         , ("M-S-l", spawn "gmrun")
-         , ("M-<Print>", spawn "shutter -w")
-         -- , ("M-q", spawn "xmonad --recompile && xmonad --restart")
-         -- , ("M-S-q", io (exitWith ExitSuccess))
-         , ("M-h", windows W.focusDown)
-         , ("M-t", windows W.focusUp)
-         , ("M-m", windows W.focusMaster)
-         , ("M-S-h", windows W.swapDown)
-         , ("M-S-t", windows W.swapUp)
-         , ("M-d", sendMessage Shrink)
-         , ("M-b", withFocused $ \w ->  sendMessage (HasBorder False w))
-         , ("M-S-b", withFocused $ \w ->  sendMessage (ResetBorder w))
-         , ("M-n", sendMessage Expand)
-         , ("M-w", sendMessage (IncMasterN 1))
-         , ("M-v", sendMessage (IncMasterN (-1)))
-         , ("M-'", goToSelected gsconfig1)
-         , ("M-s", withFocused $ windows . W.sink)
-         , ("M-<Right>", nextScreen)
-         , ("M-<Left>", prevScreen)
-         , ("M-<Up>", gridselectWorkspace gsconfig1 (\ws -> W.shift ws))
-         , ("M-S-,", screenWorkspace 0 >>= flip whenJust (windows . W.shift))
-         , ("M-S-.", screenWorkspace 1 >>= flip whenJust (windows . W.shift))
-         , ("M-S-p", screenWorkspace 2 >>= flip whenJust (windows . W.shift))
-         , ("M-k", withFocused $ \w -> do
-               withDisplay $ \dpy -> do
-                 classHint <- io $ getClassHint dpy w
-                 when (resClass classHint /= "Workrave") $ do
-                   killWindow w
-               )
-         , ("M-<Backspace>", cycleRecentWindows [xK_Super_L, xK_Super_R] xK_BackSpace xK_Delete)
+        ([ ("M-p", spawn "exe=$(yeganesh -x) && exec $exe")
          , ("C-\\", sendMessage (XkbToggle Nothing))
-         , ("M-g", focusUrgent)
+         , ("M-i", getPassword)
+         , ("M-;", spawn "sshmenu")
+         , ("M-<Backspace>", windows W.swapMaster)
+         , ("M-<Tab>", rotSlavesUp)
+         , ("M-S-<Tab>", rotSlavesDown)
+
+         -- , ("M-S-l", spawn "gmrun")
+         -- , ("M-<Print>", spawn "shutter -w")
+         -- -- , ("M-q", spawn "xmonad --recompile && xmonad --restart")
+         -- -- , ("M-S-q", io (exitWith ExitSuccess))
+         -- , ("M-h", windows W.focusDown)
+         -- , ("M-t", windows W.focusUp)
+         -- , ("M-m", windows W.focusMaster)
+         -- , ("M-S-h", windows W.swapDown)
+         -- , ("M-S-t", windows W.swapUp)
+         -- , ("M-d", sendMessage Shrink)
+         -- , ("M-b", withFocused $ \w ->  sendMessage (HasBorder False w))
+         -- , ("M-S-b", withFocused $ \w ->  sendMessage (ResetBorder w))
+         -- , ("M-n", sendMessage Expand)
+         -- , ("M-w", sendMessage (IncMasterN 1))
+         -- , ("M-v", sendMessage (IncMasterN (-1)))
+         -- , ("M-'", goToSelected gsconfig1)
+         -- , ("M-s", withFocused $ windows . W.sink)
+         -- , ("M-<Right>", nextScreen)
+         -- , ("M-<Left>", prevScreen)
+         -- , ("M-<Up>", gridselectWorkspace gsconfig1 (\ws -> W.shift ws))
+         -- , ("M-S-,", screenWorkspace 0 >>= flip whenJust (windows . W.shift))
+         -- , ("M-S-.", screenWorkspace 1 >>= flip whenJust (windows . W.shift))
+         -- , ("M-S-p", screenWorkspace 2 >>= flip whenJust (windows . W.shift))
+         -- , ("M-k", withFocused $ \w -> do
+         --       withDisplay $ \dpy -> do
+         --         classHint <- io $ getClassHint dpy w
+         --         when (resClass classHint /= "Workrave") $ do
+         --           killWindow w
+         --       )
+         -- , ("M-<Backspace>", cycleRecentWindows [xK_Super_L, xK_Super_R] xK_BackSpace xK_Delete)
+         -- , ("M-g", focusUrgent)
         ]
          ++ [ ("M-" ++ key, switchToPrimary name)
             | (name, key) <- primaryWorkspaces ]

@@ -22,7 +22,7 @@ start-programs() {
 
 xmonad-loop() {
     rm -f $HOME/.xmonad/xmonad.state
-    while true; do 
+    while true; do
         xmonad
     done
 }

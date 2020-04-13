@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+nix-build --no-out-link --attr xmonad-config $HOME/.rc/xmonad-config/release.nix
+
+rm -f $1
+nix-build -o $1 --attr xmonad-executable $HOME/.rc/xmonad-config/release.nix

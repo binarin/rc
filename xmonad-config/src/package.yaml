@@ -1,0 +1,19 @@
+name: xmonad-config
+version: 0.1.0.0
+
+dependencies:
+  - base >=4.12 && <4.13
+  - xmonad
+  - xmonad-contrib
+  - containers
+  - stm
+  - unix
+  - taffybar
+  - X11
+  - lens
+  - data-default
+
+executable:
+  main: Main.hs
+  source-dirs:
+    - .
