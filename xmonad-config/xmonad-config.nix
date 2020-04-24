@@ -9,7 +9,7 @@ mkDerivation {
   isExecutable = true;
   libraryToolDepends = [ hpack ];
   executableHaskellDepends = [
-    base containers data-default lens stm taffybar unix X11 xmonad
+    base containers data-default lens stm unix X11 xmonad
     xmonad-contrib
   ];
   prePatch = "hpack";

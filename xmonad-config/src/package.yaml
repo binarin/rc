@@ -11,16 +11,16 @@ default-extensions:
   - RecordWildCards
 
 dependencies:
-  - base >=4.12 && <4.13
+  - base
   - xmonad
   - xmonad-contrib
   - containers
   - stm
   - unix
-  - taffybar
   - X11
   - lens
   - data-default
+  - utf8-string
 
 executable:
   main: Main.hs
