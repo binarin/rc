@@ -49,7 +49,8 @@
  '(package-selected-packages (quote (php-mode)))
  '(safe-local-variable-values
    (quote
-    ((cperl-indent-subs-specially)
+    ((flycheck-disabled-checkers emacs-lisp-checkdoc)
+     (cperl-indent-subs-specially)
      (cperl-close-paren-offset . -2)
      (intero-targets "haskell-restish-todo:lib" "haskell-restish-todo:exe:haskell-restish-todo-exe" "haskell-restish-todo:test:component" "haskell-restish-todo:test:unit")
      (intero-targets "haskell-restish-todo:lib" "haskell-restish-todo:exe:haskell-restish-todo-exe" "haskell-restish-todo:test:unit")))))
