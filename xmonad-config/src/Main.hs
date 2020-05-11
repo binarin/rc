@@ -88,6 +88,7 @@ myManageHook = composeAll
     , className =? "Skype"          --> doF (W.shift "msg")
     , className =? "Viber"          --> doF (W.shift "msg")
     , className =? "Workrave"       --> doFloat
+    -- , className =? "looking-glass-client" --> doFloat
     , title     =? "FAST_CHOICE"    --> doCenterFloat
     ]
 
@@ -103,8 +104,11 @@ instance SetsAmbiguous NoFullscreenBorders where
       fullRect = W.RationalRect (0 % 1) (0 % 1) (1 % 1) (1 % 1)
       fullFloats = filter (\(_, r) -> r == fullRect) floats
 
-myLayout = myBordersMod (ultrawide ||| Full ||| Mirror tiled ||| tiled)
+myLayout = myBordersMod perWorkspace
+
   where
+    defaultLayout = ultrawide ||| Full ||| Mirror tiled ||| tiled
+    perWorkspace = onWorkspace "secondary" simpleFloat defaultLayout
     tiled = Tall nmaster delta ratio
     ultrawide = Ultrawide 1 (5/100) (1/3)
     nmaster = 1
