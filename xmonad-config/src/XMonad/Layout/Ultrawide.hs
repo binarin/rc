@@ -1,3 +1,5 @@
+{-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
 module XMonad.Layout.Ultrawide (Ultrawide(..)) where
 
 import Control.Monad (msum)

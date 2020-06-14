@@ -25,7 +25,7 @@ import           XMonad.Actions.Navigation2D
 import           XMonad.Actions.OnScreen
 import           XMonad.Core (withWindowSet, fromMessage)
 import           XMonad.Hooks.CurrentWorkspaceOnTop (currentWorkspaceOnTop)
-import           XMonad.Hooks.EwmhDesktops (ewmhDesktopsStartup, ewmhDesktopsLogHook)
+import           XMonad.Hooks.EwmhDesktops (ewmhDesktopsStartup, ewmhDesktopsLogHook, fullscreenEventHook)
 import           XMonad.Hooks.ManageDebug (debugManageHookOn)
 import           XMonad.Hooks.ManageDocks (docks, avoidStruts)
 import           XMonad.Hooks.ManageHelpers (doFullFloat, isFullscreen, doCenterFloat, Side(..), doSideFloat, doFloatAt, composeOne)
@@ -33,7 +33,12 @@ import           XMonad.Hooks.Place (smart, fixed, withGaps, inBounds, placeHook
 import           XMonad.Hooks.UrgencyHook (withUrgencyHookC, NoUrgencyHook(NoUrgencyHook), focusUrgent, urgencyConfig)
 import qualified XMonad.Hooks.UrgencyHook as Urgency
 import           XMonad.Layout.Accordion
-import           XMonad.Layout.Fullscreen (FullscreenMessage(..), fullscreenSupport, fullscreenFull)
+
+-- NOTE: Not compatible with NoFullscreenBorders defined below
+-- NOTE: The only reason to use this was that it also produces layout messages, which I tried to use for screen-saver inhibitor
+-- import           XMonad.Layout.Fullscreen (FullscreenMessage(..), fullscreenSupport, fullscreenFull, fullscreenFloat)
+
+
 import           XMonad.Layout.Grid
 import           XMonad.Layout.IM
 import           XMonad.Layout.LayoutModifier (LayoutModifier, handleMess, ModifiedLayout(..))
@@ -53,6 +58,22 @@ import           XMonad.Util.XUtils (fi)
 import           Xkb
 import           FullscreenScreensaverInhibitor (disableScreensaverWhenFullscreen)
 import           XMonad.Layout.Ultrawide (Ultrawide(..))
+
+import System.IO
+
+debugStuff :: X ()
+debugStuff = withWindowSet (\ws -> do
+    liftIO $ print ws
+    liftIO $ logToTmpFile $ show ws
+  )
+
+myAppendFile :: FilePath -> String -> IO ()
+myAppendFile f s = do
+  withFile f AppendMode $ \h -> do
+    hPutStrLn h s
+
+logToTmpFile :: String -> IO ()
+logToTmpFile = myAppendFile "/tmp/xmonad.log" . (++ "\n")
 
 primaryWorkspaces :: [(String, String)]
 primaryWorkspaces =
@@ -116,7 +137,7 @@ myLayout = myBordersMod perWorkspace
     delta = 5/100
 
 myLayoutHook =
-  fullscreenFull $
+  -- fullscreenFloat $
   xkbLayout $
   avoidStruts $
   myLayout
@@ -159,7 +180,6 @@ myManageFloats = placeHook $ inBounds $ withGaps (16,0,16,0) (fixed (0.5,0.5))
 configModifiers =
       withUrgencyHookC NoUrgencyHook urgencyConfig {Urgency.suppressWhen = Urgency.Never}
     . myEwmh
-    . fullscreenSupport
     . pagerHints
     . arrowNavigation
     . docks
@@ -172,7 +192,7 @@ configModifiers =
 
 myEwmh :: XConfig l -> XConfig l
 myEwmh xc = xc { startupHook = startupHook xc <> ewmhDesktopsStartup  <> addEWMHFullscreen
-               , handleEventHook = handleEventHook xc <> myEwmhDesktopsEventHook <> borderEventHook
+               , handleEventHook = handleEventHook xc <> myEwmhDesktopsEventHook <> fullscreenEventHook <> borderEventHook
                , logHook = logHook xc <> ewmhDesktopsLogHook
                }
 
@@ -244,6 +264,7 @@ myConfig =  configModifiers def
          , ("M-<Backspace>", windows W.swapMaster)
          , ("M-<Tab>", rotSlavesUp)
          , ("M-S-<Tab>", rotSlavesDown)
+         , ("M-S-l", debugStuff)
 
          -- , ("M-S-l", spawn "gmrun")
          -- , ("M-<Print>", spawn "shutter -w")
@@ -427,7 +448,7 @@ fixWorkspaceChoice (WorkspaceChoice priChoice secChoice terChoice) (WorkspaceCho
 
 workspaceOnScreen :: ScreenId -> X WorkspaceId
 workspaceOnScreen sid = do
-  W.StackSet{current = currentScreen, visible = visibleScreens} <- gets windowset
+  W.StackSet { W.current = currentScreen, W.visible = visibleScreens} <- gets windowset
   let allScreens = currentScreen:visibleScreens
   pure $ W.tag $ W.workspace $ head $ filter (\x -> W.screen x == sid) allScreens
 
