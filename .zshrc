@@ -202,3 +202,5 @@ function br {
     rm -f "$f"
     eval "$d"
 }
+
+eval "$(direnv hook zsh)"
