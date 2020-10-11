@@ -173,9 +173,9 @@ if type -p fzf-share > /dev/null ; then
     test -f "$fzf_share/key-bindings.zsh" && . "$fzf_share/key-bindings.zsh"
 fi
 
-if which bk >& /dev/null; then
-    source <(bk completion zsh)
-fi
+# if which bk >& /dev/null; then
+#     source <(bk completion zsh)
+# fi
 
 export PERL5LIB=/run/current-system/sw/lib/perl5/site_perl:~/.nix-profile/lib/perl5/site_perl${PERL5LIB:+:}$PERL5LIB
 
