@@ -49,25 +49,25 @@
    #+BEGIN_SRC emacs-lisp
      (require 'smart-mode-line)
 
-     (defconst binarin/mode-line-scale-factor 0.6)
+     ;; (defconst binarin/mode-line-scale-factor 0.6)
 
-     (defun binarin/advise-sml/fill-width-available (orig-fun)
-       (if (display-graphic-p)
-           (let ((estimated-total-width (floor (/ (window-width) binarin/mode-line-scale-factor))))
-             (cl-letf (((symbol-function 'window-total-width) (lambda () estimated-total-width)))
-               (funcall orig-fun)))
-         (funcall orig-fun)))
+     ;; (defun binarin/advise-sml/fill-width-available (orig-fun)
+     ;;   (if (display-graphic-p)
+     ;;       (let ((estimated-total-width (floor (/ (window-width) binarin/mode-line-scale-factor))))
+     ;;         (cl-letf (((symbol-function 'window-total-width) (lambda () estimated-total-width)))
+     ;;           (funcall orig-fun)))
+     ;;     (funcall orig-fun)))
 
-     (advice-add 'sml/fill-width-available :around #'binarin/advise-sml/fill-width-available)
+     ;; (advice-add 'sml/fill-width-available :around #'binarin/advise-sml/fill-width-available)
 
      (gsetq sml/no-confirm-load-theme t)
-     (gsetq sml/theme 'powerline)
+     (gsetq sml/theme 'dark)
 
      (sml/setup)
 
-     (set-face-attribute 'mode-line nil :height binarin/mode-line-scale-factor)
-     (set-face-attribute 'mode-line-inactive nil :height binarin/mode-line-scale-factor)
-     (set-face-attribute 'sml/folder nil :foreground "#aaaaaa")
+     ;; (set-face-attribute 'mode-line nil :height binarin/mode-line-scale-factor)
+     ;; (set-face-attribute 'mode-line-inactive nil :height binarin/mode-line-scale-factor)
+     ;; (set-face-attribute 'sml/folder nil :foreground "#aaaaaa")
 
      (defface binarin/sml-modes-red '((t :inherit sml/minor-modes :foreground "red")) "")
 
@@ -461,6 +461,8 @@
                      (format "\\(%s\\)\\|\\(%s\\)"
                              vc-ignore-dir-regexp
                              tramp-file-name-regexp))
+
+     (gsetq tramp-use-ssh-controlmaster-options nil)
    #+end_src
 * Programming
 ** Projects
@@ -1338,6 +1340,28 @@
        (org-cycle-hide-drawers 'subtree))
    #+end_src
 
+** Roam
+   :PROPERTIES:
+   :ID:       50517a18-e858-4bc1-8304-0aff3951e8ac
+   :END:
+   #+begin_src emacs-lisp
+     (gsetq org-roam-directory (concat (file-name-as-directory org-directory) "roam"))
+     (org-roam-mode t)
+
+     (general-define-key
+      :keymaps 'org-roam-mode-map
+      "C-c n r" 'org-roam-db-build-cache
+      "C-c n l" 'org-roam
+      "C-c n f" 'org-roam-find-file
+      "C-c n g" 'org-roam-graph)
+
+     (general-define-key
+      :keymaps 'org-mode-map
+      "C-c n i" 'org-roam-insert
+      "C-c n I" 'org-roam-insert-immediate)
+
+     (setf (alist-get 'file org-link-frame-setup) 'find-file)
+   #+end_src
 * Communication
 ** IRC
    #+begin_src emacs-lisp

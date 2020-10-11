@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+if [[ $1 == "--clip" ]]; then
+    gopass show "$@"
+else
+    gopass "$@"
+fi
