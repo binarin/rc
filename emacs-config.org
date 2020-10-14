@@ -1347,6 +1347,7 @@
    #+begin_src emacs-lisp
      (gsetq org-roam-directory (concat (file-name-as-directory org-directory) "roam"))
      (org-roam-mode t)
+     (require 'org-roam-protocol)
 
      (general-define-key
       :keymaps 'org-roam-mode-map
