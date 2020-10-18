@@ -38,7 +38,7 @@ cp -sn ~/.rc/{toggle-touchpad,volume.sh} .
 
 mkdir -p ~/.xmonad
 cd ~/.xmonad
-cp -sn ~/.rc/xmonad-config/build .
+cp -sf /etc/nixos/xmonad-config/build .
 
 mkdir -p ~/.config/taffybar
 cd ~/.config/taffybar
