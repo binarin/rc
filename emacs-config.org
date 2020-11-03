@@ -781,8 +781,10 @@
      (require 'face-remap)
 
      (defun binarin/shrink-text ()
-       (when (or (not (boundp 'text-scale-mode))
-                 (not text-scale-mode))
+       (when (and
+              (window-system)
+              (or (not (boundp 'text-scale-mode))
+                 (not text-scale-mode)))
          (text-scale-increase 0)
          (text-scale-increase -1)))
 
