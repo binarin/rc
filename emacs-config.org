@@ -38,6 +38,7 @@
    #+BEGIN_SRC emacs-lisp
      (add-to-list 'default-frame-alist
                   '(font . "Iosevka-22"))
+     (setf face-ignored-fonts '("Adobe Blank"))
    #+END_SRC
 ** Theme
    #+begin_src emacs-lisp
