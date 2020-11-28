@@ -945,6 +945,7 @@
                   ("l" "Link" entry
                    (file "~/org/refile.org")
                    "* TODO %a\n  :PROPERTIES:\n  :ID: %(org-id-new)\n  :END:\n  %U\n\n  %i" :immediate-finish t)))
+     (setq org-id-link-to-org-use-id 'create-if-interactive)
      (setq org-default-notes-file "~/org/refile.org")
    #+END_SRC
 
