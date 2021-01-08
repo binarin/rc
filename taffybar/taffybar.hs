@@ -87,7 +87,7 @@ main = do
         , barPadding = 0
         , barHeight = 30
         , widgetSpacing = 0
-        , monitorsAction = pure [0]
+        , monitorsAction = pure [1]
         }
   dyreTaffybar $ withLogServer $ withToggleServer $
                toTaffyConfig myConfig
