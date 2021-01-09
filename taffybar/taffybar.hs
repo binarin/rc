@@ -77,7 +77,7 @@ main = do
         , endWidgets = map (>>= buildContentsBox)
           [ clock
           , tray
-          , battery
+          -- , battery
           , cpu
           , mem
           , net
