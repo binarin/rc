@@ -485,6 +485,11 @@
      (gsetq projectile-git-submodule-command nil)
    #+END_SRC
 
+   For sparse-checkout the default command still lists too much files, so let's filter them out.
+   #+begin_src emacs-lisp
+     (gsetq projectile-git-command "git ls-files -tzco --exclude-standard | perl -n0E '($l, $r) = split / /, $_, 2; if ( $l !~ /^S/ ) { print $r }'")
+   #+end_src
+
 ** Vue
    #+BEGIN_SRC emacs-lisp
      (defun binarin/vue-mode-hook ()
