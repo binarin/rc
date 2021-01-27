@@ -950,7 +950,6 @@
                   ("l" "Link" entry
                    (file "~/org/refile.org")
                    "* TODO %a\n  :PROPERTIES:\n  :ID: %(org-id-new)\n  :END:\n  %U\n\n  %i" :immediate-finish t)))
-     (setq org-id-link-to-org-use-id 'create-if-interactive)
      (setq org-default-notes-file "~/org/refile.org")
    #+END_SRC
 
@@ -1256,9 +1255,8 @@
     #+END_SRC
 ** Links
    #+BEGIN_SRC emacs-lisp
-   (gsetq org-return-follows-link t)
-   (gsetq org-id-link-to-org-use-id t)
-
+     (gsetq org-return-follows-link t)
+     (gsetq org-id-link-to-org-use-id 'create-if-interactive)
    #+END_SRC
 ** Speed commands
    #+BEGIN_SRC emacs-lisp
