@@ -577,6 +577,7 @@
 
      (defun binarin/open-web-link-to-source-code ()
        (interactive)
+       (require 'magit)
        (aif (block loop
               (dolist (url (binarin/get-git-remote-urls))
                 (anaphoric-cond
