@@ -846,7 +846,7 @@
                          :background "cyan4")
      (set-face-attribute 'org-habit-ready-face nil
                          :background "cyan4"
-                         :foreground "green")
+                         :foreground "green2")
      (set-face-attribute 'org-habit-alert-face nil
                          :background "cyan4"
                          :foreground "pink2")
