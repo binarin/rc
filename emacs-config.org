@@ -714,7 +714,7 @@
 
      (cl-defun binarin/refile-tasks-custom-agenda ()
        '(tags "REFILE"
-              ((org-agenda-overriding-header "Task to Refile")
+              ((org-agenda-overriding-header "Tasks to Refile")
                (org-tags-match-list-sublevels nil)
                (org-agenda-hide-tags-regexp "REFILE\\|CANCELLED\\|WAITING\\|HOLD"))))
 
