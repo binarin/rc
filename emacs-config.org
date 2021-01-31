@@ -761,12 +761,25 @@
          ((agenda
            ""
            ((org-agenda-sorting-strategy '(habit-down user-defined-up time-up priority-down category-keep))
-            (org-agenda-cmp-user-defined #'binarin/sort-habits)))
+            (org-agenda-cmp-user-defined #'binarin/sort-habits)
+            (org-super-agenda-groups
+             '(;; Each group has an implicit boolean OR operator between its selectors.
+               (:name "Today"          ; Optionally specify section name
+                      :time-grid t     ; Items that appear on the time grid
+                      :todo "TODAY")   ; Items that have this TODO keyword
+               (:name "Important"
+                      :priority>= "B")
+               (:name "Habits"
+                      :habit t)))))
           ,(binarin/refile-tasks-custom-agenda)
           (stuck "" nil)
           ,(binarin/next-tasks-for-context-agenda tag includes))
          nil
          (,(concat "~/tmp/agenda-gen/c-" tag ".html"))))
+
+     (org-super-agenda-mode)
+     (gsetq org-super-agenda-header-separator ""
+            org-super-agenda-header-prefix "")
 
      (gsetq org-agenda-custom-commands
             `((" " "Agenda"
