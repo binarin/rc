@@ -1,2 +1,0 @@
-#!/bin/bash
-exec ~/apps/firefox/firefox -app ~/apps/conkeror/application.ini "$@"

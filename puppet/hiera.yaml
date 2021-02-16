@@ -1,7 +1,0 @@
-:hierarchy:
-  - common
-:backends:
-  - yaml
-:yaml:
-  :datadir: './hiera'
-:merge_behavior: deeper

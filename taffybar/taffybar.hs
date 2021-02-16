@@ -61,6 +61,7 @@ main = do
         , widgetGap = 0
         , showWorkspaceFn = hideEmpty
         , iconSort = return . id
+        -- , getWindowIconPixbuf = scaledWindowIconPixbufGetter getWindowIconPixbufFromEWMH
         }
       workspaces = workspacesNew myWorkspacesConfig
       cpu = pollingGraphNew cpuCfg 0.5 cpuCallback
