@@ -59,13 +59,13 @@ mkdir -p ~/personal-workspace/ ~/booking-workspace/
 if [[ !( -f ~/.config/user-dirs.dirs) || !(grep -q HOME/Downloads ~/.config/user-dirs.dirs) ]]; then
     mkdir -p ~/.config
     rm -f ~/.config/user-dirs.{dirs,locale}
-    LANG=C xdg-user-dirs-update --force
+    LANG=C xdg-user-dirs-update --force || true
 fi
 
 if [[ ! -f ~/.local/share/applications/smart-browser-chooser.desktop ]]; then
     mkdir -p ~/.local/share/applications
     ln -s ~/.rc/smart-browser-chooser.desktop ~/.local/share/applications/
-    update-desktop-database ~/.local/share/applications
+    update-desktop-database ~/.local/share/applications || true
 fi
 
 if [[ ! -f ~/.local/share/applications/org-protocol.desktop ]]; then

@@ -4,6 +4,10 @@ Host hass
     Hostname 192.168.2.21
     ProxyJump binarin@amon.binarin.ru
 
+Host nix-build
+    Hostname 192.168.2.31
+    ProxyJump binarin@amon.binarin.ru
+
 Host *
      ForwardAgent yes
      ControlMaster auto
