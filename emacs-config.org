@@ -272,7 +272,8 @@
    #+END_SRC
 ** Bookmarks
    #+BEGIN_SRC emacs-lisp
-     (gsetq bookmark-save-flag 1)
+          (gsetq bookmark-save-flag 1
+                 bookmark-fontify nil)
    #+END_SRC
 ** Narrowing
    #+BEGIN_SRC emacs-lisp
